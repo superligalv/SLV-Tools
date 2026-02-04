@@ -1,9 +1,9 @@
 [
   { "id": "aja", "team": "Ajax", "dropbox_dir": "https://dl.dropbox.com/scl/fi/30knw09xzakgh3bv03zu1/aja.txt?rlkey=daeh3loaglf02fc2wcey50c9r&dl=0" },
-  { "id": "ars", "team": "Arsenal", "dropbox_dir": "https://dl.dropboxusercontent.com/s/fu3l9pxeheim88ohege1c/ars.txt" },
-  { "id": "ast", "team": "Aston Villa", "dropbox_dir": "https://dl.dropboxusercontent.com/s/7k93zidphhrhxt4r9skgp/ast.txt" },
+  { "id": "ars", "team": "Arsenal", "dropbox_dir": "https://dl.dropbox.com/scl/fi/fu3l9pxeheim88ohege1c/ars.txt?rlkey=yukhzitnp1tkleatw15vf6el6&dl=0" },
+  { "id": "ast", "team": "Aston Villa", "dropbox_dir": "https://dl.dropbox.com/scl/fi/7k93zidphhrhxt4r9skgp/ast.txt?rlkey=xy9u7upafgk5nwoojjogwwxo8&dl=0" },
   { "id": "atm", "team": "Atletico de Madrid", "dropbox_dir": "https://dl.dropboxusercontent.com/s/0u0vih5iaoc7phiyxucd0/atm.txt" },
-  { "id": "bay", "team": "Bayern Munchen", "dropbox_dir": "https://dl.dropboxusercontent.com/s/0n71bwvkp4lyy3kjolofs/bay.txt" },
+  { "id": "bay", "team": "Bayern Munchen", "dropbox_dir": "https://dl.dropbox.com/scl/fi/0n71bwvkp4lyy3kjolofs/bay.txt?rlkey=cz2sgvfdvwislv4v4u5f5svkp&dl=0" },
   { "id": "ben", "team": "SL Benfica", "dropbox_dir": "https://dl.dropboxusercontent.com/s/1nc8bsxdfys9lfkh67tjk/ben.txt" },
   { "id": "bet", "team": "Real Betis", "dropbox_dir": "https://dl.dropboxusercontent.com/s/d661gipxfwdi83xn8ppqs/bet.txt" },
   { "id": "bri", "team": "Brighton", "dropbox_dir": "https://dl.dropboxusercontent.com/s/hmsu8wb2zix0bvnkat0iu/bri.txt" },
