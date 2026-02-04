@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listar Equipos</title>
+  <link rel="stylesheet" href="./JS/listar_equipos.css">
+  <style>
+    /* Estilos CSS, puedes moverlos a un archivo CSS si quieres */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; color: #333; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
+    h1 { margin-bottom: 2rem; text-align: center; font-size: 2rem; color: #2c3e50; }
+    .grid-container { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); width: 100%; max-width: 1200px; }
+    .team-button { background: #fff; border: 2px solid #ddd; border-radius: 12px; padding: 0.5rem; text-align: center; transition: all 0.3s ease; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .team-button:hover { border-color: #3498db; box-shadow: 0 6px 15px rgba(0,0,0,0.2); transform: translateY(-3px); }
+    .team-button img { width: 100%; height: auto; border-radius: 8px; }
+    .team-button span { display: block; margin-top: 0.5rem; font-weight: bold; color: #2c3e50; font-size: 0.9rem; }
+    @media (max-width: 600px) { .team-button span { font-size: 0.8rem; } }
+  </style>
+</head>
+<body>
+
+  <h1>Equipos</h1>
+  <div class="grid-container" id="teamsGrid"></div>
+
+  <!-- Cargamos el JS externo -->
+  <script src="./JS/listar_equipos.js"></script>
+
+</body>
+</html>
