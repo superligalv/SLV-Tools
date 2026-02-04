@@ -86,7 +86,8 @@ function crearTabla(jugadores, headers) {
   const tableWrapper = document.createElement('div');
   tableWrapper.style.overflowX = 'auto';
   tableWrapper.style.marginTop = '1rem';
-
+  const tableHeader = document.createElement('h3');
+  tableHeader.textContent = "Plantilla";
   const table = document.createElement('table');
   table.style.width = '100%';
   table.style.borderCollapse = 'collapse';
