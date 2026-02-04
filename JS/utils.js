@@ -15,6 +15,49 @@ export function esMayor30(jugador) {
   return !isNaN(age) && age >= 30;
 }
 
+// Funciones de posicion
+export function posicion(jugador) {
+  const St = parseInt(jugador.St, 10);
+  const Tk = parseInt(jugador.Tk, 10);
+  const Ps = parseInt(jugador.Ps, 10);
+  const Sh = parseInt(jugador.Sh, 10);
+  
+  // Encontrar el valor más alto
+  const valores = { St, Tk, Ps, Sh };
+  const maxValor = Math.max(St, Tk, Ps, Sh);
+  
+  // Determinar cuál es el más alto
+  if (maxValor === St) {
+    return "GK";
+  }
+  
+  if (maxValor === Tk) {
+    return "DF";
+  }
+  
+  if (maxValor === Sh) {
+    return "FW";
+  }
+  
+  // Si Ps es el más alto (ya que no entró en los casos anteriores)
+  if (maxValor === Ps) {
+    // Verificar condiciones adicionales para Ps
+    if (Tk > Sh && Tk >= 9) {
+      return "DM";
+    } else if (Sh > Tk && Sh >= 9) {
+      return "AM";
+    } else if (Sh < 9 && Tk < 9) {
+      return "MF";
+    } else {
+      // Caso por defecto cuando Ps es el más alto
+      return "MF";
+    }
+  }
+  
+  // Caso por defecto (no debería llegar aquí normalmente)
+  return "position";
+}
+
 // Crear tabla de plantilla
 export function crearTabla(jugadores, headers, containerEl) {
   containerEl.innerHTML = '<h3 style="text-align:center;margin-bottom:1rem;">Plantilla</h3>';
@@ -46,6 +89,9 @@ export function crearTabla(jugadores, headers, containerEl) {
   const tbody = document.createElement('tbody');
   jugadores.forEach((j, idx) => {
     const tr = document.createElement('tr');
+	const posicionJugador = posicion(j).toLowerCase();
+	// Añadir clase según la posición
+	tr.classList.add(posicionJugador);
     tr.style.background = idx % 2 === 0 ? '#f9f9f9' : '#fff';
     headers.forEach(h => {
       const td = document.createElement('td');

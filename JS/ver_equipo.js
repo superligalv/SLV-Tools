@@ -1,5 +1,5 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
-         porteros, defensas, delanteros, mediocampistas } from './utils.js';
+         porteros, defensas, delanteros, mediocampistas, posicion } from './utils.js';
 
 const teamId = getQueryParam('id');
 
