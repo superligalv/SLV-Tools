@@ -1,5 +1,5 @@
 // Importar funciones del utils.js
-import { getQueryParam, crearTabla, esSub21, esMayor30 } from './JS/utils.js';
+import { esSub21, esMayor30 } from './utils.js';
 
 // Referencias a elementos HTML
 const teamNameEl = document.getElementById('teamName');
