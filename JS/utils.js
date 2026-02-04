@@ -92,7 +92,7 @@ export function crearTabla(jugadores, headers, containerEl) {
 	const posicionJugador = posicion(j).toLowerCase();
 	// Añadir clase según la posición
 	tr.classList.add(posicionJugador);
-    tr.style.background = idx % 2 === 0 ? '#f9f9f9' : '#fff';
+    //tr.style.background = idx % 2 === 0 ? '#f9f9f9' : '#fff';
     headers.forEach(h => {
       const td = document.createElement('td');
       td.textContent = j[h] || '';
