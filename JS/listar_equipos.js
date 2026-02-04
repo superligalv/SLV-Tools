@@ -25,10 +25,10 @@ fetch('./JS/teams.json')
       button.appendChild(img);
       button.appendChild(span);
 
-      // Click abre archivo Dropbox
-      button.addEventListener('click', () => {
-        window.open(e.dropbox_dir, '_blank');
-      });
+      // Click abre ver_equipo.html con el id del equipo
+	  button.addEventListener('click', () => {
+		window.location.href = `ver_equipo.html?id=${e.id}`;
+	  });
 
       grid.appendChild(button);
     });
