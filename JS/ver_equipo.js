@@ -1,17 +1,18 @@
-// Obtener el query string ?id=xxx
-function getQueryParam(param) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(param);
-}
+// Importar funciones del utils.js
+import { getQueryParam, crearTabla, esSub21, esMayor30 } from './JS/utils.js';
 
-const teamId = getQueryParam('id');
-
+// Referencias a elementos HTML
 const teamNameEl = document.getElementById('teamName');
+const statsEl = document.getElementById('teamStats');
 const teamContentEl = document.getElementById('teamContent');
+
+// Obtener el id del equipo de la URL
+const teamId = getQueryParam('id');
 
 if (!teamId) {
   teamNameEl.textContent = "Equipo no especificado";
   teamContentEl.innerHTML = "";
+  statsEl.innerHTML = "";
 } else {
   // Cargar teams.json
   fetch('./JS/teams.json')
@@ -24,12 +25,13 @@ if (!teamId) {
       if (!team) {
         teamNameEl.textContent = "Equipo no encontrado";
         teamContentEl.innerHTML = "";
+        statsEl.innerHTML = "";
         return;
       }
 
       teamNameEl.textContent = team.team;
 
-      // Cargar TXT de Dropbox
+      // Cargar TXT del equipo
       fetch(team.dropbox_dir)
         .then(resp => {
           if (!resp.ok) throw new Error('No se pudo cargar el archivo del equipo');
@@ -39,7 +41,7 @@ if (!teamId) {
           // Convertir TXT en vector de jugadores
           const lines = txt.trim().split('\n');
 
-          // Detectar línea separadora (---) si existe
+          // Detectar línea separadora (---)
           const separatorIndex = lines.findIndex(l => l.includes('---'));
           let headersLine, dataLines;
 
@@ -66,70 +68,31 @@ if (!teamId) {
               return jugador;
             });
 
-          // Crear tabla
-          crearTabla(jugadores, headers);
+          // --- Crear tabla con encabezado "Plantilla" ---
+          teamContentEl.innerHTML = `<h3 style="text-align:center;margin-bottom:1rem;">Plantilla</h3>`;
+          crearTabla(jugadores, headers, teamContentEl);
+
+          // --- Calcular estadísticas ---
+          const sub21 = jugadores.filter(j => esSub21(j)).length;
+          const mayor30 = jugadores.filter(j => esMayor30(j)).length;
+
+          // Mostrar estadísticas con encabezado
+          statsEl.innerHTML = `
+            <h3 style="text-align:center;margin-bottom:1rem;">Estadísticas</h3>
+            Jugadores Sub21: ${sub21} <br>
+            Jugadores >=30: ${mayor30}
+          `;
         })
         .catch(err => {
-          teamContentEl.innerHTML = "<p>Error cargando contenido del equipo.</p>";
+          teamContentEl.innerHTML = "<p class='error'>Error cargando contenido del equipo.</p>";
+          statsEl.innerHTML = "";
           console.error(err);
         });
     })
     .catch(err => {
       teamNameEl.textContent = "Error cargando datos de equipos";
       teamContentEl.innerHTML = "";
+      statsEl.innerHTML = "";
       console.error(err);
     });
-}
-
-// Función para crear tabla HTML desde vector de jugadores
-function crearTabla(jugadores, headers) {
-  const tableWrapper = document.createElement('div');
-  tableWrapper.style.overflowX = 'auto';
-  tableWrapper.style.marginTop = '1rem';
-  const tableHeader = document.createElement('h3');
-  tableHeader.textContent = "Plantilla";
-  const table = document.createElement('table');
-  table.style.width = '100%';
-  table.style.borderCollapse = 'collapse';
-
-  // Encabezado
-  const thead = document.createElement('thead');
-  const trHead = document.createElement('tr');
-  headers.forEach(h => {
-    const th = document.createElement('th');
-    th.textContent = h;
-    th.style.border = '1px solid #ccc';
-    th.style.padding = '6px';
-    th.style.background = '#3498db';
-    th.style.color = '#fff';
-    th.style.fontSize = '12px';
-    th.style.position = 'sticky';
-    th.style.top = '0';
-    trHead.appendChild(th);
-  });
-  thead.appendChild(trHead);
-  table.appendChild(thead);
-
-  // Cuerpo
-  const tbody = document.createElement('tbody');
-  jugadores.forEach((j, idx) => {
-    const tr = document.createElement('tr');
-    tr.style.background = idx % 2 === 0 ? '#f9f9f9' : '#fff'; // zebra stripes
-
-    headers.forEach(h => {
-      const td = document.createElement('td');
-      td.textContent = j[h];
-      td.style.border = '1px solid #ccc';
-      td.style.padding = '4px';
-      td.style.fontSize = '12px';
-      tr.appendChild(td);
-    });
-    tbody.appendChild(tr);
-  });
-  table.appendChild(tbody);
-
-  tableWrapper.appendChild(table);
-
-  teamContentEl.innerHTML = '';
-  teamContentEl.appendChild(tableWrapper);
 }
