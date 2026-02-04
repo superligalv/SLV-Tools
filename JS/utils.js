@@ -1,23 +1,30 @@
-// utils.js
+// Funciones de edad
+export function esSub21(jugador) {
+  const age = parseInt(jugador.Age, 10);
+  return !isNaN(age) && age <= 21;
+}
 
-// Obtener query param de la URL
+export function esMayor30(jugador) {
+  const age = parseInt(jugador.Age, 10);
+  return !isNaN(age) && age >= 30;
+}
+
+// Función para obtener query param
 export function getQueryParam(param) {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(param);
 }
 
-// Crear tabla desde vector de objetos
+// Función para crear tabla
 export function crearTabla(jugadores, headers, containerEl) {
   const tableWrapper = document.createElement('div');
   tableWrapper.style.overflowX = 'auto';
-  tableWrapper.style.maxHeight = '80vh';
   tableWrapper.style.marginTop = '1rem';
 
   const table = document.createElement('table');
   table.style.width = '100%';
   table.style.borderCollapse = 'collapse';
 
-  // Encabezado
   const thead = document.createElement('thead');
   const trHead = document.createElement('tr');
   headers.forEach(h => {
@@ -35,14 +42,13 @@ export function crearTabla(jugadores, headers, containerEl) {
   thead.appendChild(trHead);
   table.appendChild(thead);
 
-  // Cuerpo
   const tbody = document.createElement('tbody');
   jugadores.forEach((j, idx) => {
     const tr = document.createElement('tr');
     tr.style.background = idx % 2 === 0 ? '#f9f9f9' : '#fff';
     headers.forEach(h => {
       const td = document.createElement('td');
-      td.textContent = j[h];
+      td.textContent = j[h] || '';
       td.style.border = '1px solid #ccc';
       td.style.padding = '4px';
       td.style.fontSize = '12px';
@@ -51,21 +57,90 @@ export function crearTabla(jugadores, headers, containerEl) {
     tbody.appendChild(tr);
   });
   table.appendChild(tbody);
-
   tableWrapper.appendChild(table);
-
-  containerEl.innerHTML = '';
   containerEl.appendChild(tableWrapper);
 }
 
-// Función para comprobar si un jugador es sub21
-export function esSub21(jugador) {
-  const age = parseInt(jugador.Age, 10);
-  return !isNaN(age) && age <= 21;
+// =======================
+// Contadores y medias por posición
+// =======================
+
+// Porteros
+export function contarPorteros(jugadores) {
+  let maxSt = Math.max(...jugadores.map(j => parseInt(j.St,10)||0));
+  return jugadores.filter(j => parseInt(j.St,10)===maxSt).length;
 }
 
-// Función para comprobar si un jugador es mayor o igual a 30
-export function esMayor30(jugador) {
-  const age = parseInt(jugador.Age, 10);
-  return !isNaN(age) && age >= 30;
+export function mediaPorteros(jugadores) {
+  let maxSt = Math.max(...jugadores.map(j => parseInt(j.St,10)||0));
+  let porteros = jugadores.filter(j => parseInt(j.St,10)===maxSt);
+  if (!porteros.length) return 0;
+  let sum = porteros.reduce((a,j)=>a + (parseInt(j.St,10)||0),0);
+  return (sum / porteros.length).toFixed(2);
+}
+
+// Defensas
+export function contarDFs(jugadores) {
+  let maxTk = Math.max(...jugadores.map(j => parseInt(j.Tk,10)||0));
+  return jugadores.filter(j => parseInt(j.Tk,10)===maxTk).length;
+}
+
+export function mediaDFs(jugadores) {
+  let maxTk = Math.max(...jugadores.map(j => parseInt(j.Tk,10)||0));
+  let dfs = jugadores.filter(j => parseInt(j.Tk,10)===maxTk);
+  if (!dfs.length) return 0;
+  let sum = dfs.reduce((a,j)=>a + (parseInt(j.Tk,10)||0),0);
+  return (sum / dfs.length).toFixed(2);
+}
+
+// Delanteros
+export function contarFWs(jugadores) {
+  let maxSh = Math.max(...jugadores.map(j => parseInt(j.Sh,10)||0));
+  return jugadores.filter(j => parseInt(j.Sh,10)===maxSh).length;
+}
+
+export function mediaFWs(jugadores) {
+  let maxSh = Math.max(...jugadores.map(j => parseInt(j.Sh,10)||0));
+  let fws = jugadores.filter(j => parseInt(j.Sh,10)===maxSh);
+  if (!fws.length) return 0;
+  let sum = fws.reduce((a,j)=>a + (parseInt(j.Sh,10)||0),0);
+  return (sum / fws.length).toFixed(2);
+}
+
+// Mediocampistas
+export function contarMediocampistas(jugadores) {
+  let MF=0, DM=0, AM=0;
+  jugadores.forEach(j=>{
+    const ps=parseInt(j.Ps,10)||0;
+    const tk=parseInt(j.Tk,10)||0;
+    const sh=parseInt(j.Sh,10)||0;
+    const maxVal = Math.max(ps, tk, sh);
+    if(maxVal===ps){
+      if(tk>=9) DM++;
+      else if(sh>=9) AM++;
+      else MF++;
+    }
+  });
+  return { MF, DM, AM };
+}
+
+export function mediaMediocampistas(jugadores) {
+  let MF_vals=[], DM_vals=[], AM_vals=[];
+  jugadores.forEach(j=>{
+    const ps=parseInt(j.Ps,10)||0;
+    const tk=parseInt(j.Tk,10)||0;
+    const sh=parseInt(j.Sh,10)||0;
+    const maxVal = Math.max(ps, tk, sh);
+    if(maxVal===ps){
+      if(tk>=9) DM_vals.push(ps);
+      else if(sh>=9) AM_vals.push(ps);
+      else MF_vals.push(ps);
+    }
+  });
+  const media = arr=>arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2) : 0;
+  return {
+    MF: media(MF_vals),
+    DM: media(DM_vals),
+    AM: media(AM_vals)
+  };
 }
