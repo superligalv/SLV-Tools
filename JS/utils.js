@@ -9,14 +9,9 @@ export function esMayor30(jugador) {
   return !isNaN(age) && age >= 30;
 }
 
-// Función para obtener query param
-export function getQueryParam(param) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(param);
-}
-
-// Función para crear tabla
+// Crear tabla de plantilla
 export function crearTabla(jugadores, headers, containerEl) {
+  containerEl.innerHTML = '<h3 style="text-align:center;margin-bottom:1rem;">Plantilla</h3>';
   const tableWrapper = document.createElement('div');
   tableWrapper.style.overflowX = 'auto';
   tableWrapper.style.marginTop = '1rem';
@@ -62,85 +57,54 @@ export function crearTabla(jugadores, headers, containerEl) {
 }
 
 // =======================
-// Contadores y medias por posición
+// Conteos y medias definitivas
 // =======================
 
 // Porteros
-export function contarPorteros(jugadores) {
-  let maxSt = Math.max(...jugadores.map(j => parseInt(j.St,10)||0));
-  return jugadores.filter(j => parseInt(j.St,10)===maxSt).length;
-}
-
-export function mediaPorteros(jugadores) {
-  let maxSt = Math.max(...jugadores.map(j => parseInt(j.St,10)||0));
-  let porteros = jugadores.filter(j => parseInt(j.St,10)===maxSt);
-  if (!porteros.length) return 0;
-  let sum = porteros.reduce((a,j)=>a + (parseInt(j.St,10)||0),0);
-  return (sum / porteros.length).toFixed(2);
+export function porteros(jugadores) {
+  if (!jugadores.length) return { count: 0, media: 0 };
+  const maxSt = Math.max(...jugadores.map(j => parseInt(j.St,10)||0));
+  const porteros = jugadores.filter(j => parseInt(j.St,10) === maxSt);
+  const sum = porteros.reduce((a,j)=>a + (parseInt(j.St,10)||0),0);
+  return { count: porteros.length, media: porteros.length ? (sum/porteros.length).toFixed(2) : 0 };
 }
 
 // Defensas
-export function contarDFs(jugadores) {
-  let maxTk = Math.max(...jugadores.map(j => parseInt(j.Tk,10)||0));
-  return jugadores.filter(j => parseInt(j.Tk,10)===maxTk).length;
-}
-
-export function mediaDFs(jugadores) {
-  let maxTk = Math.max(...jugadores.map(j => parseInt(j.Tk,10)||0));
-  let dfs = jugadores.filter(j => parseInt(j.Tk,10)===maxTk);
-  if (!dfs.length) return 0;
-  let sum = dfs.reduce((a,j)=>a + (parseInt(j.Tk,10)||0),0);
-  return (sum / dfs.length).toFixed(2);
+export function defensas(jugadores) {
+  if (!jugadores.length) return { count: 0, media: 0 };
+  const maxTk = Math.max(...jugadores.map(j => parseInt(j.Tk,10)||0));
+  const dfs = jugadores.filter(j => parseInt(j.Tk,10) === maxTk);
+  const sum = dfs.reduce((a,j)=>a + (parseInt(j.Tk,10)||0),0);
+  return { count: dfs.length, media: dfs.length ? (sum/dfs.length).toFixed(2) : 0 };
 }
 
 // Delanteros
-export function contarFWs(jugadores) {
-  let maxSh = Math.max(...jugadores.map(j => parseInt(j.Sh,10)||0));
-  return jugadores.filter(j => parseInt(j.Sh,10)===maxSh).length;
-}
-
-export function mediaFWs(jugadores) {
-  let maxSh = Math.max(...jugadores.map(j => parseInt(j.Sh,10)||0));
-  let fws = jugadores.filter(j => parseInt(j.Sh,10)===maxSh);
-  if (!fws.length) return 0;
-  let sum = fws.reduce((a,j)=>a + (parseInt(j.Sh,10)||0),0);
-  return (sum / fws.length).toFixed(2);
+export function delanteros(jugadores) {
+  if (!jugadores.length) return { count:0, media:0 };
+  const maxSh = Math.max(...jugadores.map(j => parseInt(j.Sh,10)||0));
+  const fws = jugadores.filter(j => parseInt(j.Sh,10) === maxSh);
+  const sum = fws.reduce((a,j)=>a + (parseInt(j.Sh,10)||0),0);
+  return { count:fws.length, media:fws.length ? (sum/fws.length).toFixed(2) : 0 };
 }
 
 // Mediocampistas
-export function contarMediocampistas(jugadores) {
-  let MF=0, DM=0, AM=0;
+export function mediocampistas(jugadores) {
+  let MF=[], DM=[], AM=[];
   jugadores.forEach(j=>{
     const ps=parseInt(j.Ps,10)||0;
     const tk=parseInt(j.Tk,10)||0;
     const sh=parseInt(j.Sh,10)||0;
     const maxVal = Math.max(ps, tk, sh);
     if(maxVal===ps){
-      if(tk>=9) DM++;
-      else if(sh>=9) AM++;
-      else MF++;
+      if(tk>=9) DM.push(ps);
+      else if(sh>=9) AM.push(ps);
+      else MF.push(ps);
     }
   });
-  return { MF, DM, AM };
-}
-
-export function mediaMediocampistas(jugadores) {
-  let MF_vals=[], DM_vals=[], AM_vals=[];
-  jugadores.forEach(j=>{
-    const ps=parseInt(j.Ps,10)||0;
-    const tk=parseInt(j.Tk,10)||0;
-    const sh=parseInt(j.Sh,10)||0;
-    const maxVal = Math.max(ps, tk, sh);
-    if(maxVal===ps){
-      if(tk>=9) DM_vals.push(ps);
-      else if(sh>=9) AM_vals.push(ps);
-      else MF_vals.push(ps);
-    }
-  });
-  const media = arr=>arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2) : 0;
+  const media = arr => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2) : 0;
   return {
-    MF: media(MF_vals),
-    DM: media(DM_vals),
-    AM: media(AM_vals)
+    MF: { count: MF.length, media: media(MF) },
+    DM: { count: DM.length, media: media(DM) },
+    AM: { count: AM.length, media: media(AM) }
   };
 }

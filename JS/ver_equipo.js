@@ -1,122 +1,86 @@
-// Importar funciones del utils.js
-import { getQueryParam, crearTabla, esSub21, esMayor30, 
-         contarPorteros, mediaPorteros,
-         contarDFs, mediaDFs,
-         contarFWs, mediaFWs,
-         contarMediocampistas, mediaMediocampistas
-       } from './utils.js';
+import { getQueryParam, crearTabla, esSub21, esMayor30,
+         porteros, defensas, delanteros, mediocampistas } from './utils.js';
 
-// Referencias a elementos HTML
-const teamNameEl = document.getElementById('teamName');
-const statsEl = document.getElementById('teamStats');
-const teamContentEl = document.getElementById('teamContent');
-
-// Obtener el id del equipo de la URL
 const teamId = getQueryParam('id');
+
+const teamNameEl = document.getElementById('teamName');
+const teamContentEl = document.getElementById('teamContent');
+const statsEl = document.getElementById('teamStats');
 
 if (!teamId) {
   teamNameEl.textContent = "Equipo no especificado";
   teamContentEl.innerHTML = "";
   statsEl.innerHTML = "";
 } else {
-  // Cargar teams.json
   fetch('./JS/teams.json')
-    .then(res => {
-      if (!res.ok) throw new Error('No se pudo cargar teams.json');
-      return res.json();
-    })
+    .then(res => res.ok ? res.json() : Promise.reject('Error cargando teams.json'))
     .then(equipos => {
       const team = equipos.find(e => e.id === teamId.toLowerCase());
-      if (!team) {
-        teamNameEl.textContent = "Equipo no encontrado";
-        teamContentEl.innerHTML = "";
-        statsEl.innerHTML = "";
-        return;
-      }
-
+      if (!team) throw 'Equipo no encontrado';
       teamNameEl.textContent = team.team;
 
-      // Cargar TXT del equipo
-      fetch(team.dropbox_dir)
-        .then(resp => {
-          if (!resp.ok) throw new Error('No se pudo cargar el archivo del equipo');
-          return resp.text();
-        })
-        .then(txt => {
-          // Convertir TXT en vector de jugadores
-          const lines = txt.trim().split('\n');
+      return fetch(team.dropbox_dir);
+    })
+    .then(resp => resp.ok ? resp.text() : Promise.reject('Error cargando TXT'))
+    .then(txt => {
+      const lines = txt.trim().split('\n');
+      const sep = lines.findIndex(l=>l.includes('---'));
+      const headersLine = sep>=0 ? lines[0] : lines[0];
+      const dataLines = sep>=0 ? lines.slice(sep+1) : lines.slice(1);
+      const headers = headersLine.trim().split(/\s+/);
 
-          // Detectar línea separadora (---)
-          const separatorIndex = lines.findIndex(l => l.includes('---'));
-          let headersLine, dataLines;
+      const jugadores = dataLines.filter(l=>l.trim()!=='').map(line=>{
+        const values = line.trim().split(/\s+/);
+        const j = {};
+        headers.forEach((h,i)=>j[h]=values[i]||'');
+        return j;
+      });
 
-          if (separatorIndex >= 0) {
-            headersLine = lines[0];
-            dataLines = lines.slice(separatorIndex + 1);
-          } else {
-            headersLine = lines[0];
-            dataLines = lines.slice(1);
-          }
+      // Tabla plantilla
+      crearTabla(jugadores, headers, teamContentEl);
 
-          // Headers
-          const headers = headersLine.trim().split(/\s+/);
+      // Estadísticas
+      const sub21 = jugadores.filter(j=>esSub21(j)).length;
+      const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
 
-          // Vector de jugadores
-          const jugadores = dataLines
-            .filter(line => line.trim() !== '')
-            .map(line => {
-              const values = line.trim().split(/\s+/);
-              const jugador = {};
-              headers.forEach((h, i) => {
-                jugador[h] = values[i] || '';
-              });
-              return jugador;
-            });
+      const port = porteros(jugadores);
+      const df = defensas(jugadores);
+      const fw = delanteros(jugadores);
+      const mfs = mediocampistas(jugadores);
 
-          // --- Crear tabla con encabezado "Plantilla" ---
-          teamContentEl.innerHTML = `<h3 style="text-align:center;margin-bottom:1rem;">Plantilla</h3>`;
-          crearTabla(jugadores, headers, teamContentEl);
-
-          // --- Calcular estadísticas ---
-          const statsEl = document.getElementById('teamStats');
-
-		  const sub21 = jugadores.filter(j => esSub21(j)).length;
-		  const mayor30 = jugadores.filter(j => esMayor30(j)).length;
-
-		  const porteros = contarPorteros(jugadores);
-		  const mediaPort = mediaPorteros(jugadores);
-
-		  const dfs = contarDFs(jugadores);
-		  const mediaDf = mediaDFs(jugadores);
-
-		  const fws = contarFWs(jugadores);
-		  const mediaFw = mediaFWs(jugadores);
-
-		  const mfs = contarMediocampistas(jugadores);
-		  const mediaMfs = mediaMediocampistas(jugadores);
-
-		  statsEl.innerHTML = `
-		    <h3 style="text-align:center;margin-bottom:1rem;">Estadísticas</h3>
-		    Jugadores Sub21: ${sub21} <br>
-		    Jugadores >=30: ${mayor30} <br>
-		    Porteros: ${porteros} (media St: ${mediaPort}) <br>
-		    Defensas: ${dfs} (media Tk: ${mediaDf}) <br>
-		    Delanteros: ${fws} (media Sh: ${mediaFw}) <br>
-		    MF: ${mfs.MF} (media Ps: ${mediaMfs.MF}) <br>
-		    DM: ${mfs.DM} (media Ps: ${mediaMfs.DM}) <br>
-		    AM: ${mfs.AM} (media Ps: ${mediaMfs.AM})
-		  `;
-        })
-        .catch(err => {
-          teamContentEl.innerHTML = "<p class='error'>Error cargando contenido del equipo.</p>";
-          statsEl.innerHTML = "";
-          console.error(err);
-        });
+      statsEl.innerHTML = `
+        <h3 style="text-align:center;margin-bottom:1rem;">Estadísticas</h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
+          <div style="background:#3498db;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>Sub21</strong><br>${sub21}
+          </div>
+          <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>>=30</strong><br>${mayor30}
+          </div>
+          <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>Porteros</strong><br>${port.count} (St: ${port.media})
+          </div>
+          <div style="background:#1abc9c;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>Defensas</strong><br>${df.count} (Tk: ${df.media})
+          </div>
+          <div style="background:#9b59b6;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>Delanteros</strong><br>${fw.count} (Sh: ${fw.media})
+          </div>
+          <div style="background:#34495e;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>MF</strong><br>${mfs.MF.count} (Ps: ${mfs.MF.media})
+          </div>
+          <div style="background:#16a085;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>DM</strong><br>${mfs.DM.count} (Ps: ${mfs.DM.media})
+          </div>
+          <div style="background:#c0392b;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>AM</strong><br>${mfs.AM.count} (Ps: ${mfs.AM.media})
+          </div>
+        </div>
+      `;
     })
     .catch(err => {
-      teamNameEl.textContent = "Error cargando datos de equipos";
-      teamContentEl.innerHTML = "";
-      statsEl.innerHTML = "";
+      teamContentEl.innerHTML = `<p class="error">Error: ${err}</p>`;
+      statsEl.innerHTML = '';
       console.error(err);
     });
 }
