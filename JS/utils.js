@@ -1,3 +1,9 @@
+
+// Función para obtener query param
+export function getQueryParam(param) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
 // Funciones de edad
 export function esSub21(jugador) {
   const age = parseInt(jugador.Age, 10);
