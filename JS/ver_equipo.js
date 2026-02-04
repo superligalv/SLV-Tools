@@ -42,7 +42,7 @@ if (!teamId) {
       // Estadísticas
       const sub21 = jugadores.filter(j=>esSub21(j)).length;
       const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
-
+	  const cuentaJugadores = jugadores.length;
       const port = porteros(jugadores);
       const df = defensas(jugadores);
       const fw = delanteros(jugadores);
@@ -56,6 +56,9 @@ if (!teamId) {
           </div>
           <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
             <strong>>=30</strong><br>${mayor30}
+          </div>
+		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>>=30</strong><br>${cuentaJugadores}
           </div>
           <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
             <strong>Porteros</strong><br>${port.count} (St: ${port.media})
