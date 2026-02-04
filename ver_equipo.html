@@ -50,6 +50,19 @@
     width: 100%;
     border-collapse: collapse;
   }
+  #teamStats {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 1200px;
+	width: 80%;
+    margin: 0 auto;
+    min-height: 100px;          /* altura mínima para la tabla */
+    overflow-x: auto;           /* scroll horizontal para muchas columnas */
+    overflow-y: auto;           /* scroll vertical si la tabla es muy larga */
+    white-space: nowrap;        /* evita que el texto se rompa en celdas */
+  }
   </style>
 </head>
 <body>
@@ -57,6 +70,11 @@
   <h1 id="teamName">Cargando...</h1>
   <section id="teamContent">Cargando contenido del equipo...</section>
 
-  <script src="./JS/ver_equipo.js"></script>
+  <script type="module" src="./JS/ver_equipo.js"></script>
+  
+  <section id="teamStats">
+  Cargando estadísticas del equipo...
+  </section>
+  
 </body>
 </html>
