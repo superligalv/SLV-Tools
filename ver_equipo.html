@@ -31,6 +31,25 @@
       color: red;
       font-weight: bold;
     }
+	#teamContent {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 1200px;
+	width: 80%;
+    margin: 0 auto;
+    min-height: 500px;          /* altura mínima para la tabla */
+    overflow-x: auto;           /* scroll horizontal para muchas columnas */
+    overflow-y: auto;           /* scroll vertical si la tabla es muy larga */
+    white-space: nowrap;        /* evita que el texto se rompa en celdas */
+  }
+
+  /* opcional: si quieres que la tabla ocupe todo el ancho */
+  #teamContent table {
+    width: 100%;
+    border-collapse: collapse;
+  }
   </style>
 </head>
 <body>
