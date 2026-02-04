@@ -58,7 +58,7 @@ if (!teamId) {
             <strong>>=30</strong><br>${mayor30}
           </div>
 		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>>=30</strong><br>${cuentaJugadores}
+            <strong>Total jugadores</strong><br>${cuentaJugadores}
           </div>
           <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
             <strong>Porteros</strong><br>${port.count} (St: ${port.media})
