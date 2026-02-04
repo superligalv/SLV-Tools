@@ -16,7 +16,7 @@ fetch('./JS/teams.json')
       // Imagen placeholder
       const img = document.createElement('img');
       //img.src = `https://via.placeholder.com/150?text=${e.id.toUpperCase()}`;
-	  img.src = `./images/flags/homepage/${e.id}.png`;
+	  img.src = `./images/flags/headerRund/${e.id}.png`;
       img.alt = e.id;
 
       const span = document.createElement('span');
