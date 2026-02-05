@@ -319,27 +319,7 @@ export function mediapuntas(jugadores) {
   return { count: lista.length };
 }
 
-export function avgmediapuntas(jugadores) {
-  // Filtrar solo porteros (St es el valor más alto)
-  const mediapuntas = jugadores.filter(j => {
-    const st = parseInt(j.St, 10) || 0;
-    const tk = parseInt(j.Tk, 10) || 0;
-    const ps = parseInt(j.Ps, 10) || 0;
-    const sh = parseInt(j.Sh, 10) || 0;
 
-    return ps > st && ps > sh && ps > tk && sh > tk && sh > 8;
-  });
-  
-  // Si no hay porteros, retornar 0
-  if (mediapuntas.length === 0) return 0;
-  
-  // Calcular promedio de St de los mediapuntas
-  const sumaPs = mediapuntas.reduce((total, j) => {
-    return total + (parseInt(j.Ps, 10) || 0);
-  }, 0);
-  
-  return parseFloat((sumaPs / mediapuntas.length).toFixed(2));
-}
 
 export function pivotes(jugadores) {
     const lista = jugadores.filter(j => {
@@ -352,26 +332,4 @@ export function pivotes(jugadores) {
   });
   
   return { count: lista.length };
-}
-
-export function avgpivotes(jugadores) {
-  // Filtrar solo porteros (St es el valor más alto)
-  const pivotes = jugadores.filter(j => {
-    const st = parseInt(j.St, 10) || 0;
-    const tk = parseInt(j.Tk, 10) || 0;
-    const ps = parseInt(j.Ps, 10) || 0;
-    const sh = parseInt(j.Sh, 10) || 0;
-
-    return ps > st && ps > sh && ps > tk && tk > st && tk > 8;
-  });
-  
-  // Si no hay porteros, retornar 0
-  if (pivotes.length === 0) return 0;
-  
-  // Calcular promedio de St de los pivotes
-  const sumaPs = pivotes.reduce((total, j) => {
-    return total + (parseInt(j.Ps, 10) || 0);
-  }, 0);
-  
-  return parseFloat((sumaPs / pivotes.length).toFixed(2));
 }

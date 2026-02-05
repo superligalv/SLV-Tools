@@ -1,6 +1,6 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
-		 avgporteros, avgdefensas, avgdelanteros, avgmediocampistas, avgmediapuntas, avgpivotes
+		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,
   calcularSalarioJugador,
   calcularSalarioTotal } from './utils.js';
 
@@ -74,8 +74,8 @@ if (!teamId) {
 	  const avgdf = avgdefensas(jugadores);
 	  const avgfw = avgdelanteros(jugadores);
 	  const avgmfs = avgmediocampistas(jugadores);
-	  const avgams = avgmediapuntas(jugadores);
-	  const avgdms = avgpivotes(jugadores);
+	  const avgams = mediapuntas(jugadores);
+	  const avgdms = pivotes(jugadores);
 
 	  statsEl.innerHTML = `
 		<h3 style="text-align:center;margin-bottom:1rem;">Estadísticas</h3>
@@ -121,13 +121,13 @@ if (!teamId) {
 			<strong>Media de DF</strong><br>${avgdf}
 		  </div>
 		  <div style="background:#16a085;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-			<strong>Media de DM</strong><br>${avgdms} 
+			<strong>Media de DM</strong><br>${dms.count} 
 		  </div>
 		  <div style="background:#34495e;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
 			<strong>Media de MF</strong><br>${avgmfs}
 		  </div>
 		  <div style="background:#c0392b;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-			<strong>Media de AM</strong><br>${avgams}
+			<strong>Media de AM</strong><br>${ams.count}
 		  </div>
 		  <div style="background:#9b59b6;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
 			<strong>Media de FW</strong><br>${avgfw}
