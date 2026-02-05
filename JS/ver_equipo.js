@@ -83,6 +83,8 @@ if (!teamId) {
 		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
 			<strong>Salarios</strong><br>${salarioTotal.toFixed(2)} M
 		  </div>
+		  <!-- Separador -->
+		  <div style="width:100%; margin:1.5rem 0; border-top:2px solid #ddd;"></div>
 		  <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
 			<strong>Porteros</strong><br>${port.count} (St: ${port.media})
 		  </div>
