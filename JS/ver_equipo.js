@@ -78,7 +78,6 @@ if (!teamId) {
 	  const avgdms = pivotes(jugadores);
 
 	  statsEl.innerHTML = `
-		<h3 style="text-align:center;margin-bottom:1rem;">Estadísticas</h3>
 		<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
 		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
 			<strong>Sub21</strong><br>${sub21}
