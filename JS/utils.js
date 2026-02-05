@@ -210,7 +210,7 @@ export function mediocampistas(jugadores) {
     const ps = parseInt(j.Ps, 10) || 0;
     const sh = parseInt(j.Sh, 10) || 0;
 
-    return ps > st && ps > sh && ps > tk && tk < 9 && st < 9;
+    return ps > st && ps > sh && ps > tk && tk < 9 && sh < 9;
   });
   
   return { count: lista.length };
@@ -224,7 +224,7 @@ export function mediapuntas(jugadores) {
     const ps = parseInt(j.Ps, 10) || 0;
     const sh = parseInt(j.Sh, 10) || 0;
 
-    return ps > st && ps > sh && ps > tk && st > tk && st > 8;
+    return ps > st && ps > sh && ps > tk && sh > tk && sh > 8;
   });
   
   return { count: lista.length };
