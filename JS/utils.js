@@ -227,7 +227,7 @@ export function avgdefensas(jugadores) {
   
   // Calcular promedio de St de los defensas
   const sumaTk = defensas.reduce((total, j) => {
-    return total + (parseInt(j.tk, 10) || 0);
+    return total + (parseInt(j.Tk, 10) || 0);
   }, 0);
   
   return sumaTk / defensas.length;
