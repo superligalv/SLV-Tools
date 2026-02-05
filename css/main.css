@@ -29,7 +29,6 @@ body {
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     max-width: 1200px;
-	width: 80%;
     margin: 0 auto;
     min-height: 500px;          /* altura mínima para la tabla */
     overflow-x: auto;           /* scroll horizontal para muchas columnas */
@@ -48,8 +47,7 @@ body {
     padding: 1.5rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     max-width: 1200px;
-	width: 80%;
-    margin: 0 auto;
+	margin: 0 auto;
     min-height: 100px;          /* altura mínima para la tabla */
     overflow-x: auto;           /* scroll horizontal para muchas columnas */
     overflow-y: auto;           /* scroll vertical si la tabla es muy larga */
