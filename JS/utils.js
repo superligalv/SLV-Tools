@@ -263,7 +263,7 @@ export function avgdelanteros(jugadores) {
   
   // Calcular promedio de St de los delanteros
   const sumaSh = delanteros.reduce((total, j) => {
-    return total + (parseInt(j.Tk, 10) || 0);
+    return total + (parseInt(j.Sh, 10) || 0);
   }, 0);
   
   return parseFloat((sumaSh / defensas.length).toFixed(2));
