@@ -193,7 +193,7 @@ export function avgporteros(jugadores) {
     return total + (parseInt(j.St, 10) || 0);
   }, 0);
   
-  return sumaSt / porteros.length;
+  return parseFloat((sumaSt / defensas.length).toFixed(2));
 }
 
 // Defensas
@@ -230,7 +230,7 @@ export function avgdefensas(jugadores) {
     return total + (parseInt(j.Tk, 10) || 0);
   }, 0);
   
-  return sumaTk / defensas.length;
+  return parseFloat((sumaTk / defensas.length).toFixed(2));
 }
 
 // Delanteros
@@ -266,7 +266,7 @@ export function avgdelanteros(jugadores) {
     return total + (parseInt(j.Tk, 10) || 0);
   }, 0);
   
-  return sumaSh / delanteros.length;
+  return parseFloat((sumaSh / defensas.length).toFixed(2));
 }
 
 // Mediocampistas

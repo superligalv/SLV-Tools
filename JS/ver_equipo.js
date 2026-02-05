@@ -130,7 +130,7 @@ if (!teamId) {
 			<strong>Media de AM</strong><br>${ams.count}
 		  </div>
 		  <div style="background:#9b59b6;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-			<strong>Media de FW</strong><br>${fw.count}
+			<strong>Media de FW</strong><br>${avgfw}
 		</div>
 	  `;
 	});
