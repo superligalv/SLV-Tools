@@ -204,22 +204,41 @@ export function delanteros(jugadores) {
 
 // Mediocampistas
 export function mediocampistas(jugadores) {
-  let MF=[], DM=[], AM=[];
-  jugadores.forEach(j=>{
-    const ps=parseInt(j.Ps,10)||0;
-    const tk=parseInt(j.Tk,10)||0;
-    const sh=parseInt(j.Sh,10)||0;
-    const maxVal = Math.max(ps, tk, sh);
-    if(maxVal===ps){
-      if(tk>=9) DM.push(ps);
-      else if(sh>=9) AM.push(ps);
-      else MF.push(ps);
-    }
+    const lista = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return ps > st && ps > sh && ps > tk && tk < 9 && st < 9;
   });
-  const media = arr => arr.length ? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2) : 0;
-  return {
-    MF: { count: MF.length, media: media(MF) },
-    DM: { count: DM.length, media: media(DM) },
-    AM: { count: AM.length, media: media(AM) }
-  };
+  
+  return { count: lista.length };
+}
+
+// Mediocampistas
+export function mediapuntas(jugadores) {
+    const lista = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return ps > st && ps > sh && ps > tk && st > tk && st > 8;
+  });
+  
+  return { count: lista.length };
+}
+
+export function pivotes(jugadores) {
+    const lista = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return ps > st && ps > sh && ps > tk && tk > st && tk > 8;
+  });
+  
+  return { count: lista.length };
 }
