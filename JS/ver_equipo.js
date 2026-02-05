@@ -9,6 +9,8 @@ const teamId = getQueryParam('id');
 const teamNameEl = document.getElementById('teamName');
 const teamContentEl = document.getElementById('teamContent');
 const statsEl = document.getElementById('teamStats');
+const teamNameTextEl = document.getElementById('teamNameText');
+const teamLogoEl = document.getElementById('teamLogo');
 
 async function procesarSalarios(jugadores) {
   const cfg = await fetch('./JS/salary.cfg').then(r => r.text());
@@ -35,12 +37,18 @@ if (!teamId) {
   fetch('./JS/teams.json')
     .then(res => res.ok ? res.json() : Promise.reject('Error cargando teams.json'))
     .then(equipos => {
-      const team = equipos.find(e => e.id === teamId.toLowerCase());
-      if (!team) throw 'Equipo no encontrado';
-      teamNameEl.textContent = team.team;
+	  const team = equipos.find(e => e.id === teamId.toLowerCase());
+	  if (!team) throw 'Equipo no encontrado';
 
-      return fetch(team.dropbox_dir);
-    })
+	  // Nombre del equipo
+	  teamNameTextEl.textContent = team.team;
+
+	  // Logo del equipo
+	  teamLogoEl.src = `./images/flags/\headerRund/${team.id}.png`;
+	  teamLogoEl.alt = team.team;
+
+	  return fetch(team.dropbox_dir);
+	})
     .then(resp => resp.ok ? resp.text() : Promise.reject('Error cargando TXT'))
     .then(txt => {
       const lines = txt.trim().split('\n');
