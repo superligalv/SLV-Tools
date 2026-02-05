@@ -42,8 +42,7 @@ if (!teamId) {
 	  .then(r => r.text())
 	  .then(cfg => {
 		const tablaSalarios = parsearTablaSalarios(cfg);
-		// Calcular salario total
-		const salarioTotal = calcularSalarioTotal(jugadores, tablaSalarios);
+		
 		jugadores.forEach(j => {
 		  j.salario = calcularSalarioJugador(j, tablaSalarios);
 		});
@@ -52,7 +51,8 @@ if (!teamId) {
 	  });
       // Tabla plantilla
       crearTabla(jugadores, headers, teamContentEl);
-
+	  // Calcular salario total
+	  const salarioTotal = calcularSalarioTotal(jugadores, tablaSalarios);
       // Estadísticas
       const sub21 = jugadores.filter(j=>esSub21(j)).length;
       const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
