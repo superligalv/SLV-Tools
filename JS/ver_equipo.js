@@ -1,6 +1,6 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
-		 avgporteros,
+		 avgporteros,avgdefensas,
   calcularSalarioJugador,
   calcularSalarioTotal } from './utils.js';
 
