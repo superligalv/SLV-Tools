@@ -266,7 +266,7 @@ export function avgdelanteros(jugadores) {
     return total + (parseInt(j.Sh, 10) || 0);
   }, 0);
   
-  return parseFloat((sumaSh / defensas.length).toFixed(2));
+  return parseFloat((sumaSh / delanteros.length).toFixed(2));
 }
 
 // Mediocampistas
