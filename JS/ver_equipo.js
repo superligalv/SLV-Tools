@@ -1,6 +1,7 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas, posicion, parsearTablaSalarios,
-  calcularSalarioJugador } from './utils.js';
+  calcularSalarioJugador,
+  calcularSalarioTotal } from './utils.js';
 
 const teamId = getQueryParam('id');
 
@@ -41,7 +42,8 @@ if (!teamId) {
 	  .then(r => r.text())
 	  .then(cfg => {
 		const tablaSalarios = parsearTablaSalarios(cfg);
-
+		// Calcular salario total
+		const salarioTotal = calcularSalarioTotal(jugadores, tablaSalarios);
 		jugadores.forEach(j => {
 		  j.salario = calcularSalarioJugador(j, tablaSalarios);
 		});
@@ -71,6 +73,9 @@ if (!teamId) {
           </div>
 		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
             <strong>Total jugadores</strong><br>${cuentaJugadores}
+          </div>
+		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+            <strong>Salarios</strong><br>${salarioTotal.toFixed(2)} M
           </div>
           <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
             <strong>Porteros</strong><br>${port.count} (St: ${port.media})
