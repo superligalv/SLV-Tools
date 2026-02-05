@@ -9,6 +9,28 @@ const teamNameEl = document.getElementById('teamName');
 const teamContentEl = document.getElementById('teamContent');
 const statsEl = document.getElementById('teamStats');
 
+async function procesarSalarios(jugadores) {
+  const cfg = await fetch('./JS/salary.cfg').then(r => r.text());
+  const tablaSalarios = parsearTablaSalarios(cfg);
+
+  jugadores.forEach(j => {
+    j.salario = parseFloat(calcularSalarioJugador(j, tablaSalarios));
+  });
+
+  crearTabla(jugadores, headers, teamContentEl);
+
+  const salarioTotal = calcularSalarioTotal(jugadores);
+
+  console.log(jugadores.map(j => j.salario));
+  console.log("Total:", salarioTotal);
+
+  const totalEl = document.getElementById("salario-total");
+  if (totalEl) {
+    totalEl.textContent = salarioTotal.toFixed(2) + " M";
+  }
+}
+
+
 if (!teamId) {
   teamNameEl.textContent = "Equipo no especificado";
   teamContentEl.innerHTML = "";
@@ -38,23 +60,11 @@ if (!teamId) {
         headers.forEach((h,i)=>j[h]=values[i]||'');
         return j;
       });
-	  fetch('./JS/salary.cfg')
-	  .then(r => r.text())
-	  .then(cfg => {
-		const tablaSalarios = parsearTablaSalarios(cfg);
-		
-		jugadores.forEach(j => {
-		  j.salario = parseFloat(calcularSalarioJugador(j, tablaSalarios));
-		});
-
-		console.log(jugadores); // ya tienen salario
-	  });
+	  procesarSalarios(jugadores);
       // Tabla plantilla
       crearTabla(jugadores, headers, teamContentEl);
 	  // Calcular salario total
 	  const salarioTotal = calcularSalarioTotal(jugadores);
-	  console.log(jugadores.map(j => j.salario));
-	  console.log("Total:", salarioTotal);
       // Estadísticas
       const sub21 = jugadores.filter(j=>esSub21(j)).length;
       const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
