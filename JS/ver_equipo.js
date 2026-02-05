@@ -1,5 +1,6 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
+		 avgporteros,
   calcularSalarioJugador,
   calcularSalarioTotal } from './utils.js';
 
@@ -69,6 +70,12 @@ if (!teamId) {
 	  const mfs = mediocampistas(jugadores);
 	  const ams = mediapuntas(jugadores);
 	  const dms = pivotes(jugadores);
+	  const avgport = avgporteros(jugadores);
+	  const avgdf = defensas(jugadores);
+	  const avgfw = delanteros(jugadores);
+	  const avgmfs = mediocampistas(jugadores);
+	  const avgams = mediapuntas(jugadores);
+	  const avgdms = pivotes(jugadores);
 
 	  statsEl.innerHTML = `
 		<h3 style="text-align:center;margin-bottom:1rem;">Estadísticas</h3>
@@ -105,6 +112,25 @@ if (!teamId) {
 		  <div style="background:#9b59b6;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
 			<strong>Numero de FW</strong><br>${fw.count}
 		  </div>
+		  <!-- Separador -->
+		  <div style="width:100%; margin:1.5rem 0;"></div>
+		  <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Media de GK</strong><br>${avgport.count}
+		  </div>
+		  <div style="background:#1abc9c;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Media de DF</strong><br>${df.count}
+		  </div>
+		  <div style="background:#16a085;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Media de DM</strong><br>${dms.count} 
+		  </div>
+		  <div style="background:#34495e;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Media de MF</strong><br>${mfs.count}
+		  </div>
+		  <div style="background:#c0392b;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Media de AM</strong><br>${ams.count}
+		  </div>
+		  <div style="background:#9b59b6;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Media de FW</strong><br>${fw.count}
 		</div>
 	  `;
 	});

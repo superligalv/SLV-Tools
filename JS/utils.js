@@ -174,6 +174,28 @@ export function porteros(jugadores) {
   return { count: lista.length };
 }
 
+export function avgporteros(jugadores) {
+  // Filtrar solo porteros (St es el valor más alto)
+  const porteros = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return st > tk && st > ps && st > sh;
+  });
+  
+  // Si no hay porteros, retornar 0
+  if (porteros.length === 0) return 0;
+  
+  // Calcular promedio de St de los porteros
+  const sumaSt = porteros.reduce((total, j) => {
+    return total + (parseInt(j.St, 10) || 0);
+  }, 0);
+  
+  return sumaSt / porteros.length;
+}
+
 // Defensas
 export function defensas(jugadores) {
     const lista = jugadores.filter(j => {
