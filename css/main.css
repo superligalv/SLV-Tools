@@ -56,7 +56,7 @@ body {
  
  details {
   max-width: 1200px;
-  width: 80%;
+  width: 85%;
   margin: 1rem auto;
   background: #fff;
   border-radius: 12px;
@@ -65,7 +65,7 @@ body {
 }
 
 summary {
-  padding: 1rem 1.5rem;
+  padding: 1rem 1rem;
   font-size: 1.3rem;
   font-weight: bold;
   cursor: pointer;

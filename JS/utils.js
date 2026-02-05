@@ -108,7 +108,7 @@ export function posicion(jugador) {
 
 // Crear tabla de plantilla
 export function crearTabla(jugadores, headers, containerEl) {
-  containerEl.innerHTML = '<h3 style="text-align:center;margin-bottom:1rem;">Plantilla</h3>';
+  //containerEl.innerHTML = '<h3 style="text-align:center;margin-bottom:1rem;">Plantilla</h3>';
   const tableWrapper = document.createElement('div');
   tableWrapper.style.overflowX = 'auto';
   tableWrapper.style.marginTop = '1rem';
