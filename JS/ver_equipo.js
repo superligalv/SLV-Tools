@@ -119,7 +119,7 @@ if (!teamId) {
 			<strong>Numero de FW</strong><br>${fw.count}
 		  </div>
 		  <!-- Separador -->
-		  <div style="width:100%; margin:1.5rem 0;"></div>
+		  <div style="width:100%;"></div>
 		  <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
 			<strong>Media de GK</strong><br>${avgport}
 		  </div>
