@@ -17,19 +17,13 @@ async function procesarSalarios(jugadores) {
     j.salario = parseFloat(calcularSalarioJugador(j, tablaSalarios));
   });
 
-  crearTabla(jugadores, headers, teamContentEl);
-
   const salarioTotal = calcularSalarioTotal(jugadores);
 
   console.log(jugadores.map(j => j.salario));
   console.log("Total:", salarioTotal);
 
-  const totalEl = document.getElementById("salario-total");
-  if (totalEl) {
-    totalEl.textContent = salarioTotal.toFixed(2) + " M";
-  }
+  return salarioTotal;
 }
-
 
 if (!teamId) {
   teamNameEl.textContent = "Equipo no especificado";
@@ -60,55 +54,57 @@ if (!teamId) {
         headers.forEach((h,i)=>j[h]=values[i]||'');
         return j;
       });
-	  procesarSalarios(jugadores);
-      // Tabla plantilla
-      crearTabla(jugadores, headers, teamContentEl);
-	  // Calcular salario total
-	  const salarioTotal = calcularSalarioTotal(jugadores);
-      // Estadísticas
-      const sub21 = jugadores.filter(j=>esSub21(j)).length;
-      const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
-	  const cuentaJugadores = jugadores.length;
-      const port = porteros(jugadores);
-      const df = defensas(jugadores);
-      const fw = delanteros(jugadores);
-      const mfs = mediocampistas(jugadores);
+	  procesarSalarios(jugadores).then(salarioTotal => {
 
-      statsEl.innerHTML = `
-        <h3 style="text-align:center;margin-bottom:1rem;">Estadísticas</h3>
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
-          <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>Sub21</strong><br>${sub21}
-          </div>
-          <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>>=30</strong><br>${mayor30}
-          </div>
+	  // Tabla plantilla
+	  crearTabla(jugadores, headers, teamContentEl);
+
+	  // Estadísticas
+	  const sub21 = jugadores.filter(j=>esSub21(j)).length;
+	  const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
+	  const cuentaJugadores = jugadores.length;
+	  const port = porteros(jugadores);
+	  const df = defensas(jugadores);
+	  const fw = delanteros(jugadores);
+	  const mfs = mediocampistas(jugadores);
+
+	  statsEl.innerHTML = `
+		<h3 style="text-align:center;margin-bottom:1rem;">Estadísticas</h3>
+		<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
 		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>Total jugadores</strong><br>${cuentaJugadores}
-          </div>
+			<strong>Sub21</strong><br>${sub21}
+		  </div>
 		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>Salarios</strong><br>${salarioTotal.toFixed(2)} M
-          </div>
-          <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>Porteros</strong><br>${port.count} (St: ${port.media})
-          </div>
-          <div style="background:#1abc9c;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>Defensas</strong><br>${df.count} (Tk: ${df.media})
-          </div>
-          <div style="background:#9b59b6;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>Delanteros</strong><br>${fw.count} (Sh: ${fw.media})
-          </div>
-          <div style="background:#34495e;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>MF</strong><br>${mfs.MF.count} (Ps: ${mfs.MF.media})
-          </div>
-          <div style="background:#16a085;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>DM</strong><br>${mfs.DM.count} (Ps: ${mfs.DM.media})
-          </div>
-          <div style="background:#c0392b;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-            <strong>AM</strong><br>${mfs.AM.count} (Ps: ${mfs.AM.media})
-          </div>
-        </div>
-      `;
+			<strong>>=30</strong><br>${mayor30}
+		  </div>
+		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Total jugadores</strong><br>${cuentaJugadores}
+		  </div>
+		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Salarios</strong><br>${salarioTotal.toFixed(2)} M
+		  </div>
+		  <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Porteros</strong><br>${port.count} (St: ${port.media})
+		  </div>
+		  <div style="background:#1abc9c;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Defensas</strong><br>${df.count} (Tk: ${df.media})
+		  </div>
+		  <div style="background:#9b59b6;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>Delanteros</strong><br>${fw.count} (Sh: ${fw.media})
+		  </div>
+		  <div style="background:#34495e;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>MF</strong><br>${mfs.MF.count} (Ps: ${mfs.MF.media})
+		  </div>
+		  <div style="background:#16a085;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>DM</strong><br>${mfs.DM.count} (Ps: ${mfs.DM.media})
+		  </div>
+		  <div style="background:#c0392b;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+			<strong>AM</strong><br>${mfs.AM.count} (Ps: ${mfs.AM.media})
+		  </div>
+		</div>
+	  `;
+	});
+
     })
     .catch(err => {
       teamContentEl.innerHTML = `<p class="error">Error: ${err}</p>`;
