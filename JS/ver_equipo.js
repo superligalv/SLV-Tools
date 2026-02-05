@@ -52,7 +52,7 @@ if (!teamId) {
       // Tabla plantilla
       crearTabla(jugadores, headers, teamContentEl);
 	  // Calcular salario total
-	  const salarioTotal = calcularSalarioTotal(jugadores, tablaSalarios);
+	  const salarioTotal = calcularSalarioTotal(jugadores);
       // Estadísticas
       const sub21 = jugadores.filter(j=>esSub21(j)).length;
       const mayor30 = jugadores.filter(j=>esMayor30(j)).length;

@@ -30,17 +30,10 @@ export function parsearTablaSalarios(texto) {
   });
 }
 
-export function calcularSalarioTotal(jugadores, tablaSalarios) {
-  let total = 0;
-
-  jugadores.forEach(j => {
-    const salario = calcularSalarioJugador(j, tablaSalarios);
-    total += salario;
-    j.salario = salario; // opcional: guardar salario en el jugador
-  });
-
-  return total;
+export function calcularSalarioTotal(jugadores) {
+  return jugadores.reduce((total, j) => total + (j.salario || 0), 0);
 }
+
 
 export function calcularSalarioJugador(jugador, tablaSalarios) {
   const medias = obtenerMediasJugador(jugador);
