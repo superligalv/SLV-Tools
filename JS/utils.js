@@ -247,7 +247,7 @@ export function delanteros(jugadores) {
   return { count: lista.length };
 }
  
-export function avgddelanteros(jugadores) {
+export function avgdelanteros(jugadores) {
   // Filtrar solo porteros (St es el valor más alto)
   const delanteros = jugadores.filter(j => {
     const st = parseInt(j.St, 10) || 0;
@@ -262,11 +262,11 @@ export function avgddelanteros(jugadores) {
   if (delanteros.length === 0) return 0;
   
   // Calcular promedio de St de los delanteros
-  const sumaTk = delanteros.reduce((total, j) => {
+  const sumaSh = delanteros.reduce((total, j) => {
     return total + (parseInt(j.Tk, 10) || 0);
   }, 0);
   
-  return sumaTk / delanteros.length;
+  return sumaSh / delanteros.length;
 }
 
 // Mediocampistas

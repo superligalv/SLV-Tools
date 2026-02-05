@@ -1,6 +1,6 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
-		 avgporteros,avgdefensas,
+		 avgporteros,avgdefensas,avgdelanteros,
   calcularSalarioJugador,
   calcularSalarioTotal } from './utils.js';
 
@@ -72,7 +72,7 @@ if (!teamId) {
 	  const dms = pivotes(jugadores);
 	  const avgport = avgporteros(jugadores);
 	  const avgdf = avgdefensas(jugadores);
-	  const avgfw = delanteros(jugadores);
+	  const avgfw = avgdelanteros(jugadores);
 	  const avgmfs = mediocampistas(jugadores);
 	  const avgams = mediapuntas(jugadores);
 	  const avgdms = pivotes(jugadores);
