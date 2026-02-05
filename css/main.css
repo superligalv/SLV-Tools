@@ -54,6 +54,16 @@ body {
     white-space: nowrap;        /* evita que el texto se rompa en celdas */
   }
  
+ #teamName {
+  display: flex;
+  align-items: center;   /* centra verticalmente */
+  justify-content: center; /* centra todo horizontalmente */
+  gap: 15px;              /* espacio entre logo y texto */
+}
+#teamLogo {
+  width: 60px;
+  height: auto;
+}
  details {
   max-width: 1300px;
   width: 88%;
