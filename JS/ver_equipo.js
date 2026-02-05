@@ -71,7 +71,7 @@ if (!teamId) {
 	  const ams = mediapuntas(jugadores);
 	  const dms = pivotes(jugadores);
 	  const avgport = avgporteros(jugadores);
-	  const avgdf = defensas(jugadores);
+	  const avgdf = avgdefensas(jugadores);
 	  const avgfw = delanteros(jugadores);
 	  const avgmfs = mediocampistas(jugadores);
 	  const avgams = mediapuntas(jugadores);
@@ -115,10 +115,10 @@ if (!teamId) {
 		  <!-- Separador -->
 		  <div style="width:100%; margin:1.5rem 0;"></div>
 		  <div style="background:#2ecc71;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-			<strong>Media de GK</strong><br>${avgport.count}
+			<strong>Media de GK</strong><br>${avgport}
 		  </div>
 		  <div style="background:#1abc9c;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-			<strong>Media de DF</strong><br>${df.count}
+			<strong>Media de DF</strong><br>${avgdf}
 		  </div>
 		  <div style="background:#16a085;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
 			<strong>Media de DM</strong><br>${dms.count} 
