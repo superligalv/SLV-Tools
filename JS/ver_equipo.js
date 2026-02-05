@@ -53,6 +53,8 @@ if (!teamId) {
       crearTabla(jugadores, headers, teamContentEl);
 	  // Calcular salario total
 	  const salarioTotal = calcularSalarioTotal(jugadores);
+	  console.log(jugadores.map(j => j.salario));
+	  console.log("Total:", salarioTotal);
       // Estadísticas
       const sub21 = jugadores.filter(j=>esSub21(j)).length;
       const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
@@ -65,7 +67,7 @@ if (!teamId) {
       statsEl.innerHTML = `
         <h3 style="text-align:center;margin-bottom:1rem;">Estadísticas</h3>
         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
-          <div style="background:#3498db;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
+          <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
             <strong>Sub21</strong><br>${sub21}
           </div>
           <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
