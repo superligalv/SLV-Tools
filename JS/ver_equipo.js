@@ -1,5 +1,6 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
-         porteros, defensas, delanteros, mediocampistas, posicion } from './utils.js';
+         porteros, defensas, delanteros, mediocampistas, posicion, parsearTablaSalarios,
+  calcularSalarioJugador } from './utils.js';
 
 const teamId = getQueryParam('id');
 
@@ -12,6 +13,7 @@ if (!teamId) {
   teamContentEl.innerHTML = "";
   statsEl.innerHTML = "";
 } else {
+
   fetch('./JS/teams.json')
     .then(res => res.ok ? res.json() : Promise.reject('Error cargando teams.json'))
     .then(equipos => {
@@ -35,7 +37,17 @@ if (!teamId) {
         headers.forEach((h,i)=>j[h]=values[i]||'');
         return j;
       });
+	  fetch('./JS/salary.cfg')
+	  .then(r => r.text())
+	  .then(cfg => {
+		const tablaSalarios = parsearTablaSalarios(cfg);
 
+		jugadores.forEach(j => {
+		  j.salario = calcularSalarioJugador(j, tablaSalarios);
+		});
+
+		console.log(jugadores); // ya tienen salario
+	  });
       // Tabla plantilla
       crearTabla(jugadores, headers, teamContentEl);
 

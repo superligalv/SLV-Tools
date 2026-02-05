@@ -15,6 +15,50 @@ export function esMayor30(jugador) {
   return !isNaN(age) && age >= 30;
 }
 
+export function parsearTablaSalarios(texto) {
+  const lineas = texto.split('\n')
+    .map(l => l.trim())
+    .filter(l => l && !l.startsWith('#') && !l.startsWith('numMedias'));
+
+  return lineas.map(linea => {
+    const [avg, sec, mon] = linea.split(';');
+    return {
+      avg: parseInt(avg, 10),
+      sec: sec,
+      mon: parseFloat(mon)
+    };
+  });
+}
+
+
+export function calcularSalarioJugador(jugador, tablaSalarios) {
+  const medias = obtenerMediasJugador(jugador);
+
+  if (medias.length < 2) return 0;
+
+  const mediaPrincipal = medias[0];
+  const mediaSecundaria = medias[1];
+
+  const tieneSecundaria = mediaSecundaria >= 8 ? "SI" : "NO";
+
+  const fila = tablaSalarios.find(f =>
+    f.avg === mediaPrincipal && f.sec === tieneSecundaria
+  );
+
+  return fila ? fila.mon : 0;
+}
+
+export function obtenerMediasJugador(jugador) {
+  const medias = [
+    parseInt(jugador.St, 10),
+    parseInt(jugador.Tk, 10),
+    parseInt(jugador.Ps, 10),
+    parseInt(jugador.Sh, 10)
+  ].filter(n => !isNaN(n));
+
+  return medias.sort((a, b) => b - a); // mayor a menor
+}
+
 // Funciones de posicion
 export function posicion(jugador) {
   const St = parseInt(jugador.St, 10);
