@@ -60,10 +60,7 @@ body {
   justify-content: center; /* centra todo horizontalmente */
   gap: 15px;              /* espacio entre logo y texto */
 }
-#teamLogo {
-  width: 60px;
-  height: auto;
-}
+
  details {
   max-width: 1300px;
   width: 88%;
