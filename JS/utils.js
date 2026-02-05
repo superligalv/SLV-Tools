@@ -193,7 +193,7 @@ export function avgporteros(jugadores) {
     return total + (parseInt(j.St, 10) || 0);
   }, 0);
   
-  return parseFloat((sumaSt / defensas.length).toFixed(2));
+  return parseFloat((sumaSt / porteros.length).toFixed(2));
 }
 
 // Defensas
