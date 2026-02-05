@@ -44,7 +44,7 @@ if (!teamId) {
 		const tablaSalarios = parsearTablaSalarios(cfg);
 		
 		jugadores.forEach(j => {
-		  j.salario = calcularSalarioJugador(j, tablaSalarios);
+		  j.salario = parseFloat(calcularSalarioJugador(j, tablaSalarios));
 		});
 
 		console.log(jugadores); // ya tienen salario
