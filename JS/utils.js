@@ -162,30 +162,45 @@ export function crearTabla(jugadores, headers, containerEl) {
 
 // Porteros
 export function porteros(jugadores) {
-  if (!jugadores.length) return { count: 0, media: 0 };
-  const maxSt = Math.max(...jugadores.map(j => parseInt(j.St,10)||0));
-  const porteros = jugadores.filter(j => parseInt(j.St,10) === maxSt);
-  const sum = porteros.reduce((a,j)=>a + (parseInt(j.St,10)||0),0);
-  return { count: porteros.length, media: porteros.length ? (sum/porteros.length).toFixed(2) : 0 };
+  const lista = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return st > tk && st > ps && st > sh;
+  });
+
+  return { count: lista.length };
 }
 
 // Defensas
 export function defensas(jugadores) {
-  if (!jugadores.length) return { count: 0, media: 0 };
-  const maxTk = Math.max(...jugadores.map(j => parseInt(j.Tk,10)||0));
-  const dfs = jugadores.filter(j => parseInt(j.Tk,10) === maxTk);
-  const sum = dfs.reduce((a,j)=>a + (parseInt(j.Tk,10)||0),0);
-  return { count: dfs.length, media: dfs.length ? (sum/dfs.length).toFixed(2) : 0 };
-}
+    const lista = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
 
+    return tk > st && tk > ps && tk > sh;
+  });
+
+  return { count: lista.length };
+}
 // Delanteros
 export function delanteros(jugadores) {
-  if (!jugadores.length) return { count:0, media:0 };
-  const maxSh = Math.max(...jugadores.map(j => parseInt(j.Sh,10)||0));
-  const fws = jugadores.filter(j => parseInt(j.Sh,10) === maxSh);
-  const sum = fws.reduce((a,j)=>a + (parseInt(j.Sh,10)||0),0);
-  return { count:fws.length, media:fws.length ? (sum/fws.length).toFixed(2) : 0 };
+    const lista = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return sh > st && sh > ps && sh > tk;
+  });
+  
+  return { count: lista.length };
 }
+  
 
 // Mediocampistas
 export function mediocampistas(jugadores) {
