@@ -7,6 +7,53 @@ import { getQueryParam, crearTabla, esSub21, esMayor30,
 
 const container = document.getElementById("teamsContainer");
 
+// Función para cargar y procesar un equipo
+async function procesarEquipo(team) {
+  try {
+    console.log(`Procesando: ${team.team}`);
+    
+    // Cargar el archivo de jugadores del equipo
+    const response = await fetch(team.dropbox_dir);
+    if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+    
+    const txt = await response.text();
+    const lines = txt.trim().split('\n');
+    const sep = lines.findIndex(l => l.includes('---'));
+    const headersLine = sep >= 0 ? lines[0] : lines[0];
+    const dataLines = sep >= 0 ? lines.slice(sep + 1) : lines.slice(1);
+    const headers = headersLine.trim().split(/\s+/);
+
+    // Crear array de jugadores para ESTE equipo
+    const jugadores = dataLines
+      .filter(l => l.trim() !== '')
+      .map(line => {
+        const values = line.trim().split(/\s+/);
+        const jugador = {};
+        headers.forEach((h, i) => jugador[h] = values[i] || '');
+        return jugador;
+      });
+
+    console.log(`${team.team}: ${jugadores.length} jugadores cargados`);
+    
+    // RETORNAR los datos procesados para este equipo
+    return {
+      equipoInfo: team,      // info del equipo (id, team, dropbox_dir, etc.)
+      jugadores: jugadores,  // array de jugadores de ESTE equipo
+      total: jugadores.length
+    };
+    
+  } catch (error) {
+    console.error(`Error procesando ${team.team}:`, error);
+    return {
+      equipoInfo: team,
+      jugadores: [],
+      total: 0,
+      error: error.message
+    };
+  }
+}
+
+
 // Usa la ruta correcta según tu estructura
 fetch("../JS/teams.json")
   .then(res => {
@@ -75,6 +122,8 @@ function renderTeams(teams) {
   `;
 
   teams.forEach(team => {
+	const t = procesarEquipo(team)
+	console.log(t);
     html += `
       <tr>
 	    <td style="border: 1px solid #ddd; padding: 8px;"><img src="../images/flags/headerRund/${team.id}.png" alt="${team.id}" width="50" height="50"/></td>
