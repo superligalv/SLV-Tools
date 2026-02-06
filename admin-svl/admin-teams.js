@@ -7,7 +7,7 @@ import { getQueryParam, crearTabla, esSub21, esMayor30,
 
 const container = document.getElementById("teamsContainer");
 
-// Función para cargar y procesar un equipo
+// Función para cargar y procesar un equipo - Devuelve SOLO el array de jugadores
 async function procesarEquipo(team) {
   try {
     console.log(`Procesando: ${team.team}`);
@@ -23,7 +23,7 @@ async function procesarEquipo(team) {
     const dataLines = sep >= 0 ? lines.slice(sep + 1) : lines.slice(1);
     const headers = headersLine.trim().split(/\s+/);
 
-    // Crear array de jugadores para ESTE equipo
+    // Crear y devolver array de jugadores para ESTE equipo
     const jugadores = dataLines
       .filter(l => l.trim() !== '')
       .map(line => {
@@ -33,22 +33,17 @@ async function procesarEquipo(team) {
         return jugador;
       });
 
-    //console.log(`${team.team}: ${jugadores.length} jugadores cargados`);
+    console.log(`${team.team}: ${jugadores.length} jugadores cargados`);
     
-    // RETORNAR los datos procesados para este equipo
+    // Devolver SOLO el array de jugadores
     return jugadores;
     
   } catch (error) {
     console.error(`Error procesando ${team.team}:`, error);
-    return {
-      equipoInfo: team,
-      jugadores: [],
-      total: 0,
-      error: error.message
-    };
+    // Devolver array vacío en caso de error
+    return [];
   }
 }
-
 
 // Usa la ruta correcta según tu estructura
 fetch("../JS/teams.json")
@@ -119,7 +114,7 @@ function renderTeams(teams) {
 
   teams.forEach(team => {
 	const t = procesarEquipo(team)
-	const cuentaJugadores = t.length;  // ¡CORRECTO!
+	const cuentaJugadores = t.jugadores.length;  // ¡CORRECTO!
 	console.log(`Tiene ${cuentaJugadores} `);
 	//const sub21 = jugadores.filter(j=>esSub21(j)).length;
 	//const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
