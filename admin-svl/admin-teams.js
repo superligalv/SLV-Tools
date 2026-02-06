@@ -85,7 +85,7 @@ async function renderTeams(teams) {
           <th>Salarios</th>
           <th>Potencial</th>
           <th>Jugadores</th>
-          <th>GKS</th>
+          <th class="gk">GKS</th>
           <th>DFS</th>
           <th>DMS</th>
           <th>MFS</th>
@@ -120,7 +120,7 @@ async function renderTeams(teams) {
         <td style="border: 1px solid #ddd; padding: 8px;">-</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${potencial}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${cuentaJugadores}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${port.count}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;" class="gk">${port.count}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${df.count}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${dms.count}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${mfs.count}</td>
