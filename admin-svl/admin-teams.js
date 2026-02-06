@@ -56,6 +56,7 @@ function renderTeams(teams) {
     <table style="width: 100%; border-collapse: collapse;">
       <thead>
         <tr style="background-color: #f2f2f2;">
+		  <th style="border: 1px solid #ddd; padding: 8px;">LOGO</th>
           <th style="border: 1px solid #ddd; padding: 8px;">ID</th>
           <th style="border: 1px solid #ddd; padding: 8px;">Equipo</th>
           <th style="border: 1px solid #ddd; padding: 8px;">Acciones</th>
@@ -67,6 +68,7 @@ function renderTeams(teams) {
   teams.forEach(team => {
     html += `
       <tr>
+	    <td style="border: 1px solid #ddd; padding: 8px;"><img src="../images/flags/headerRund/${team.id}" alt="${team.id}"/></td>
         <td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${team.team}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">
