@@ -43,6 +43,22 @@ async function procesarEquipo(team) {
   }
 }
 
+async function procesarSalarios(jugadores) {
+  const cfg = await fetch('./JS/salary.cfg').then(r => r.text());
+  const tablaSalarios = parsearTablaSalarios(cfg);
+
+  jugadores.forEach(j => {
+    j.salario = parseFloat(calcularSalarioJugador(j, tablaSalarios));
+	j.potencial = potencialJugador(j);
+  });
+
+  const salarioTotal = calcularSalarioTotal(jugadores);
+
+  console.log(jugadores.map(j => j.potencial));
+  //console.log("Total:", salarioTotal);
+
+  return salarioTotal;
+}
 
 // ===============================
 // Cargar lista de equipos
@@ -86,11 +102,29 @@ async function renderTeams(teams) {
           <th>Potencial</th>
           <th>Jugadores</th>
           <th class="gk">GKS</th>
-          <th>DFS</th>
-          <th>DMS</th>
-          <th>MFS</th>
-          <th>AMS</th>
-          <th>FWS</th>
+          <th class="gk">GKS</th>
+          <th class="gk">GKS</th>
+          <th class="gk">GKS</th>
+          <th class="df">DFS</th>
+          <th class="df">DFS</th>
+          <th class="df">DFS</th>
+          <th class="df">DFS</th>
+          <th class="dm">DMS</th>
+          <th class="dm">DMS</th>
+          <th class="dm">DMS</th>
+          <th class="dm">DMS</th>
+          <th class="mf">MFS</th>
+          <th class="mf">MFS</th>
+          <th class="mf">MFS</th>
+          <th class="mf">MFS</th>
+          <th class="am">AMS</th>
+          <th class="am">AMS</th>
+          <th class="am">AMS</th>
+          <th class="am">AMS</th>
+          <th class="fw">FWS</th>
+          <th class="fw">FWS</th>
+          <th class="fw">FWS</th>
+          <th class="fw">FWS</th>
         </tr>
       </thead>
       <tbody>
@@ -121,11 +155,29 @@ async function renderTeams(teams) {
         <td style="border: 1px solid #ddd; padding: 8px;">${potencial}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${cuentaJugadores}</td>
         <td style="border: 1px solid #ddd; padding: 8px;" class="gk">${port.count}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${df.count}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${dms.count}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${mfs.count}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${ams.count}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${fw.count}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="gk">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="gk">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="gk">-</td>
+        <td style="border: 1px solid #ddd; padding: 8px;" class="df">>${df.count}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
+        <td style="border: 1px solid #ddd; padding: 8px;" class="dm">>${dms.count}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
+        <td style="border: 1px solid #ddd; padding: 8px;" class="mf">${mfs.count}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
+        <td style="border: 1px solid #ddd; padding: 8px;" class="am">${ams.count}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
+        <td style="border: 1px solid #ddd; padding: 8px;" class="fw">${fw.count}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
       </tr>
     `;
   }
