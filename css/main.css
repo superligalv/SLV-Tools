@@ -136,7 +136,7 @@ details[open] summary::after {
   border-radius: 16px;
   padding: 2rem;
   text-decoration: none;
-  color: #fff;
+  color: #000;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
