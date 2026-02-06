@@ -59,7 +59,9 @@ function renderTeams(teams) {
 		  <th style="border: 1px solid #ddd; padding: 8px;">LOGO</th>
           <th style="border: 1px solid #ddd; padding: 8px;">ID</th>
           <th style="border: 1px solid #ddd; padding: 8px;">Equipo</th>
-          <th style="border: 1px solid #ddd; padding: 8px;">Acciones</th>
+		  <th style="border: 1px solid #ddd; padding: 8px;">Jugadpres</th>
+		  <th style="border: 1px solid #ddd; padding: 8px;">Salarios</th>
+		  <th style="border: 1px solid #ddd; padding: 8px;">Potencial</th>
         </tr>
       </thead>
       <tbody>
@@ -68,14 +70,12 @@ function renderTeams(teams) {
   teams.forEach(team => {
     html += `
       <tr>
-	    <td style="border: 1px solid #ddd; padding: 8px;"><img src="../images/flags/headerRund/${team.id}" alt="${team.id}"/></td>
+	    <td style="border: 1px solid #ddd; padding: 8px;"><img src="../images/flags/headerRund/${team.id}.png" alt="${team.id}"/></td>
         <td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${team.team}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">
-          <a href="../ver_equipo.html?id=${team.id}" target="_blank" style="color: blue; text-decoration: none;">
-            👁️ Ver
-          </a>
-        </td>
+        <td style="border: 1px solid #ddd; padding: 8px;"><a href="../ver_equipo.html?id=${team.id}" target="_blank" style="color: blue; text-decoration: none;">${team.team}</a></td>
+        <td style="border: 1px solid #ddd; padding: 8px;">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;">-</td>
       </tr>
     `;
   });
