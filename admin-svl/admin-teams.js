@@ -123,10 +123,10 @@ function renderTeams(teams) {
 
   teams.forEach(team => {
 	const t = procesarEquipo(team)
-	//console.log(t);
+	console.log(t);
 	//const sub21 = jugadores.filter(j=>esSub21(j)).length;
 	//const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
-	const cuentaJugadores = t.jugadores.length;
+	//const cuentaJugadores = t.jugadores.length;
 	//const port = porteros(jugadores);
 	//const df = defensas(jugadores);
 	//const fw = delanteros(jugadores);
