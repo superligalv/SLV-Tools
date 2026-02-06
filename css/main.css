@@ -23,7 +23,7 @@ body {
       color: red;
       font-weight: bold;
     }
-	#teamContent {
+#teamContent {
     background: #fff;
     border-radius: 12px;
     padding: 1.5rem;
@@ -60,7 +60,25 @@ body {
   justify-content: center; /* centra todo horizontalmente */
   gap: 15px;              /* espacio entre logo y texto */
 }
+#teamsContainer {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 1200px;
+	margin: 0 auto;
+    min-height: 100px;          /* altura mínima para la tabla */
+    overflow-x: auto;           /* scroll horizontal para muchas columnas */
+    overflow-y: auto;           /* scroll vertical si la tabla es muy larga */
+    white-space: nowrap;        /* evita que el texto se rompa en celdas */
+  }
+ 
 
+  /* opcional: si quieres que la tabla ocupe todo el ancho */
+  #teamsContainer table {
+    width: 100%;
+    border-collapse: collapse;
+  }
  details {
   max-width: 1300px;
   width: 88%;
