@@ -100,7 +100,6 @@ async function renderTeams(teams) {
       </thead>
       <tbody>
   `;
-
   for (const team of teams) {
     const t = await procesarEquipo(team);
 
