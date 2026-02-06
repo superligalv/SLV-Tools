@@ -24,11 +24,11 @@
   { "id": "new", "team": "Newcastle United", "dropbox_dir": "https://dl.dropbox.com/scl/fi/ejh902cn7usuewip8mvya/new.txt?rlkey=io9hklz13cmnk5qabsu23noo2&dl=0" },
   { "id": "por", "team": "FC Porto", "dropbox_dir": "https://dl.dropbox.com/scl/fi/k05likqpd8s87oj4flis3/por.txt?rlkey=mykgfp1q1thx9hgtlk29izpi4&dl=0" },
   { "id": "psg", "team": "Paris Saint-Germain", "dropbox_dir": "https://dl.dropbox.com/scl/fi/lh25m0w135dc85vkfqxi8/psg.txt?rlkey=e28ct9k3t47knej597qxs510i&dl=0" },
-  { "id": "psv", "team": "PSV Eindhoven", "dropbox_dir": "https://dl.dropboxusercontent.com/s/wzl11m116z25tfhbn5gbx/psv.txt" },
-  { "id": "rbl", "team": "RB Leipzig", "dropbox_dir": "https://dl.dropboxusercontent.com/s/jml9svaan4xx0n21xii0m/rbl.txt" },
+  { "id": "psv", "team": "PSV Eindhoven", "dropbox_dir": "https://dl.dropbox.com/scl/fi/wzl11m116z25tfhbn5gbx/psv.txt?rlkey=9jlp1jvxh4iz32rg3alty8qt2&dl=0" },
+  { "id": "rbl", "team": "RB Leipzig", "dropbox_dir": "https://dl.dropbox.com/scl/fi/jml9svaan4xx0n21xii0m/rbl.txt?rlkey=03whg7mly8amwj44v6zriyhzs&dl=0" },
   { "id": "rma", "team": "Real Madrid", "dropbox_dir": "https://dl.dropbox.com/scl/fi/w78g12bvzp7xkjfyps0pj/rma.txt?rlkey=vdia95etntxvdgeq919rrtdam&dl=0" },
-  { "id": "rom", "team": "AS Roma", "dropbox_dir": "https://dl.dropboxusercontent.com/s/fm2e6ex43cs8hshkuve9z/rom.txt" },
-  { "id": "rso", "team": "Real Sociedad", "dropbox_dir": "https://dl.dropboxusercontent.com/s/srzrenaijor6yhgwvptft/rso.txt" },
-  { "id": "sev", "team": "Sevilla FC", "dropbox_dir": "https://dl.dropboxusercontent.com/s/ykyood1s26cps4oylwx3t/sev.txt" },
-  { "id": "tot", "team": "Tottenham Hotspur", "dropbox_dir": "https://dl.dropboxusercontent.com/s/8n6yrq8u16rfri72aqyzs/tot.txt" }
+  { "id": "rom", "team": "AS Roma", "dropbox_dir": "https://dl.dropbox.com/scl/fi/fm2e6ex43cs8hshkuve9z/rom.txt?rlkey=nbmg5qj3d7s30nulf4u1lkr8w&dl=0" },
+  { "id": "rso", "team": "Real Sociedad", "dropbox_dir": "https://dl.dropbox.com/scl/fi/srzrenaijor6yhgwvptft/rso.txt?rlkey=eoghxkkkb2r7p6v92vkoo32lo&dl=0" },
+  { "id": "sev", "team": "Sevilla FC", "dropbox_dir": "https://dl.dropbox.com/scl/fi/ykyood1s26cps4oylwx3t/sev.txt?rlkey=b9q2q4ufmu8dtzjwa9935i1ci&dl=0" },
+  { "id": "tot", "team": "Tottenham Hotspur", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" }
 ]
