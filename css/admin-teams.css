@@ -1,5 +1,5 @@
 #teamsContainer table {
-  font-size: 11px;
+  font-size: 13px;
 }
 
 #teamsContainer th,
@@ -8,6 +8,6 @@
 }
 
 #teamsContainer img {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
 }

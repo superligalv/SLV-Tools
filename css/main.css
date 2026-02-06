@@ -113,6 +113,23 @@ details[open] summary::after {
   transform: rotate(180deg);
 }
 
+.maincontainer {
+  max-width: 900px;
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+}
+
+.mainsubtitle {
+  opacity: 0.8;
+  margin-bottom: 2rem;
+}
+
+.maingrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
 
 .card {
   background: rgba(255, 255, 255, 0.1);
