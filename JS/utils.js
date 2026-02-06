@@ -418,8 +418,10 @@ export function totalPotencial(jugadores, vP = 1) {
     valorPot += PotTeamJ[i];
   }
 
-  return valorPot;
+  //return valorPot;
+  return parseFloat(valorPot.toFixed(2));
 }
+
 
 export function potencialJugador(j) {
   const vP = 1; // mismo valor que en Java
@@ -450,6 +452,8 @@ export function potencialJugador(j) {
   if (secundaria > 1) {
     pJug += secundaria / 10;
   }
-
-  return pJug;
+  
+  //return pJug;
+  return parseFloat(pJug.toFixed(2));
+  
 }
