@@ -24,8 +24,7 @@ let html = `
 teams.forEach(team => {
   html += `
     <tr>
-	  <td><img src="../images/flags/headerRund/${team.id}.png" alt="${team.id}" width="30" height="30"></td>
-      <td>${team.id}</td>
+	  <td>${team.id}</td>
       <td>${team.team}</td>
       <td>
         <a href="../ver_equipo.html?id=${team.id}" target="_blank">
