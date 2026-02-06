@@ -420,3 +420,36 @@ export function totalPotencial(jugadores, vP = 1) {
 
   return valorPot;
 }
+
+export function potencialJugador(j) {
+  const vP = 1; // mismo valor que en Java
+
+  const st = parseInt(j.St, 10) || 0;
+  const tk = parseInt(j.Tk, 10) || 0;
+  const ps = parseInt(j.Ps, 10) || 0;
+  const sh = parseInt(j.Sh, 10) || 0;
+
+  const medias = [st, tk, ps, sh].sort((a, b) => b - a);
+  const principal = medias[0];
+  const secundaria = medias[1];
+
+  let habilidad = 0;
+
+  if (principal === st) {
+    habilidad = parseInt(j.KAb, 10) || 0;
+  } else if (principal === tk) {
+    habilidad = parseInt(j.TAb, 10) || 0;
+  } else if (principal === ps) {
+    habilidad = parseInt(j.PAb, 10) || 0;
+  } else {
+    habilidad = parseInt(j.SAb, 10) || 0;
+  }
+
+  let pJug = principal * vP + habilidad / 1000;
+
+  if (secundaria > 1) {
+    pJug += secundaria / 10;
+  }
+
+  return pJug;
+}

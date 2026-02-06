@@ -22,8 +22,8 @@ async function procesarSalarios(jugadores) {
 
   const salarioTotal = calcularSalarioTotal(jugadores);
 
-  console.log(jugadores.map(j => j.salario));
-  console.log("Total:", salarioTotal);
+  //console.log(jugadores.map(j => j.salario));
+  //console.log("Total:", salarioTotal);
 
   return salarioTotal;
 }
@@ -68,7 +68,7 @@ if (!teamId) {
 	  // Tabla plantilla
 	  crearTabla(jugadores, headers, teamContentEl);
 	  const potencial = totalPotencial(jugadores);
-	  console.log(potencial);
+	  console.log("POotencial" + potencial);
 	  // Estadísticas
 	  const sub21 = jugadores.filter(j=>esSub21(j)).length;
 	  const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
