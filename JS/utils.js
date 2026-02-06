@@ -196,6 +196,40 @@ export function avgporteros(jugadores) {
   return parseFloat((sumaSt / porteros.length).toFixed(2));
 }
 
+export function extremosPorteros(jugadores) {
+  const porteros = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return st > tk && st > ps && st > sh;
+  });
+
+  if (!porteros.length) {
+    return { mejor: null, peor: null };
+  }
+
+  let mejor = porteros[0];
+  let peor = porteros[0];
+
+  porteros.forEach(p => {
+    const st = parseInt(p.St, 10) || 0;
+
+    if (st > (parseInt(mejor.St, 10) || 0)) {
+      mejor = p;
+    }
+    if (st < (parseInt(peor.St, 10) || 0)) {
+      peor = p;
+    }
+  });
+
+  return {
+    mejor,
+    peor
+  };
+}
+
 // Defensas
 export function defensas(jugadores) {
     const lista = jugadores.filter(j => {
