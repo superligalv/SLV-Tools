@@ -1,6 +1,6 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
-		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes,
+		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,
   calcularSalarioJugador,
   calcularSalarioTotal } from './utils.js';
 
@@ -67,7 +67,8 @@ if (!teamId) {
 
 	  // Tabla plantilla
 	  crearTabla(jugadores, headers, teamContentEl);
-
+	  const potencial = totalPotencial(jugadores);
+	  console.log(potencial);
 	  // Estadísticas
 	  const sub21 = jugadores.filter(j=>esSub21(j)).length;
 	  const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
