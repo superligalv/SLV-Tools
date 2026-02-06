@@ -154,7 +154,7 @@ async function renderTeams(teams) {
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
-		  <img src="../images/flags/headerRund/${team.id}.png" width="50" height="50"/>
+		  <img src="../images/flags/headerRund/${team.id}.png" width="30" height="30"/>
 		</td>
 		<td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;">
