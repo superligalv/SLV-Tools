@@ -105,7 +105,7 @@ async function renderTeams(teams) {
     const mfs = mediocampistas(t);
     const ams = mediapuntas(t);
     const dms = pivotes(t);
-    const potencial = totalPotencial(jugadores);
+    const potencial = totalPotencial(t);
     html += `
       <tr>
         <td style="border: 1px solid #ddd; padding: 8px;">
