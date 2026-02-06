@@ -142,14 +142,14 @@ async function renderTeams(teams) {
 	const ams = mediapuntas(t);
 	const dms = pivotes(t);
 	const potencial = totalPotencial(t);
-	const avgport = avgporteros(jugadores);
-	const avgdf = avgdefensas(jugadores);
-	const avgfw = avgdelanteros(jugadores);
-	const avgmfs = avgmediocampistas(jugadores);
-	const avgams = avgmediapuntas(jugadores);
-	const avgdms = avgpivotes(jugadores);
-	const averageage= avgage(jugadores);
-    const extremosGK = extremosPorteros(jugadores);
+	const avgport = avgporteros(t);
+	const avgdf = avgdefensas(t);
+	const avgfw = avgdelanteros(t);
+	const avgmfs = avgmediocampistas(t);
+	const avgams = avgmediapuntas(t);
+	const avgdms = avgpivotes(t);
+	const averageage= avgage(t);
+    const extremosGK = extremosPorteros(t);
 	
 	html += `
 	  <tr>
