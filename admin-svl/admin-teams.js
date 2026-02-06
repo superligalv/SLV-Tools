@@ -8,7 +8,7 @@ import { getQueryParam, crearTabla, esSub21, esMayor30,
 const container = document.getElementById("teamsContainer");
 
 // Función para cargar y procesar un equipo - Devuelve SOLO el array de jugadores
-async function procesarEquipo(team) {
+function procesarEquipo(team) {
   try {
     console.log(`Procesando: ${team.team}`);
     
@@ -114,7 +114,7 @@ function renderTeams(teams) {
 
   teams.forEach(team => {
 	const t = procesarEquipo(team)
-	const cuentaJugadores = ${t.length};  // ¡CORRECTO!
+	const cuentaJugadores = t.length;  // ¡CORRECTO!
 	console.log(`Tiene ${cuentaJugadores} `);
 	//const sub21 = jugadores.filter(j=>esSub21(j)).length;
 	//const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
