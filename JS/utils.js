@@ -375,3 +375,48 @@ export function avgpivotes(jugadores) {
   
   return parseFloat((sumaPs / mediocampistas.length).toFixed(2));
 }
+
+export function totalPotencial(jugadores, vP = 1) {
+  const PotTeamP = [];
+  const PotTeamJ = [];
+
+  for (const p of jugadores) {
+    let pJug = 0;
+
+    const Omedias = [p.st, p.tk, p.ps, p.sh].sort((a, b) => b - a);
+
+    if (p.st === Omedias[0]) {
+      pJug += p.st * vP + p.kAb / 1000.0;
+      if (Omedias[1] > 1) pJug += Omedias[1] / 10;
+      PotTeamP.push(pJug);
+    } else if (p.tk === Omedias[0]) {
+      pJug += p.tk * vP + p.tAb / 1000.0;
+      if (Omedias[1] > 1) pJug += Omedias[1] / 10;
+      PotTeamJ.push(pJug);
+    } else if (p.ps === Omedias[0]) {
+      pJug += p.ps * vP + p.pAb / 1000.0;
+      if (Omedias[1] > 1) pJug += Omedias[1] / 10;
+      PotTeamJ.push(pJug);
+    } else {
+      pJug += p.sh * vP + p.sAb / 1000.0;
+      if (Omedias[1] > 1) pJug += Omedias[1] / 10;
+      PotTeamJ.push(pJug);
+    }
+  }
+
+  // Ordenar de mayor a menor
+  PotTeamP.sort((a, b) => b - a);
+  PotTeamJ.sort((a, b) => b - a);
+
+  let valorPot = 0;
+
+  if (PotTeamP.length > 0) {
+    valorPot += PotTeamP[0];
+  }
+
+  for (let i = 0; i < 15 && i < PotTeamJ.length; i++) {
+    valorPot += PotTeamJ[i];
+  }
+
+  return valorPot;
+}
