@@ -1,0 +1,13 @@
+#teamsContainer table {
+  font-size: 11px;
+}
+
+#teamsContainer th,
+#teamsContainer td {
+  padding: 2px 4px;
+}
+
+#teamsContainer img {
+  width: 24px;
+  height: 24px;
+}
