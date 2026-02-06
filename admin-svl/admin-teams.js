@@ -12,7 +12,7 @@ const container = document.getElementById("teamsContainer");
 // ===============================
 async function procesarEquipo(team) {
   try {
-    console.log(`Procesando: ${team.team}`);
+    //console.log(`Procesando: ${team.team}`);
 	// 👇 Actualiza el texto en la web
     container.innerHTML = `Cargando equipo: <strong>${team.team}</strong>...`;
     const response = await fetch(team.dropbox_dir);
@@ -34,7 +34,7 @@ async function procesarEquipo(team) {
         return jugador;
       });
 
-    console.log(`${team.team}: ${jugadores.length} jugadores cargados`);
+    //console.log(`${team.team}: ${jugadores.length} jugadores cargados`);
 
     return jugadores;
 
@@ -55,10 +55,10 @@ async function procesarSalarios(jugadores) {
 
   const salarioTotal = calcularSalarioTotal(jugadores);
 
-  console.log(jugadores.map(j => j.potencial));
-  //console.log("Total:", salarioTotal);
-
-  return salarioTotal;
+  //console.log(jugadores.map(j => j.potencial));
+  ////console.log("Total:", salarioTotal);
+  return parseFloat((salarioTotal/2).toFixed(2));
+  //return salarioTotal;
 }
 
 // ===============================
