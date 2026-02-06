@@ -111,7 +111,7 @@ async function renderTeams(teams) {
     const mfs = mediocampistas(t);
     const ams = mediapuntas(t);
     const dms = pivotes(t);
-
+    const potencial = totalPotencial(jugadores);
     html += `
       <tr>
         <td style="border: 1px solid #ddd; padding: 8px;">
@@ -124,7 +124,7 @@ async function renderTeams(teams) {
           </a>
         </td>
         <td style="border: 1px solid #ddd; padding: 8px;">-</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">-</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${potencial}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${cuentaJugadores}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${port.count}</td>
         <td style="border: 1px solid #ddd; padding: 8px;">${df.count}</td>
