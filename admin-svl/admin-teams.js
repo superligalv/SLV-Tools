@@ -1,3 +1,10 @@
+import { getQueryParam, crearTabla, esSub21, esMayor30,
+         porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
+		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,avgage,
+  calcularSalarioJugador, potencialJugador,
+  calcularSalarioTotal } from '../JS/utils.js';
+
+
 const container = document.getElementById("teamsContainer");
 
 // Usa la ruta correcta según tu estructura
@@ -59,7 +66,7 @@ function renderTeams(teams) {
 		  <th style="border: 1px solid #ddd; padding: 8px;">LOGO</th>
           <th style="border: 1px solid #ddd; padding: 8px;">ID</th>
           <th style="border: 1px solid #ddd; padding: 8px;">Equipo</th>
-		  <th style="border: 1px solid #ddd; padding: 8px;">Jugadpres</th>
+		  <th style="border: 1px solid #ddd; padding: 8px;">Jugadores</th>
 		  <th style="border: 1px solid #ddd; padding: 8px;">Salarios</th>
 		  <th style="border: 1px solid #ddd; padding: 8px;">Potencial</th>
         </tr>
@@ -70,7 +77,7 @@ function renderTeams(teams) {
   teams.forEach(team => {
     html += `
       <tr>
-	    <td style="border: 1px solid #ddd; padding: 8px;"><img src="../images/flags/headerRund/${team.id}.png" alt="${team.id}"/></td>
+	    <td style="border: 1px solid #ddd; padding: 8px;"><img src="../images/flags/headerRund/${team.id}.png" alt="${team.id}" width="50" height="50"/></td>
         <td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
         <td style="border: 1px solid #ddd; padding: 8px;"><a href="../ver_equipo.html?id=${team.id}" target="_blank" style="color: blue; text-decoration: none;">${team.team}</a></td>
         <td style="border: 1px solid #ddd; padding: 8px;">-</td>
