@@ -33,7 +33,7 @@ async function procesarEquipo(team) {
         return jugador;
       });
 
-    console.log(`${team.team}: ${jugadores.length} jugadores cargados`);
+    //console.log(`${team.team}: ${jugadores.length} jugadores cargados`);
     
     // RETORNAR los datos procesados para este equipo
     return {
@@ -123,7 +123,8 @@ function renderTeams(teams) {
 
   teams.forEach(team => {
 	const t = procesarEquipo(team)
-	console.log(t);
+	const cuentaJugadores = t.jugadores.length;  // ¡CORRECTO!
+	console.log(`Tiene ${cuentaJugadores} `);
 	//const sub21 = jugadores.filter(j=>esSub21(j)).length;
 	//const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
 	//const cuentaJugadores = t.jugadores.length;
