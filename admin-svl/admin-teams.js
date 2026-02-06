@@ -1,7 +1,7 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
 		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,avgage,
-  calcularSalarioJugador, potencialJugador,
+  calcularSalarioJugador, potencialJugador,totalSalarios,
   calcularSalarioTotal } from '../JS/utils.js';
 
 const container = document.getElementById("teamsContainer");
@@ -44,7 +44,7 @@ async function procesarEquipo(team) {
 }
 
 async function procesarSalarios(jugadores) {
-  const cfg = await fetch('./JS/salary.cfg').then(r => r.text());
+  const cfg = await fetch('../JS/salary.cfg').then(r => r.text());
   const tablaSalarios = parsearTablaSalarios(cfg);
 
   jugadores.forEach(j => {
@@ -153,7 +153,7 @@ async function renderTeams(teams) {
 			${team.team}
 		  </a>
 		</td>
-		<td style="border: 1px solid #ddd; padding: 8px;">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;">${salarioTotal}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;">${potencial}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;">${cuentaJugadores}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="gk">${port.count}</td>
