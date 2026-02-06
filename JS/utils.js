@@ -376,52 +376,53 @@ export function avgpivotes(jugadores) {
   return parseFloat((sumaPs / mediocampistas.length).toFixed(2));
 }
 
-export function totalPotencial(jugadores, vP = 1) {
-  const PotTeamP = [];
-  const PotTeamJ = [];
+export function totalPotencial(jugadores) {
+  if (!jugadores || !jugadores.length) return 0;
 
-  for (const p of jugadores) {
-    let pJug = 0;
+  const porteros = [];
+  const campo = [];
 
-    const Omedias = [p.st, p.tk, p.ps, p.sh].sort((a, b) => b - a);
+  jugadores.forEach(j => {
+    const pot = parseFloat(j.potencial);
+    if (isNaN(pot)) return;
 
-    if (p.st === Omedias[0]) {
-      pJug += p.st * vP + p.kAb / 1000.0;
-      if (Omedias[1] > 1) pJug += Omedias[1] / 10;
-      PotTeamP.push(pJug);
-    } else if (p.tk === Omedias[0]) {
-      pJug += p.tk * vP + p.tAb / 1000.0;
-      if (Omedias[1] > 1) pJug += Omedias[1] / 10;
-      PotTeamJ.push(pJug);
-    } else if (p.ps === Omedias[0]) {
-      pJug += p.ps * vP + p.pAb / 1000.0;
-      if (Omedias[1] > 1) pJug += Omedias[1] / 10;
-      PotTeamJ.push(pJug);
+    const st = parseInt(j.St, 10) || 0;
+
+    // Si es portero (St es su mejor media)
+    const medias = [
+      parseInt(j.St, 10) || 0,
+      parseInt(j.Tk, 10) || 0,
+      parseInt(j.Ps, 10) || 0,
+      parseInt(j.Sh, 10) || 0
+    ];
+
+    const maxMedia = Math.max(...medias);
+
+    if (st === maxMedia) {
+      porteros.push(pot);
     } else {
-      pJug += p.sh * vP + p.sAb / 1000.0;
-      if (Omedias[1] > 1) pJug += Omedias[1] / 10;
-      PotTeamJ.push(pJug);
+      campo.push(pot);
     }
-  }
+  });
 
   // Ordenar de mayor a menor
-  PotTeamP.sort((a, b) => b - a);
-  PotTeamJ.sort((a, b) => b - a);
+  porteros.sort((a, b) => b - a);
+  campo.sort((a, b) => b - a);
 
-  let valorPot = 0;
+  let total = 0;
 
-  if (PotTeamP.length > 0) {
-    valorPot += PotTeamP[0];
+  // Mejor portero
+  if (porteros.length > 0) {
+    total += porteros[0];
   }
 
-  for (let i = 0; i < 15 && i < PotTeamJ.length; i++) {
-    valorPot += PotTeamJ[i];
+  // Mejores 15 de campo
+  for (let i = 0; i < 15 && i < campo.length; i++) {
+    total += campo[i];
   }
 
-  //return valorPot;
-  return parseFloat(valorPot.toFixed(2));
+  return parseFloat(total.toFixed(2));
 }
-
 
 export function potencialJugador(j) {
   const vP = 1; // mismo valor que en Java
