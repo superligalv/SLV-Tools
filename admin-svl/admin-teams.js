@@ -114,7 +114,7 @@ function renderTeams(teams) {
 
   teams.forEach(team => {
 	const t = procesarEquipo(team)
-	const cuentaJugadores = t.jugadores.length;  // ¡CORRECTO!
+	const cuentaJugadores = t.length;  // ¡CORRECTO!
 	console.log(`Tiene ${cuentaJugadores} `);
 	//const sub21 = jugadores.filter(j=>esSub21(j)).length;
 	//const mayor30 = jugadores.filter(j=>esMayor30(j)).length;
