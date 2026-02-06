@@ -1,7 +1,7 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
 		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,
-  calcularSalarioJugador,
+  calcularSalarioJugador, potencialJugador,
   calcularSalarioTotal } from './utils.js';
 
 const teamId = getQueryParam('id');
@@ -18,6 +18,7 @@ async function procesarSalarios(jugadores) {
 
   jugadores.forEach(j => {
     j.salario = parseFloat(calcularSalarioJugador(j, tablaSalarios));
+	j.potencial = potencialJugador(j);
   });
 
   const salarioTotal = calcularSalarioTotal(jugadores);
