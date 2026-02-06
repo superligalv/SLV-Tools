@@ -425,36 +425,36 @@ export function totalPotencial(jugadores) {
 }
 
 export function potencialJugador(j) {
-  const vP = 1; // mismo valor que en Java
+  const vP = 1; // o el valor que uses
 
   const st = parseInt(j.St, 10) || 0;
   const tk = parseInt(j.Tk, 10) || 0;
   const ps = parseInt(j.Ps, 10) || 0;
   const sh = parseInt(j.Sh, 10) || 0;
 
+  const kab = parseInt(j.KAb, 10) || 0;
+  const tab = parseInt(j.TAb, 10) || 0;
+  const pab = parseInt(j.PAb, 10) || 0;
+  const sab = parseInt(j.SAb, 10) || 0;
+
   const medias = [st, tk, ps, sh].sort((a, b) => b - a);
-  const principal = medias[0];
-  const secundaria = medias[1];
 
-  let habilidad = 0;
+  let pJug = 0;
 
-  if (principal === st) {
-    habilidad = parseInt(j.KAb, 10) || 0;
-  } else if (principal === tk) {
-    habilidad = parseInt(j.TAb, 10) || 0;
-  } else if (principal === ps) {
-    habilidad = parseInt(j.PAb, 10) || 0;
+  if (st === medias[0]) {
+    pJug += st * vP + kab / 1000;
+  } else if (tk === medias[0]) {
+    pJug += tk * vP + tab / 1000;
+  } else if (ps === medias[0]) {
+    pJug += ps * vP + pab / 1000;
   } else {
-    habilidad = parseInt(j.SAb, 10) || 0;
+    pJug += sh * vP + sab / 1000;
   }
 
-  let pJug = principal * vP + habilidad / 1000;
-
-  if (secundaria > 1) {
-    pJug += secundaria / 10;
+  if (medias[1] > 1) {
+    pJug += medias[1] / 10;
   }
-  
-  //return pJug;
+
+  // 🔴 redondeo como en Java
   return parseFloat(pJug.toFixed(2));
-  
 }
