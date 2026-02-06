@@ -131,62 +131,62 @@ async function renderTeams(teams) {
   `;
   for (const team of teams) {
     const t = await procesarEquipo(team);
+	procesarSalarios(t).then(salarioTotal => {
 
-    const cuentaJugadores = t.length;
-    const port = porteros(t);
-    const df = defensas(t);
-    const fw = delanteros(t);
-    const mfs = mediocampistas(t);
-    const ams = mediapuntas(t);
-    const dms = pivotes(t);
-    const potencial = totalPotencial(t);
-    html += `
-      <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;">
-          <img src="../images/flags/headerRund/${team.id}.png" width="50" height="50"/>
-        </td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">
-          <a href="../ver_equipo.html?id=${team.id}" target="_blank">
-            ${team.team}
-          </a>
-        </td>
-        <td style="border: 1px solid #ddd; padding: 8px;">-</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${potencial}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${cuentaJugadores}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;" class="gk">${port.count}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="gk">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="gk">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="gk">-</td>
-        <td style="border: 1px solid #ddd; padding: 8px;" class="df">>${df.count}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
-        <td style="border: 1px solid #ddd; padding: 8px;" class="dm">>${dms.count}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
-        <td style="border: 1px solid #ddd; padding: 8px;" class="mf">${mfs.count}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
-        <td style="border: 1px solid #ddd; padding: 8px;" class="am">${ams.count}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
-        <td style="border: 1px solid #ddd; padding: 8px;" class="fw">${fw.count}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
-      </tr>
-    `;
-  }
-
+		const cuentaJugadores = t.length;
+		const port = porteros(t);
+		const df = defensas(t);
+		const fw = delanteros(t);
+		const mfs = mediocampistas(t);
+		const ams = mediapuntas(t);
+		const dms = pivotes(t);
+		const potencial = totalPotencial(t);
+		html += `
+		  <tr>
+			<td style="border: 1px solid #ddd; padding: 8px;">
+			  <img src="../images/flags/headerRund/${team.id}.png" width="50" height="50"/>
+			</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">
+			  <a href="../ver_equipo.html?id=${team.id}" target="_blank">
+				${team.team}
+			  </a>
+			</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">${potencial}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;">${cuentaJugadores}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="gk">${port.count}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="gk">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="gk">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="gk">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="df">${df.count}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${dms.count}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${mfs.count}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="am">${ams.count}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${fw.count}</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
+			<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
+		  </tr>
+		`;
+	  }
+  });
   html += `
       </tbody>
     </table>
     <p style="margin-top: 20px;">Total equipos: ${teams.length}</p>
   `;
-
   container.innerHTML = html;
 }
