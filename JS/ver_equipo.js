@@ -105,7 +105,7 @@ if (!teamId) {
 			<strong>Salarios</strong><br>${salarioTotal.toFixed(2)} M
 		  </div>
 		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-			<strong>Potencial</strong><br>---
+			<strong>Potencial</strong><br>${potencial}
 		  </div>
 		  <!-- Separador -->
 		  <div style="width:100%; margin:1.5rem 0; border-top:2px solid #ddd;"></div>
