@@ -1,6 +1,6 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
-		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,
+		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,avgage,
   calcularSalarioJugador, potencialJugador,
   calcularSalarioTotal } from './utils.js';
 
@@ -86,6 +86,7 @@ if (!teamId) {
 	  const avgmfs = avgmediocampistas(jugadores);
 	  const avgams = avgmediapuntas(jugadores);
 	  const avgdms = avgpivotes(jugadores);
+	  const averageage= avgage(jugadores);
 
 	  statsEl.innerHTML = `
 		<div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1rem;">
@@ -96,7 +97,7 @@ if (!teamId) {
 			<strong>>=30</strong><br>${mayor30}
 		  </div>
 		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
-			<strong>Media de edad</strong><br>---
+			<strong>Media de edad</strong><br>${averageage}
 		  </div>
 		  <div style="background:#e67e22;color:white;padding:1rem;border-radius:10px;min-width:150px;text-align:center;">
 			<strong>Total jugadores</strong><br>${cuentaJugadores}

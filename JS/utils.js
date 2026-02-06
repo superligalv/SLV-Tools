@@ -376,6 +376,15 @@ export function avgpivotes(jugadores) {
   return parseFloat((sumaPs / mediocampistas.length).toFixed(2));
 }
 
+export function avgage(jugadores) {
+  // Calcular promedio de St de los mediocampistas
+  const sumaAge = jugadores.reduce((total, j) => {
+    return total + (parseInt(j.Age, 10) || 0);
+  }, 0);
+  
+  return parseFloat((sumaAge / jugadores.length).toFixed(2));
+}
+
 export function totalPotencial(jugadores) {
   if (!jugadores || !jugadores.length) return 0;
 
