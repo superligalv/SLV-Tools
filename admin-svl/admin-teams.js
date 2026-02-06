@@ -13,7 +13,8 @@ const container = document.getElementById("teamsContainer");
 async function procesarEquipo(team) {
   try {
     console.log(`Procesando: ${team.team}`);
-
+	// 👇 Actualiza el texto en la web
+    container.innerHTML = `Cargando equipo: <strong>${team.team}</strong>...`;
     const response = await fetch(team.dropbox_dir);
     if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
 
