@@ -145,7 +145,7 @@ function renderTeams(teams) {
 	    <td style="border: 1px solid #ddd; padding: 8px;"><img src="../images/flags/headerRund/${team.id}.png" alt="${team.id}" width="50" height="50"/></td>
         <td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
         <td style="border: 1px solid #ddd; padding: 8px;"><a href="../ver_equipo.html?id=${team.id}" target="_blank" style="color: blue; text-decoration: none;">${team.team}</a></td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${cuentaJugadores}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">-</td>
 		<td style="border: 1px solid #ddd; padding: 8px;">-</td>
 		<td style="border: 1px solid #ddd; padding: 8px;">-</td>
       </tr>
