@@ -11,3 +11,39 @@
   width: 28px;
   height: 28px;
 }
+th.fw {
+    text-align: center;
+}
+th.gk {
+    text-align: center;
+}
+th.df {
+    text-align: center;
+}
+th.mf {
+    text-align: center;
+}
+th.dm {
+    text-align: center;
+}
+th.am {
+    text-align: center;
+}
+td.fw {
+    text-align: center;
+}
+td.gk {
+    text-align: center;
+}
+td.df {
+    text-align: center;
+}
+td.mf {
+    text-align: center;
+}
+td.dm {
+    text-align: center;
+}
+td.am {
+    text-align: center;
+}
