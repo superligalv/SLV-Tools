@@ -153,8 +153,8 @@ async function renderTeams(teams) {
 	const extremosDF = extremosDefensas(t);
 	const extremosFW = extremosDelanteros(t);
 	const extremosMF = extremosMedios(t);
-	const extremosAM extremosMediapuntas(t);
-	const extremosDM extremosPivotes(t);
+	const extremosAM = extremosMediapuntas(t);
+	const extremosDM = extremosPivotes(t);
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
