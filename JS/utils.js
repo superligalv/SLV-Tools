@@ -418,7 +418,7 @@ export function extremosMedios(jugadores) {
   });
 
   if (!medios.length) {
-    return { mejor: null, peor: null };
+    return { mejor: 0, peor: 0 };
   }
 
   let mejor = medios[0];
