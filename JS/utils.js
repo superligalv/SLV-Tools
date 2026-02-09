@@ -278,28 +278,26 @@ export function extremosDefensas(jugadores) {
   });
 
   if (!defensas.length) {
-    return { mejor: null, peor: null };
+    return { min: null, max: null };
   }
 
-  let mejor = defensas[0];
-  let peor = defensas[0];
+  let min = defensas[0];
+  let max = defensas[0];
 
-  defensas.forEach(p => {
-    const tk = parseInt(p.Tk, 10) || 0;
+  defensas.forEach(j => {
+    const tk = parseInt(j.Tk, 10) || 0;
 
-    if (tk > (parseInt(mejor.Tk, 10) || 0)) {
-      mejor = p;
+    if (tk < (parseInt(min.Tk, 10) || 0)) {
+      min = j;
     }
-    if (tk < (parseInt(peor.Tk, 10) || 0)) {
-      peor = p;
+    if (tk > (parseInt(max.Tk, 10) || 0)) {
+      max = j;
     }
   });
 
-  return {
-    mejor,
-    peor
-  };
+  return { min, max };
 }
+
 
 // Delanteros
 export function delanteros(jugadores) {
