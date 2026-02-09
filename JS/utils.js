@@ -407,6 +407,40 @@ export function avgmediocampistas(jugadores) {
   return parseFloat((sumaPs / mediocampistas.length).toFixed(2));
 }
 
+export function extremosMedios(jugadores) {
+  const medios = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return ps > st && ps > sh && ps > tk && tk < 9 && sh < 9;
+  });
+
+  if (!medios.length) {
+    return { mejor: null, peor: null };
+  }
+
+  let mejor = medios[0];
+  let peor = medios[0];
+
+  medios.forEach(p => {
+    const ps = parseInt(p.Ps, 10) || 0;
+
+    if (ps > (parseInt(mejor.Ps, 10) || 0)) {
+      mejor = p;
+    }
+    if (ps < (parseInt(peor.Ps, 10) || 0)) {
+      peor = p;
+    }
+  });
+
+  return {
+    mejor,
+    peor
+  };
+}
+
 // Mediocampistas
 export function mediapuntas(jugadores) {
     const lista = jugadores.filter(j => {

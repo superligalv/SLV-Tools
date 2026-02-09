@@ -1,7 +1,7 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
 		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,avgage,
-  calcularSalarioJugador, potencialJugador,extremosPorteros,extremosDefensas,extremosDelanteros,
+  calcularSalarioJugador, potencialJugador,extremosPorteros,extremosDefensas,extremosDelanteros,extremosMedios,
   calcularSalarioTotal } from '../JS/utils.js';
 
 const container = document.getElementById("teamsContainer");
@@ -152,6 +152,7 @@ async function renderTeams(teams) {
     const extremosGK = extremosPorteros(t);
 	const extremosDF = extremosDefensas(t);
 	const extremosFW = extremosDelanteros(t);
+	const extremosMF = extremosMedios(t);
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
@@ -180,8 +181,8 @@ async function renderTeams(teams) {
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${mfs.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${avgmfs}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${extremosMF.`peor.Ps}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${extremosMF.mejor.Ps}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${ams.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${avgams}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
