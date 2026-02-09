@@ -267,6 +267,40 @@ export function avgdefensas(jugadores) {
   return parseFloat((sumaTk / defensas.length).toFixed(2));
 }
 
+export function extremosDefensas(jugadores) {
+  const defensas = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return tk > st && tk > ps && tk > sh;
+  });
+
+  if (!defensas.length) {
+    return { mejor: null, peor: null };
+  }
+
+  let mejor = defensas[0];
+  let peor = defensas[0];
+
+  defensas.forEach(p => {
+    const tk = parseInt(p.Tk, 10) || 0;
+
+    if (tk > (parseInt(mejor.Tk, 10) || 0)) {
+      mejor = p;
+    }
+    if (tk < (parseInt(peor.Tk, 10) || 0)) {
+      peor = p;
+    }
+  });
+
+  return {
+    mejor,
+    peor
+  };
+}
+
 // Delanteros
 export function delanteros(jugadores) {
     const lista = jugadores.filter(j => {

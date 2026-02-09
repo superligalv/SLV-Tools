@@ -150,7 +150,7 @@ async function renderTeams(teams) {
 	const avgdms = avgpivotes(t);
 	const averageage= avgage(t);
     const extremosGK = extremosPorteros(t);
-	
+	const exrtemosDF = extremosDefensas(t);
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
@@ -171,8 +171,8 @@ async function renderTeams(teams) {
 		<td style="border: 1px solid #ddd; padding: 8px;" class="gk">${extremosGK.mejor.St}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${df.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${avgdf}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="df">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${exrtemosDF.peor.St}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${exrtemosDF.peor.St}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${dms.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${avgdms}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
