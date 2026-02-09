@@ -183,8 +183,8 @@ async function renderTeams(teams) {
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${extremosDM.mejor?.Ps ?? 0}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${mfs.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${avgmfs}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${extremosMF.peor?.Ps ?? 0}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${extremosMF.mejor?.Ps ?? 0}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${parseInt(extremosMF.peor?.Ps) || 0}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${parseInt(extremosMF.mejor?.Ps) || 0}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${ams.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${avgams}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${extremosAM.peor?.Ps ?? 0}</td>
