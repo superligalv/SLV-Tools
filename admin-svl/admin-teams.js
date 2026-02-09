@@ -101,7 +101,7 @@ async function renderTeams(teams) {
           <th>Equipo</th>
           <th>Salarios</th>
           <th>Potencial</th>
-          <th>Jugadores</th>
+          <th>Num.\nJug.</th>
           <th class="gk">GKS</th>
           <th class="gk">AVG</th>
           <th class="gk">MIN</th>
