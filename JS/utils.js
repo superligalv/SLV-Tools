@@ -207,7 +207,7 @@ export function extremosPorteros(jugadores) {
   });
 
   if (!porteros.length) {
-    return { mejor: null, peor: null };
+    return { mejor: 0, peor: 0 };
   }
 
   let mejor = porteros[0];
@@ -278,7 +278,7 @@ export function extremosDefensas(jugadores) {
   });
 
   if (!defensas.length) {
-    return { mejor: null, peor: null };
+    return { mejor: 0, peor: 0 };
   }
 
   let mejor = defensas[0];
@@ -348,7 +348,7 @@ export function extremosDelanteros(jugadores) {
   });
 
   if (!delanteros.length) {
-    return { mejor: null, peor: null };
+    return { mejor: 0, peor: 0 };
   }
 
   let mejor = delanteros[0];
@@ -477,6 +477,40 @@ export function avgmediapuntas(jugadores) {
   return parseFloat((sumaPs / mediocampistas.length).toFixed(2));
 }
 
+export function extremosMediapuntas(jugadores) {
+  const medios = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return ps > st && ps > sh && ps > tk && sh > tk && sh > 8;
+  });
+
+  if (!medios.length) {
+    return { mejor: 0, peor: 0 };
+  }
+
+  let mejor = medios[0];
+  let peor = medios[0];
+
+  medios.forEach(p => {
+    const ps = parseInt(p.Ps, 10) || 0;
+
+    if (ps > (parseInt(mejor.Ps, 10) || 0)) {
+      mejor = p;
+    }
+    if (ps < (parseInt(peor.Ps, 10) || 0)) {
+      peor = p;
+    }
+  });
+
+  return {
+    mejor,
+    peor
+  };
+}
+
 export function pivotes(jugadores) {
     const lista = jugadores.filter(j => {
     const st = parseInt(j.St, 10) || 0;
@@ -510,6 +544,40 @@ export function avgpivotes(jugadores) {
   }, 0);
   
   return parseFloat((sumaPs / mediocampistas.length).toFixed(2));
+}
+
+export function extremosPivotes(jugadores) {
+  const medios = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return ps > st && ps > sh && ps > tk && tk > st && tk > 8;
+  });
+
+  if (!medios.length) {
+    return { mejor: 0, peor: 0 };
+  }
+
+  let mejor = medios[0];
+  let peor = medios[0];
+
+  medios.forEach(p => {
+    const ps = parseInt(p.Ps, 10) || 0;
+
+    if (ps > (parseInt(mejor.Ps, 10) || 0)) {
+      mejor = p;
+    }
+    if (ps < (parseInt(peor.Ps, 10) || 0)) {
+      peor = p;
+    }
+  });
+
+  return {
+    mejor,
+    peor
+  };
 }
 
 export function avgage(jugadores) {

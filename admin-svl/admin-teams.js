@@ -1,7 +1,7 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
 		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,avgage,
-  calcularSalarioJugador, potencialJugador,extremosPorteros,extremosDefensas,extremosDelanteros,extremosMedios,
+  calcularSalarioJugador, potencialJugador,extremosPorteros,extremosDefensas,extremosDelanteros,extremosMedios,extremosPivotes,extremosMediapuntas,
   calcularSalarioTotal } from '../JS/utils.js';
 
 const container = document.getElementById("teamsContainer");
@@ -153,6 +153,8 @@ async function renderTeams(teams) {
 	const extremosDF = extremosDefensas(t);
 	const extremosFW = extremosDelanteros(t);
 	const extremosMF = extremosMedios(t);
+	const extremosAM extremosMediapuntas(t);
+	const extremosDM extremosPivotes(t);
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
@@ -177,16 +179,16 @@ async function renderTeams(teams) {
 		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${extremosDF.mejor.Tk}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${dms.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${avgdms}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${extremosDM.peor.Ps}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${extremosDM.mejor.Ps}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${mfs.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${avgmfs}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${extremosMF.peor.Ps}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${extremosMF.mejor.Ps}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${ams.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${avgams}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${extremosAM.peor.Ps}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${extremosAM.mejor.Ps}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${fw.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${avgfw}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${extremosFW.peor.Sh}</td>
