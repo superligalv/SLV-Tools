@@ -1,7 +1,7 @@
 import { getQueryParam, crearTabla, esSub21, esMayor30,
          porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
 		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,avgage,
-  calcularSalarioJugador, potencialJugador,extremosPorteros,extremosDefensas,
+  calcularSalarioJugador, potencialJugador,extremosPorteros,extremosDefensas,extremosDelanteros,
   calcularSalarioTotal } from '../JS/utils.js';
 
 const container = document.getElementById("teamsContainer");
@@ -150,7 +150,8 @@ async function renderTeams(teams) {
 	const avgdms = avgpivotes(t);
 	const averageage= avgage(t);
     const extremosGK = extremosPorteros(t);
-	const exrtemosDF = extremosDefensas(t);
+	const extremosDF = extremosDefensas(t);
+	const extremosFW = extremosDelanteros(t);
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
@@ -171,8 +172,8 @@ async function renderTeams(teams) {
 		<td style="border: 1px solid #ddd; padding: 8px;" class="gk">${extremosGK.mejor.St}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${df.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${avgdf}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${exrtemosDF.peor.Tk}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${exrtemosDF.mejor.Tk}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${extremosDF.peor.Tk}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${extremosDF.mejor.Tk}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${dms.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${avgdms}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">-</td>
@@ -187,8 +188,8 @@ async function renderTeams(teams) {
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">-</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${fw.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${avgfw}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">-</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${extremosFW.peor.Sh}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${extremosFW.mejor.Sh}</td>
 	  </tr>
 	`;
   }

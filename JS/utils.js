@@ -337,6 +337,40 @@ export function avgdelanteros(jugadores) {
   return parseFloat((sumaSh / delanteros.length).toFixed(2));
 }
 
+export function extremosDelanteros(jugadores) {
+  const delanteros = jugadores.filter(j => {
+    const st = parseInt(j.St, 10) || 0;
+    const tk = parseInt(j.Tk, 10) || 0;
+    const ps = parseInt(j.Ps, 10) || 0;
+    const sh = parseInt(j.Sh, 10) || 0;
+
+    return sh > st && sh > ps && sh > tk;
+  });
+
+  if (!delanteros.length) {
+    return { mejor: null, peor: null };
+  }
+
+  let mejor = delanteros[0];
+  let peor = delanteros[0];
+
+  delanteros.forEach(p => {
+    const sh = parseInt(p.Sh, 10) || 0;
+
+    if (sh > (parseInt(mejor.Sh, 10) || 0)) {
+      mejor = p;
+    }
+    if (sh < (parseInt(peor.Sh, 10) || 0)) {
+      peor = p;
+    }
+  });
+
+  return {
+    mejor,
+    peor
+  };
+}
+
 // Mediocampistas
 export function mediocampistas(jugadores) {
     const lista = jugadores.filter(j => {
