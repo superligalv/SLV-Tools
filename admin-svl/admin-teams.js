@@ -102,30 +102,30 @@ async function renderTeams(teams) {
           <th>Salarios</th>
           <th>Potencial</th>
           <th>Num.</br>Jug.</th>
-          <th class="gk">GKS</th>
-          <th class="gk">AVG</th>
-          <th class="gk">MIN</th>
-          <th class="gk">MAX</th>
-          <th class="df">DFS</th>
-          <th class="df">AVG</th>
-          <th class="df">MIN</th>
-          <th class="df">MAX</th>
-          <th class="dm">DMS</th>
-          <th class="dm">AVG</th>
-          <th class="dm">MIN</th>
-          <th class="dm">MAX</th>
-          <th class="mf">MFS</th>
-          <th class="mf">AVG</th>
-          <th class="mf">MIN</th>
-          <th class="mf">MAX</th>
-          <th class="am">AMS</th>
-          <th class="am">AVG</th>
-          <th class="am">MIN</th>
-          <th class="am">MAX</th>
-          <th class="fw">FWS</th>
-          <th class="fw">AVG</th>
-          <th class="fw">MIN</th>
-          <th class="fw">MAX</th>
+          <th class="gk">Gks</th>
+          <th class="gk">Avg</th>
+          <th class="gk">Min</th>
+          <th class="gk">Max</th>
+          <th class="df">Dfs</th>
+          <th class="df">Avg</th>
+          <th class="df">Min</th>
+          <th class="df">Max</th>
+          <th class="dm">Dms</th>
+          <th class="dm">Avg</th>
+          <th class="dm">Min</th>
+          <th class="dm">Max</th>
+          <th class="mf">Mfs</th>
+          <th class="mf">Avg</th>
+          <th class="mf">Min</th>
+          <th class="mf">Max</th>
+          <th class="am">Ams</th>
+          <th class="am">Avg</th>
+          <th class="am">Min</th>
+          <th class="am">Max</th>
+          <th class="fw">Fws</th>
+          <th class="fw">Avg</th>
+          <th class="fw">Min</th>
+          <th class="fw">Max</th>
         </tr>
       </thead>
       <tbody>
