@@ -92,6 +92,24 @@ async function renderTeams(teams) {
     return;
   }
 
+  // 👉 1. Crear array con potencial calculado
+  const teamsConPotencial = [];
+
+  for (const team of teams) {
+    const t = await procesarEquipo(team);
+    await procesarSalarios(t); // necesario porque aquí calculas potencialJugador
+    const potencial = totalPotencial(t);
+
+    teamsConPotencial.push({
+      ...team,
+      potencial
+    });
+  }
+
+  // 👉 2. Ordenar de mayor a menor
+  teamsConPotencial.sort((a, b) => b.potencial - a.potencial);
+
+  // 👉 3. Pintar tabla
   let html = `
     <table style="width: 100%; border-collapse: collapse;">
       <thead>
@@ -104,37 +122,29 @@ async function renderTeams(teams) {
       </thead>
       <tbody>
   `;
-  for (const team of teams) {
-	const t = await procesarEquipo(team);
-	const salarioTotal = await procesarSalarios(t);
 
-	const cuentaJugadores = t.length;
-	const port = porteros(t);
-	const df = defensas(t);
-	const fw = delanteros(t);
-	const mfs = mediocampistas(t);
-	const ams = mediapuntas(t);
-	const dms = pivotes(t);
-	const potencial = totalPotencial(t);
-	html += `
-	  <tr>
-		<td style="border: 1px solid #ddd; padding: 8px;">
-		  <img src="../images/flags/headerRund/${team.id}.png" width="30" height="30"/>
-		</td>
-		<td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;">
-		  <a href="../ver_equipo.html?id=${team.id}" target="_blank">
-			${team.team}
-		  </a>
-		</td>
-		<td style="border: 1px solid #ddd; padding: 8px;">${potencial}</td>
-	  </tr>
-	`;
+  for (const team of teamsConPotencial) {
+    html += `
+      <tr>
+        <td style="border: 1px solid #ddd; padding: 8px;">
+          <img src="../images/flags/headerRund/${team.id}.png" width="30" height="30"/>
+        </td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
+        <td style="border: 1px solid #ddd; padding: 8px;">
+          <a href="../ver_equipo.html?id=${team.id}" target="_blank">
+            ${team.team}
+          </a>
+        </td>
+        <td style="border: 1px solid #ddd; padding: 8px;">${team.potencial}</td>
+      </tr>
+    `;
   }
+
   html += `
       </tbody>
     </table>
     <p style="margin-top: 20px;">Total equipos: ${teams.length}</p>
   `;
+
   container.innerHTML = html;
 }
