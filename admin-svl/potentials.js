@@ -150,6 +150,7 @@ async function renderTeams(teams) {
     </tr>
   `;
   }
+  
   html += `
       </tbody>
     </table>
