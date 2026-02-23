@@ -89,8 +89,6 @@ async function renderTeams(teams) {
   `;
   for (const team of teams) {
 	const t = await procesarEquipo(team);
-	const salarioTotal = await procesarSalarios(t);
-
 	const cuentaJugadores = t.length;
 	const potencial = totalPotencial(t);
 	html += `
