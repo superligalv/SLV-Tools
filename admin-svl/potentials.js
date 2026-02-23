@@ -44,6 +44,23 @@ async function procesarEquipo(team) {
   }
 }
 
+async function procesarSalarios(jugadores) {
+  const cfg = await fetch('../JS/salary.cfg').then(r => r.text());
+  const tablaSalarios = parsearTablaSalarios(cfg);
+
+  jugadores.forEach(j => {
+    j.salario = parseFloat(calcularSalarioJugador(j, tablaSalarios));
+	j.potencial = potencialJugador(j);
+  });
+
+  const salarioTotal = calcularSalarioTotal(jugadores);
+
+  //console.log(jugadores.map(j => j.potencial));
+  ////console.log("Total:", salarioTotal);
+  return parseFloat((salarioTotal/2).toFixed(2));
+  //return salarioTotal;
+}
+
 // ===============================
 // Cargar lista de equipos
 // ===============================
@@ -89,8 +106,29 @@ async function renderTeams(teams) {
   `;
   for (const team of teams) {
 	const t = await procesarEquipo(team);
+	const salarioTotal = await procesarSalarios(t);
+
 	const cuentaJugadores = t.length;
+	const port = porteros(t);
+	const df = defensas(t);
+	const fw = delanteros(t);
+	const mfs = mediocampistas(t);
+	const ams = mediapuntas(t);
+	const dms = pivotes(t);
 	const potencial = totalPotencial(t);
+	const avgport = avgporteros(t);
+	const avgdf = avgdefensas(t);
+	const avgfw = avgdelanteros(t);
+	const avgmfs = avgmediocampistas(t);
+	const avgams = avgmediapuntas(t);
+	const avgdms = avgpivotes(t);
+	const averageage= avgage(t);
+    const extremosGK = extremosPorteros(t);
+	const extremosDF = extremosDefensas(t);
+	const extremosFW = extremosDelanteros(t);
+	const extremosMF = extremosMedios(t);
+	const extremosAM = extremosMediapuntas(t);
+	const extremosDM = extremosPivotes(t);
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
