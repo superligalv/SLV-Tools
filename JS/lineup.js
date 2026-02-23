@@ -118,12 +118,9 @@ playersPanel.addEventListener("drop", e => {
 // ===============================
 // CARGA DE EQUIPO Y JUGADORES
 // ===============================
- 
 
 if (!teamId) {
-  teamNameEl.textContent = "Equipo no especificado";
-  teamContentEl.innerHTML = "";
-  statsEl.innerHTML = "";
+  teamName.textContent = "Equipo no especificado";
 } else {
 
   fetch('./JS/teams.json')
@@ -133,11 +130,11 @@ if (!teamId) {
 	  if (!team) throw 'Equipo no encontrado';
 
 	  // Nombre del equipo
-	  teamNameTextEl.textContent = team.team;
+	  teamNameText.textContent = team.team;
 
 	  // Logo del equipo
-	  teamLogoEl.src = `./images/flags/\headerRund/${team.id}.png`;
-	  teamLogoEl.alt = team.team;
+	  teamLogo.src = `./images/flags/\headerRund/${team.id}.png`;
+	  teamLogo.alt = team.team;
 
 	  return fetch(team.dropbox_dir);
 	})
