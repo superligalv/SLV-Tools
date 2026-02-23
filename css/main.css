@@ -118,7 +118,9 @@ details[open] summary::after {
   width: 100%;
   padding: 2rem;
   text-align: center;
+  margin: 0 auto;   /* centra horizontal */
 }
+
 
 .mainsubtitle {
   opacity: 0.8;
