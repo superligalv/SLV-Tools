@@ -1,6 +1,7 @@
 // ===============================
 // CONFIGURACIÓN DE LÍMITES
 // ===============================
+const teamId = getQueryParam('id');
 
 const limits = {
   GK: { min: 1, max: 1 },
@@ -113,3 +114,31 @@ playersPanel.addEventListener("drop", e => {
   playersPanel.appendChild(draggedPlayer);
   draggedPlayer = null;
 });
+
+// ===============================
+// CARGA DE EQUIPO Y JUGADORES
+// ===============================
+ 
+
+if (!teamId) {
+  teamNameEl.textContent = "Equipo no especificado";
+  teamContentEl.innerHTML = "";
+  statsEl.innerHTML = "";
+} else {
+
+  fetch('./JS/teams.json')
+    .then(res => res.ok ? res.json() : Promise.reject('Error cargando teams.json'))
+    .then(equipos => {
+	  const team = equipos.find(e => e.id === teamId.toLowerCase());
+	  if (!team) throw 'Equipo no encontrado';
+
+	  // Nombre del equipo
+	  teamNameTextEl.textContent = team.team;
+
+	  // Logo del equipo
+	  teamLogoEl.src = `./images/flags/\headerRund/${team.id}.png`;
+	  teamLogoEl.alt = team.team;
+
+	  return fetch(team.dropbox_dir);
+	})
+}
