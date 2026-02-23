@@ -116,19 +116,6 @@ async function renderTeams(teams) {
 	const ams = mediapuntas(t);
 	const dms = pivotes(t);
 	const potencial = totalPotencial(t);
-	const avgport = avgporteros(t);
-	const avgdf = avgdefensas(t);
-	const avgfw = avgdelanteros(t);
-	const avgmfs = avgmediocampistas(t);
-	const avgams = avgmediapuntas(t);
-	const avgdms = avgpivotes(t);
-	const averageage= avgage(t);
-    const extremosGK = extremosPorteros(t);
-	const extremosDF = extremosDefensas(t);
-	const extremosFW = extremosDelanteros(t);
-	const extremosMF = extremosMedios(t);
-	const extremosAM = extremosMediapuntas(t);
-	const extremosDM = extremosPivotes(t);
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
