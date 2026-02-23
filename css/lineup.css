@@ -1,0 +1,54 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f0f2f5;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+/* Panel jugadores */
+.players-panel {
+  width: 250px;
+  background: white;
+  padding: 20px;
+  border-right: 1px solid #ccc;
+}
+
+.player {
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #e3e7ff;
+  border-radius: 6px;
+  cursor: grab;
+  text-align: center;
+}
+
+/* Campo */
+.field {
+  flex: 1;
+  background: green;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 40px;
+}
+
+.row {
+  display: flex;
+  gap: 40px;
+}
+
+.position {
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}

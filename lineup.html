@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Alineación</title>
+  <link rel="stylesheet" href="./css/lineup.css">
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- Lista jugadores -->
+    <div class="players-panel">
+      <h2>Jugadores</h2>
+
+      <div class="player" draggable="true" id="p1">Messi</div>
+      <div class="player" draggable="true" id="p2">Ronaldo</div>
+      <div class="player" draggable="true" id="p3">Modric</div>
+      <div class="player" draggable="true" id="p4">Van Dijk</div>
+      <div class="player" draggable="true" id="p5">Neuer</div>
+
+    </div>
+
+    <!-- Campo -->
+    <div class="field">
+
+      <div class="position" data-pos="GK">GK</div>
+
+      <div class="row">
+        <div class="position" data-pos="DF">DF</div>
+        <div class="position" data-pos="DF">DF</div>
+		<div class="position" data-pos="DF">DF</div>
+        <div class="position" data-pos="DF">DF</div>
+      </div>
+
+      <div class="row">
+        <div class="position" data-pos="MF">MF</div>
+        <div class="position" data-pos="MF">MF</div>
+		<div class="position" data-pos="MF">MF</div>
+        <div class="position" data-pos="MF">MF</div>
+      </div>
+
+      <div class="position" data-pos="FW">FW</div>
+	  <div class="position" data-pos="FW">FW</div>
+
+    </div>
+
+  </div>
+
+  <script src="lineup.js"></script>
+</body>
+</html>
