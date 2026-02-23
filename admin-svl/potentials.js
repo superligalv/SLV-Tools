@@ -44,23 +44,6 @@ async function procesarEquipo(team) {
   }
 }
 
-async function procesarSalarios(jugadores) {
-  const cfg = await fetch('../JS/salary.cfg').then(r => r.text());
-  const tablaSalarios = parsearTablaSalarios(cfg);
-
-  jugadores.forEach(j => {
-    j.salario = parseFloat(calcularSalarioJugador(j, tablaSalarios));
-	j.potencial = potencialJugador(j);
-  });
-
-  const salarioTotal = calcularSalarioTotal(jugadores);
-
-  //console.log(jugadores.map(j => j.potencial));
-  ////console.log("Total:", salarioTotal);
-  return parseFloat((salarioTotal/2).toFixed(2));
-  //return salarioTotal;
-}
-
 // ===============================
 // Cargar lista de equipos
 // ===============================
@@ -110,9 +93,6 @@ async function renderTeams(teams) {
 
 	const cuentaJugadores = t.length;
 	const potencial = totalPotencial(t);
-	console.log("DM:", extremosDM);
-	console.log("MF:", extremosMF);
-	console.log("AM:", extremosAM);
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
