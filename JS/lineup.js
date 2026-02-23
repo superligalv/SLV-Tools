@@ -1,6 +1,16 @@
 // ===============================
+// FUNCIÓN PARA OBTENER PARÁMETROS DE URL (DEFINIR PRIMERO)
+// ===============================
+
+function getQueryParam(param) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
+
+// ===============================
 // CONFIGURACIÓN DE LÍMITES
 // ===============================
+
 const teamId = getQueryParam('id');
 
 const limits = {
