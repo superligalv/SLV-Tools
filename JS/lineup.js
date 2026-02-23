@@ -171,6 +171,7 @@ function renderizarJugadoresPanel(jugadores, containerEl) {
   jugadores.forEach(j => {
     const pos = posicion(j).toLowerCase();
     // Buscar el nombre (ajusta según tus datos)
+	console.log(j);
     const nombre = j.Nombre || j.name || j.Jugador || j.NAME || 'Jugador';
     
     const div = document.createElement('div');
