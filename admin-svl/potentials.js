@@ -118,27 +118,37 @@ async function renderTeams(teams) {
           <th>ID</th>
           <th>Equipo</th>
           <th>Potencial</th>
+		  <th>Clase</th>
         </tr>
       </thead>
       <tbody>
   `;
 
-  for (const team of teamsConPotencial) {
-    html += `
-      <tr>
-        <td style="border: 1px solid #ddd; padding: 8px;">
-          <img src="../images/flags/headerRund/${team.id}.png" width="30" height="30"/>
-        </td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
-        <td style="border: 1px solid #ddd; padding: 8px;">
-          <a href="../ver_equipo.html?id=${team.id}" target="_blank">
-            ${team.team}
-          </a>
-        </td>
-        <td style="border: 1px solid #ddd; padding: 8px;">${team.potencial}</td>
-      </tr>
-    `;
-  }
+  for (let i = 0; i < teamsConPotencial.length; i++) {
+  const team = teamsConPotencial[i];
+
+  // 👉 calcular bloque
+  const bloque = Math.floor(i / 8);
+
+  // 👉 convertir a letra
+  const clase = String.fromCharCode(65 + bloque); 
+  // 65 = 'A'
+
+  html += `
+    <tr class="clase-${clase}">
+      <td style="border: 1px solid #ddd; padding: 8px;">
+        <img src="../images/flags/headerRund/${team.id}.png" width="30" height="30"/>
+      </td>
+      <td style="border: 1px solid #ddd; padding: 8px;">${team.id}</td>
+      <td style="border: 1px solid #ddd; padding: 8px;">
+        <a href="../ver_equipo.html?id=${team.id}" target="_blank">
+          ${team.team}
+        </a>
+      </td>
+      <td style="border: 1px solid #ddd; padding: 8px;">${team.potencial}</td>
+      <td style="border: 1px solid #ddd; padding: 8px;">Clase ${clase}</td>
+    </tr>
+  `;
 
   html += `
       </tbody>
