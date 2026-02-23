@@ -172,7 +172,7 @@ function renderizarJugadoresPanel(jugadores, containerEl) {
     const pos = posicion(j).toLowerCase();
     // Buscar el nombre (ajusta según tus datos)
 	console.log(j);
-    const nombre = j.Nombre || j.name || j.Jugador || j.NAME || 'Jugador';
+    const nombre = j.Nombre || j.name || j.Jugador || j.NAME || j.Name || 'Jugador';
     
     const div = document.createElement('div');
     div.className = `player ${pos}`;
