@@ -155,6 +155,9 @@ async function renderTeams(teams) {
 	const extremosMF = extremosMedios(t);
 	const extremosAM = extremosMediapuntas(t);
 	const extremosDM = extremosPivotes(t);
+	console.log("DM:", extremosDM);
+	console.log("MF:", extremosMF);
+	console.log("AM:", extremosAM);
 	html += `
 	  <tr>
 		<td style="border: 1px solid #ddd; padding: 8px;">
@@ -179,16 +182,16 @@ async function renderTeams(teams) {
 		<td style="border: 1px solid #ddd; padding: 8px;" class="df">${extremosDF.mejor.Tk}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${dms.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${avgdms}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${extremosDM.peor?.Ps ?? 0}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${extremosDM.mejor?.Ps ?? 0}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${parseInt(extremosDM?.peor?.Ps) || 0}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="dm">${parseInt(extremosDM?.mejor?.Ps) || 0}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${mfs.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${avgmfs}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${parseInt(extremosMF.peor?.Ps) || 0}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${parseInt(extremosMF.mejor?.Ps) || 0}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${parseInt(extremosMF?.peor?.Ps) || 0}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="mf">${parseInt(extremosMF?.mejor?.Ps) || 0}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${ams.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${avgams}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${extremosAM.peor?.Ps ?? 0}</td>
-		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${extremosAM.mejor?.Ps ?? 0}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${parseInt(extremosAM?.peor?.Ps) || 0}</td>
+		<td style="border: 1px solid #ddd; padding: 8px;" class="am">${parseInt(extremosAM?.mejor?.Ps) || 0}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${fw.count}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${avgfw}</td>
 		<td style="border: 1px solid #ddd; padding: 8px;" class="fw">${extremosFW.peor.Sh}</td>
