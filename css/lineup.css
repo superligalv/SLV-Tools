@@ -15,11 +15,15 @@ body {
   background: white;
   padding: 20px;
   border-right: 1px solid #ccc;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 15px;
 }
 
 .player {
   width: 90px;
-  height: 60px;
+  height: 40px;
   background: #ffffff;
   border-radius: 45px 45px 12px 12px;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
