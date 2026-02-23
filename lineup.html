@@ -9,41 +9,54 @@
 
   <div class="app">
 
-    <!-- Lista jugadores -->
-    <div class="players-panel">
+    <!-- PANEL JUGADORES -->
+    <aside class="players-panel">
       <h2>Jugadores</h2>
 
-      <div class="player" draggable="true" id="p1">Messi</div>
-      <div class="player" draggable="true" id="p2">Ronaldo</div>
-      <div class="player" draggable="true" id="p3">Modric</div>
-      <div class="player" draggable="true" id="p4">Van Dijk</div>
-      <div class="player" draggable="true" id="p5">Neuer</div>
+      <!-- Ejemplo jugadores -->
+      <div class="player" draggable="true" data-role="GK">Neuer</div>
+      <div class="player" draggable="true" data-role="DF">Van Dijk</div>
+      <div class="player" draggable="true" data-role="DF">Ramos</div>
+      <div class="player" draggable="true" data-role="DM">Rodri</div>
+      <div class="player" draggable="true" data-role="MF">Modric</div>
+      <div class="player" draggable="true" data-role="AM">De Bruyne</div>
+      <div class="player" draggable="true" data-role="FW">Messi</div>
+      <div class="player" draggable="true" data-role="FW">Ronaldo</div>
 
-    </div>
+    </aside>
 
-    <!-- Campo -->
-    <div class="field">
+    <!-- CAMPO -->
+    <main class="field">
 
-      <div class="position" data-pos="GK">GK</div>
-
-      <div class="row">
-        <div class="position" data-pos="DF">DF</div>
-        <div class="position" data-pos="DF">DF</div>
-		<div class="position" data-pos="DF">DF</div>
-        <div class="position" data-pos="DF">DF</div>
+      <div class="zone" data-zone="GK">
+        <div class="zone-title">Portero (1)</div>
       </div>
 
-      <div class="row">
-        <div class="position" data-pos="MF">MF</div>
-        <div class="position" data-pos="MF">MF</div>
-		<div class="position" data-pos="MF">MF</div>
-        <div class="position" data-pos="MF">MF</div>
+      <div class="zone" data-zone="DF">
+        <div class="zone-title">Defensas (2–7)</div>
       </div>
-	  <div class="row">
-		  <div class="position" data-pos="FW">FW</div>
-		  <div class="position" data-pos="FW">FW</div>
-	  </div>
-    </div>
+
+      <div class="zone" data-zone="DM">
+        <div class="zone-title">Mediocentro Def (0–3)</div>
+      </div>
+
+      <div class="zone" data-zone="MF">
+        <div class="zone-title">Mediocentro (0–6)</div>
+      </div>
+
+      <div class="zone" data-zone="AM">
+        <div class="zone-title">Mediapunta (0–3)</div>
+      </div>
+
+      <div class="zone" data-zone="FW">
+        <div class="zone-title">Delanteros (1–5)</div>
+      </div>
+
+      <h3 class="bench-title">Suplentes (máx 5)</h3>
+
+      <div class="zone bench" data-zone="BENCH"></div>
+
+    </main>
 
   </div>
 
