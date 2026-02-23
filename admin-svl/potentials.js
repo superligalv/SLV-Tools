@@ -149,7 +149,7 @@ async function renderTeams(teams) {
       <td style="border: 1px solid #ddd; padding: 8px;">Clase ${clase}</td>
     </tr>
   `;
-
+  }
   html += `
       </tbody>
     </table>
