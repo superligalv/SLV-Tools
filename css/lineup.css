@@ -18,14 +18,41 @@ body {
 }
 
 .player {
-  padding: 10px;
-  margin-bottom: 10px;
-  background: #e3e7ff;
-  border-radius: 6px;
+  width: 90px;
+  height: 110px;
+  background: #ffffff;
+  border-radius: 45px 45px 12px 12px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
   cursor: grab;
-  text-align: center;
-  width: 100px;
-  height: 75px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+
+  padding: 8px;
+  font-size: 12px;
+  font-weight: bold;
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.player:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+}
+
+.player:active {
+  cursor: grabbing;
+}
+
+.player::before {
+  content: attr(data-role);
+  position: absolute;
+  top: 6px;
+  font-size: 10px;
+  font-weight: bold;
+  color: #666;
 }
 
 .gk {
