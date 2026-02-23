@@ -24,6 +24,12 @@ body {
   border-radius: 6px;
   cursor: grab;
   text-align: center;
+  width: 200px;
+  height: 150px;
+}
+
+.gk {
+	background-color: yellow;
 }
 
 /* Campo */
