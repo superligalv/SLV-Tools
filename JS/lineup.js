@@ -125,6 +125,23 @@ playersPanel.addEventListener("drop", e => {
   draggedPlayer = null;
 });
 
+function renderizarJugadoresPanel(jugadores, containerEl) {
+  containerEl.innerHTML = "";
+  
+  jugadores.forEach(j => {
+    const pos = posicion(j).toLowerCase();
+    const nombre = j.Nombre || j.name || j.Jugador || 'Jugador';
+    
+    const div = document.createElement('div');
+    div.className = `player ${pos}`;
+    div.draggable = true;
+    div.textContent = nombre;
+    div.setAttribute('data-role', pos.toUpperCase());
+    
+    containerEl.appendChild(div);
+  });
+}
+
 // ===============================
 // CARGA DE EQUIPO Y JUGADORES
 // ===============================
@@ -148,4 +165,21 @@ if (!teamId) {
 
 	  return fetch(team.dropbox_dir);
 	})
+    .then(resp => resp.ok ? resp.text() : Promise.reject('Error cargando TXT'))
+    .then(txt => {
+      const lines = txt.trim().split('\n');
+      const sep = lines.findIndex(l=>l.includes('---'));
+      const headersLine = sep>=0 ? lines[0] : lines[0];
+      const dataLines = sep>=0 ? lines.slice(sep+1) : lines.slice(1);
+      const headers = headersLine.trim().split(/\s+/);
+
+      const jugadores = dataLines.filter(l=>l.trim()!=='').map(line=>{
+        const values = line.trim().split(/\s+/);
+        const j = {};
+        headers.forEach((h,i)=>j[h]=values[i]||'');
+        return j;
+      });
+	  // Tabla plantilla
+	  renderizarJugadoresPanel(jugadores, players-container);
+	}
 }
