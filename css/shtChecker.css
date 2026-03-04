@@ -1,6 +1,6 @@
-#squadData {
+#squadData, #shtData {
   width: 100%;
-  min-height: 300px;
+  min-height: 400px;
   resize: vertical;   /* permite redimensionar solo vertical */
   padding: 12px;
   font-family: monospace;
