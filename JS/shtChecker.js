@@ -9,6 +9,7 @@ btnValidar.addEventListener("click", validar);
 function validar() {
 
   const contenido = textareasht.value.trim();
+  const selectedId = dropdown.value;
 
   // Validar si está vacío
   if (contenido === "") {
@@ -16,10 +17,23 @@ function validar() {
     return;
   }
 
-  // Si no está vacío
-  validationSection.innerHTML = "<span style='color:green;'>✔ Datos cargados correctamente.</span>";
-
+  if (!selectedId) {
+    validationSection.innerHTML =
+      "<span style='color:red;'>⚠ No has seleccionado equipo.</span>";
+    return;
+  }
+  // Primera línea del textarea
+  const primeraLinea = contenido.split("\n")[0].trim();
   // Aquí luego puedes añadir más validaciones
+  if (primeraLinea.toLowerCase() !== selectedId.toLowerCase()) {
+    validationSection.innerHTML =
+      `<span style='color:red;'>❌ La primera línea debe ser "${selectedId}" y actualmente es "${primeraLinea}".</span>`;
+    return;
+  }
+  // Si no está vacío
+  validationSection.innerHTML = "<span style='color:green;'>✔ Alineacion correcta.</span>";
+
+  
 }
 
 
