@@ -1,0 +1,10 @@
+#squadData {
+  width: 100%;
+  min-height: 300px;
+  resize: vertical;   /* permite redimensionar solo vertical */
+  padding: 12px;
+  font-family: monospace;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
