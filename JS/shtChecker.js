@@ -1,9 +1,9 @@
-const listbox = document.getElementById('teamsList');
+const dropdown = document.getElementById('teamsDropdown');
 const textarea = document.getElementById('squadData');
 
-let equiposData = []; // guardamos el JSON completo
+let equiposData = [];
 
-// Cargar equipos
+// Cargar equipos desde JSON
 fetch('./JS/teams.json')
   .then(response => {
     if (!response.ok) {
@@ -12,32 +12,33 @@ fetch('./JS/teams.json')
     return response.json();
   })
   .then(equipos => {
-    equiposData = equipos; // guardamos referencia
+    equiposData = equipos;
 
     equipos.forEach(e => {
       const option = document.createElement('option');
       option.value = e.id;
       option.textContent = e.team;
-      listbox.appendChild(option);
+      dropdown.appendChild(option);
     });
   })
   .catch(error => {
     console.error('Error cargando equipos:', error);
-    listbox.innerHTML = '<option>Error cargando equipos</option>';
   });
 
 
-// Cuando se selecciona equipo
-listbox.addEventListener('change', () => {
+// Cuando el usuario selecciona equipo
+dropdown.addEventListener('change', () => {
 
-  const selectedId = listbox.value;
-  if (!selectedId) return;
+  const selectedId = dropdown.value;
+  if (!selectedId) {
+    textarea.value = "";
+    return;
+  }
 
-  // Buscar el objeto equipo en el JSON
   const equipo = equiposData.find(e => e.id === selectedId);
 
   if (!equipo || !equipo.dropbox_dir) {
-    textarea.value = "No hay enlace de plantilla.";
+    textarea.value = "No hay enlace disponible.";
     return;
   }
 
