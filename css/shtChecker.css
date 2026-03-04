@@ -8,3 +8,9 @@
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
+
+#teamsDropdown {
+  display: block;
+  margin: 0 auto;
+  min-width: 300px;
+}

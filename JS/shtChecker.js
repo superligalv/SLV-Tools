@@ -1,5 +1,27 @@
 const dropdown = document.getElementById('teamsDropdown');
 const textarea = document.getElementById('squadData');
+const btnValidar = document.getElementById("btnValidar");
+const textareasht = document.getElementById("shtData");
+const validationSection = document.getElementById("validation");
+
+btnValidar.addEventListener("click", validar);
+
+function validar() {
+
+  const contenido = textareasht.value.trim();
+
+  // Validar si está vacío
+  if (contenido === "") {
+    validationSection.innerHTML = "<span style='color:red;'>⚠ El textarea está vacío.</span>";
+    return;
+  }
+
+  // Si no está vacío
+  validationSection.innerHTML = "<span style='color:green;'>✔ Datos cargados correctamente.</span>";
+
+  // Aquí luego puedes añadir más validaciones
+}
+
 
 let equiposData = [];
 
