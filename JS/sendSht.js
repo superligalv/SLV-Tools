@@ -2,6 +2,9 @@ const dropdown = document.getElementById('teamsDropdown');
 const btnValidar = document.getElementById("btnValidar");
 const textareasht = document.getElementById("shtData");
 const validationSection = document.getElementById("validation");
+const btnEnviar = document.getElementById("btnEnviar");
+const spinner = document.getElementById("spinner");
+const resultado = document.getElementById("resultado");
 
 btnValidar.addEventListener("click", validar);
 
@@ -10,26 +13,96 @@ function validar() {
   const contenido = textareasht.value.trim();
   const selectedId = dropdown.value;
 
-  // Validar si está vacío
+  resultado.innerHTML = "";
+  btnEnviar.disabled = true;
+
   if (contenido === "") {
-    validationSection.innerHTML = "<span style='color:red;'>⚠ El textarea está vacío.</span>";
-    return;
-  }
-
-  // Primera línea del textarea
-  const primeraLinea = contenido.split("\n")[0].trim();
-  // Aquí luego puedes añadir más validaciones
-  if (primeraLinea.toLowerCase() !== selectedId.toLowerCase()) {
     validationSection.innerHTML =
-      `<span style='color:red;'>❌ La primera línea debe ser "${selectedId}" y actualmente es "${primeraLinea}".</span>`;
+      "<span style='color:red;'>⚠ El textarea está vacío.</span>";
     return;
   }
-  // Si no está vacío
-  validationSection.innerHTML = "<span style='color:green;'>✔ Alineacion correcta.</span>";
 
-  
+  const primeraLinea = contenido.split("\n")[0].trim();
+
+  if (primeraLinea.toLowerCase() !== selectedId.toLowerCase()) {
+
+    validationSection.innerHTML =
+      `<span style='color:red;'>❌ La primera línea debe ser "${selectedId}".</span>`;
+
+    return;
+  }
+
+  validationSection.innerHTML =
+    "<span style='color:green;'>✔ Alineacion correcta.</span>";
+
+  // ✅ Habilitar envío
+  btnEnviar.disabled = false;
 }
 
+btnEnviar.addEventListener("click", enviarAApi);
+
+async function enviarAApi() {
+
+  const texto = textareasht.value.trim();
+  const equipo = dropdown.value;
+
+  if (!equipo) {
+    alert("Selecciona un equipo primero.");
+    return;
+  }
+
+  // 🔒 Bloquear botón para evitar doble click
+  btnEnviar.disabled = true;
+  spinner.style.display = "block";
+  resultado.innerHTML = "";
+
+  const formData = new FormData();
+  formData.append("alineacion", texto);
+  formData.append("filename", equipo + "sht");
+
+  try {
+
+    const response = await fetch("https://TU-DOMINIO/api/alineacion", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+
+      resultado.innerHTML = `
+        <div style="color:blue;">
+          🚀 <b>Alineación enviada correctamente</b><br>
+          📄 Archivo: ${data.archivo}<br>
+          🔗 Ruta: <a href="/alineaciones/${data.archivo}" target="_blank">
+                  Ver archivo
+                 </a>
+        </div>
+      `;
+
+    } else {
+
+      resultado.innerHTML =
+        `<span style="color:red;">❌ Error: ${data.error || "Error desconocido"}</span>`;
+    }
+
+  } catch (error) {
+
+    resultado.innerHTML =
+      "<span style='color:red;'>❌ Error de conexión con la API</span>";
+
+  } finally {
+
+    spinner.style.display = "none";
+    // 🔓 Permitir validar nuevamente si quieren modificar
+    btnEnviar.disabled = true;
+  }
+}
+
+textareasht.addEventListener("input", () => {
+  btnEnviar.disabled = true;
+});
 
 let equiposData = [];
 

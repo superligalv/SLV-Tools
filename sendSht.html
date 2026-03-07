@@ -22,11 +22,20 @@
 	    </select>
 		<p>Pega aqui tu alineacion</p>
 		<textarea id="shtData" rows="20" cols="80"></textarea>
-		<button id="btnValidar">VALIDAR</button>
-	 </section>
-	 <section id="validation">
-		Cargando validacion ...
-	 </section>
+		<div style="margin-top:10px;">
+		  <button id="btnValidar">VALIDAR</button>
+		  <button id="btnEnviar" disabled>ENVIAR</button>
+		</div>
+
+		<div id="spinner" style="display:none;margin-top:10px;">
+		  🔄 Enviando alineación...
+		</div>
+		</section>
+		<section id="validation" style="margin-top:10px;">
+		  Cargando validacion ...
+		</section>
+
+		<section id="resultado" style="margin-top:10px;"></section>
   </details>
   <script type="module" src="./JS/sendSht.js"></script>
 </body>
