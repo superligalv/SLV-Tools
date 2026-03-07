@@ -62,7 +62,7 @@ async function enviarAApi() {
 
   try {
 
-    const response = await fetch("http://144.24.204.153/api/alineacion ", {
+    const response = await fetch("http://144.24.204.153/api/alineacion", {
       method: "POST",
       body: formData
     });
