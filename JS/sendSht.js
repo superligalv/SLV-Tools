@@ -62,10 +62,10 @@ async function enviarAApi() {
 
   try {
 
-    const response = await fetch("http://144.24.204.153/api/alineacion", {
-      method: "POST",
-      body: formData
-    });
+	const response = await fetch("https://superligalv.duckdns.org/api/alineacion", {
+	  method: "POST",
+	  body: formData
+	});
 
     const data = await response.json();
 
