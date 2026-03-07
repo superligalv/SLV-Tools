@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validar alineacion</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/positions.css">
+  <link rel="stylesheet" href="./css/sendSht.css">
+</head>
+<body>
+
+  <h1 id="teamName">
+    <img id="teamLogo" src="" alt="" style="height:40px; vertical-align:middle; margin-right:10px;">
+    <span id="teamNameText">Validar alineacion</span>
+  </h1>
+  <details open>
+	<summary>Alineacion</summary>
+	<section id="shtContent">
+	    <select id="teamsDropdown">
+		  <option value="">-- Selecciona un equipo --</option>
+	    </select>
+		<p>Pega aqui tu alineacion</p>
+		<textarea id="shtData" rows="20" cols="80"></textarea>
+		<button id="btnValidar">VALIDAR</button>
+	 </section>
+	 <section id="validation">
+		Cargando validacion ...
+	 </section>
+  </details>
+  <script type="module" src="./JS/sendSht.js"></script>
+</body>
+</html>
