@@ -644,9 +644,9 @@ function parsearPlantilla(data){
     const nombre = tokens[1];
 
     if(!nombre) return;
-
+    
     const estado = tokens.slice(2).join(" ");
-
+    console.log(tokens.slice(2).join(" "));
     if(
       estado.includes("INJ") ||
       estado.includes("SUSP") ||
