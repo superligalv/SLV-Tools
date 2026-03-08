@@ -674,8 +674,8 @@ function parsearPlantilla(data) {
 
     const tokens = line.split(/\s+/);
 
-    const pos = tokens[0];
-    const nombre = tokens[1];
+    //const pos = tokens[0];
+    const nombre = tokens[0];
 
     if (!nombre) return;
     
