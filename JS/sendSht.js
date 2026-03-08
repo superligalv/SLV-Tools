@@ -121,7 +121,7 @@ async function enviarAApi() {
   formData.append("pin", pinActual);
 
   try {
-
+    console.log(formData);
     const response = await fetch("https://superligalv.duckdns.org/api/alineacion", {
       method: "POST",
       body: formData
