@@ -116,45 +116,187 @@ function validar() {
   resultado.innerHTML = "";
   btnEnviar.disabled = true;
 
+  let errores = [];
+  let checks = [];
+
   if (contenido === "") {
     validationSection.innerHTML =
       "<span style='color:red;'>⚠ El textarea está vacío.</span>";
     return;
   }
-  /*Validando nombre*/
-  const primeraLinea = contenido.split("\n")[0].trim();
+
+  const lines = contenido
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l !== "");
+
+  /* =========================
+     VALIDAR NOMBRE EQUIPO
+  ========================= */
+
+  const primeraLinea = lines[0];
 
   if (primeraLinea.toLowerCase() !== selectedId.toLowerCase()) {
 
-    validationSection.innerHTML =
-      `<span style='color:red;'>❌ La primera línea debe ser "${selectedId}".</span>`;
+    errores.push(`❌ La primera línea debe ser "${selectedId}"`);
 
-    return;
+  } else {
+
+    checks.push("✔ Nombre del equipo correcto");
+
   }
-  /*Validando tactica*/
-  const res = validarTactica()
 
-  if(!res.ok){
-	  validation.innerHTML = "❌ " + res.error
- 	  return
+  /* =========================
+     VALIDAR TACTICA
+  ========================= */
+
+  const resTactic = validarTactica();
+
+  if (!resTactic.ok) {
+
+    errores.push(`❌ ${resTactic.error}`);
+
+  } else {
+
+    checks.push(`✔ Táctica válida (${resTactic.tactic})`);
+
   }
-  
-  validation.innerHTML = "✅ Táctica válida (" + res.tactic + ")"
-  res = validarJugadores()
 
-  if(!res.ok){
+  /* =========================
+     VALIDAR JUGADORES
+  ========================= */
 
-    validation.innerHTML = res.errors
-		? "❌<br>" + res.errors.join("<br>")
-		: "❌ " + res.error
+  const validPos = ["GK","DF","DM","MF","AM","FW"];
 
-    btnEnviar.disabled = true
-    return
+  const starters = lines.slice(2,13);
+  const subs = lines.slice(13,18);
+
+  if (starters.length !== 11) {
+
+    errores.push("❌ Debe haber exactamente 11 titulares");
+
+  } else {
+
+    checks.push("✔ 11 titulares");
+
   }
-  validationSection.innerHTML =
-    "<span style='color:green;'>✔ Alineación correcta.</span>";
 
-  btnEnviar.disabled = false;
+  if (subs.length !== 5) {
+
+    errores.push("❌ Debe haber exactamente 5 suplentes");
+
+  } else {
+
+    checks.push("✔ 5 suplentes");
+
+  }
+
+  /* =========================
+     VALIDAR POSICIONES
+  ========================= */
+
+  starters.forEach((line,i)=>{
+
+    const parts = line.split(/\s+/);
+    const pos = parts[0];
+
+    if(!validPos.includes(pos)){
+      errores.push(`❌ Posición inválida en titular ${i+1}: ${pos}`);
+    }
+
+  });
+
+  subs.forEach((line,i)=>{
+
+    const parts = line.split(/\s+/);
+    const pos = parts[0];
+
+    if(!validPos.includes(pos)){
+      errores.push(`❌ Posición inválida en suplente ${i+1}: ${pos}`);
+    }
+
+  });
+
+  if(errores.length === 0){
+    checks.push("✔ Posiciones válidas");
+  }
+
+  /* =========================
+     VALIDAR GK TITULAR
+  ========================= */
+
+  const gkTitulares = starters.filter(l => l.startsWith("GK")).length;
+
+  if (gkTitulares !== 1) {
+
+    errores.push("❌ Debe haber exactamente 1 portero titular");
+
+  } else {
+
+    checks.push("✔ 1 portero titular");
+
+  }
+
+  /* =========================
+     VALIDAR JUGADORES DUPLICADOS
+  ========================= */
+
+  const jugadores = [...starters, ...subs].map(l => l.substring(3).trim());
+
+  const setJugadores = new Set(jugadores);
+
+  if (setJugadores.size !== jugadores.length) {
+
+    errores.push("❌ Hay jugadores duplicados en la alineación");
+
+  } else {
+
+    checks.push("✔ Sin jugadores duplicados");
+
+  }
+
+  /* =========================
+     SUPLENTES NO TITULARES
+  ========================= */
+
+  const titularesNombres = starters.map(l => l.substring(3).trim());
+
+  subs.forEach(l => {
+
+    const nombre = l.substring(3).trim();
+
+    if (titularesNombres.includes(nombre)) {
+
+      errores.push(`❌ ${nombre} está como titular y suplente`);
+
+    }
+
+  });
+
+  if(!errores.some(e => e.includes("titular y suplente"))){
+    checks.push("✔ Suplentes diferentes a titulares");
+  }
+
+  /* =========================
+     RESULTADO
+  ========================= */
+
+  let html = "";
+
+  if(checks.length){
+    html += "<div style='color:green'>" + checks.join("<br>") + "</div>";
+  }
+
+  if(errores.length){
+    html += "<div style='color:red;margin-top:10px'>" + errores.join("<br>") + "</div>";
+  }
+
+  validationSection.innerHTML = html;
+
+  if(errores.length === 0){
+    btnEnviar.disabled = false;
+  }
+
 }
 
 
