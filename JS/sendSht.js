@@ -684,16 +684,14 @@ function parsearPlantilla(data) {
     const sus = parseInt(tokens[tokens.length - 2]) || 0;
     
     // También podemos mantener el estado original si lo necesitas
-    const estado = tokens.slice(2).join(" ");
+    //const estado = tokens.slice(2).join(" ");
     
     // Validar disponibilidad
     if (inj > 0 || sus > 0) {
       noDisponibles.push({
         nombre,
-        pos,
         inj,
-        sus,
-        estado
+        sus
       });
       return; // No disponible
     }
