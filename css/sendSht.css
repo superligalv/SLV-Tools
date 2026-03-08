@@ -1,0 +1,16 @@
+#squadData, #shtData {
+  width: 100%;
+  min-height: 400px;
+  resize: vertical;   /* permite redimensionar solo vertical */
+  padding: 12px;
+  font-family: monospace;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+#teamsDropdown {
+  display: block;
+  margin: 0 auto;
+  min-width: 300px;
+}

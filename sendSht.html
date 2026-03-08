@@ -31,12 +31,24 @@
 		  🔄 Enviando alineación...
 		</div>
 		</section>
-		<section id="validation" style="margin-top:10px;">
-		  Cargando validacion ...
-		</section>
-
 		<section id="resultado" style="margin-top:10px;"></section>
   </details>
   <script type="module" src="./JS/sendSht.js"></script>
+  <div id="pinModal" class="modal">
+  <div class="modal-content">
+
+    <h3>🔐 Introduce el PIN</h3>
+
+    <input type="password" id="teamPin" placeholder="PIN del equipo">
+
+    <div class="modal-buttons">
+      <button id="confirmPin">Confirmar</button>
+      <button id="cancelPin">Cancelar</button>
+    </div>
+
+    <div id="pinError"></div>
+
+  </div>
+</div>
 </body>
 </html>

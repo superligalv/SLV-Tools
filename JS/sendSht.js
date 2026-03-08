@@ -5,6 +5,68 @@ const validationSection = document.getElementById("validation");
 const btnEnviar = document.getElementById("btnEnviar");
 const spinner = document.getElementById("spinner");
 const resultado = document.getElementById("resultado");
+const modal = document.getElementById("pinModal");
+const confirmPin = document.getElementById("confirmPin");
+const cancelPin = document.getElementById("cancelPin");
+const pinError = document.getElementById("pinError");
+
+cancelPin.onclick = () => {
+  modal.style.display = "none";
+  pinError.innerText = "";
+};
+
+confirmPin.onclick = validarPin;
+
+async function validarPin() {
+
+  const equipo = dropdown.value;
+  const pinIntroducido = document.getElementById("teamPin").value.trim();
+
+  if (!pinIntroducido) {
+    pinError.innerText = "Introduce el PIN";
+    return;
+  }
+
+  try {
+
+    const response = await fetch("./JS/claves.txt");
+    const texto = await response.text();
+
+    const lineas = texto.split("\n");
+
+    let pinCorrecto = null;
+
+    lineas.forEach(linea => {
+
+      const [id, pin] = linea.trim().split("=");
+
+      if (id === equipo) {
+        pinCorrecto = pin;
+      }
+
+    });
+
+    if (!pinCorrecto) {
+      pinError.innerText = "Equipo no encontrado";
+      return;
+    }
+
+    if (pinIntroducido !== pinCorrecto) {
+      pinError.innerText = "PIN incorrecto";
+      return;
+    }
+
+    modal.style.display = "none";
+
+    enviarAApi();
+
+  } catch (error) {
+
+    pinError.innerText = "Error verificando PIN";
+
+  }
+
+}
 
 btnValidar.addEventListener("click", validar);
 
@@ -39,7 +101,10 @@ function validar() {
   btnEnviar.disabled = false;
 }
 
-btnEnviar.addEventListener("click", enviarAApi);
+//btnEnviar.addEventListener("click", enviarAApi);
+btnEnviar.addEventListener("click", () => {
+  document.getElementById("pinModal").style.display = "flex";
+});
 
 async function enviarAApi() {
 
