@@ -39,6 +39,87 @@ confirmPin.onclick = () => {
 
   enviarAApi();
 };
+
+/* =========================
+   VALIDAR CONDICIONALES
+========================= */
+function validarCondicionales(lines){
+
+  const validOrders = ["SUB","TACTIC","CHANGEPOS","CHANGEAGG","AGG"]
+  const validConditions = ["MIN","SCORE","SHOTS","RED","YELLOW","INJURED"]
+  const validSigns = ["=","<=",">=","=<","=>"]
+  const validPos = ["GK","DF","DM","MF","AM","FW"]
+
+  let errores = []
+
+  lines.forEach((line,index)=>{
+
+    const tokens = line.split(/\s+/)
+
+    if(tokens.length === 0) return
+
+    const order = tokens[0]
+
+    if(!validOrders.includes(order)){
+      errores.push(`❌ Línea ${index+1}: Orden desconocida (${order})`)
+      return
+    }
+
+    if(order === "AGG"){
+      const val = parseInt(tokens[1])
+
+      if(isNaN(val) || val < 1 || val > 20){
+        errores.push(`❌ Línea ${index+1}: AGG debe ser entre 1 y 20`)
+      }
+
+      return
+    }
+
+    const ifIndex = tokens.indexOf("IF")
+
+    if(ifIndex === -1){
+      errores.push(`❌ Línea ${index+1}: Falta IF`)
+      return
+    }
+
+    const condType = tokens[ifIndex+1]
+
+    if(!validConditions.includes(condType)){
+      errores.push(`❌ Línea ${index+1}: Condición inválida (${condType})`)
+      return
+    }
+
+    if(["MIN","SCORE","SHOTS"].includes(condType)){
+
+      const sign = tokens[ifIndex+2]
+      const value = tokens[ifIndex+3]
+
+      if(!validSigns.includes(sign)){
+        errores.push(`❌ Línea ${index+1}: Signo inválido (${sign})`)
+      }
+
+      if(isNaN(parseInt(value))){
+        errores.push(`❌ Línea ${index+1}: Valor numérico inválido`)
+      }
+    }
+
+    if(["RED","YELLOW","INJURED"].includes(condType)){
+
+      const target = tokens[ifIndex+2]
+
+      if(!target){
+        errores.push(`❌ Línea ${index+1}: Falta posición o número`)
+      }
+
+      if(!validPos.includes(target) && isNaN(parseInt(target))){
+        errores.push(`❌ Línea ${index+1}: Posición o número inválido`)
+      }
+    }
+
+  })
+
+  return errores
+}
 /* =========================
    VALIDAR JUGADORES
 ========================= */
@@ -276,7 +357,23 @@ function validar() {
   if(!errores.some(e => e.includes("titular y suplente"))){
     checks.push("✔ Suplentes diferentes a titulares");
   }
+/* =========================
+   VALIDAR CONDICIONALES
+========================= */
 
+const conditionalLines = lines.slice(18)
+
+const erroresCond = validarCondicionales(conditionalLines)
+
+if(erroresCond.length){
+
+  errores.push(...erroresCond)
+
+}else{
+
+  checks.push("✔ Condicionales válidas")
+
+}
   /* =========================
      RESULTADO
   ========================= */
