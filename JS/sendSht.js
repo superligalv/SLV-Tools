@@ -5,68 +5,45 @@ const validationSection = document.getElementById("validation");
 const btnEnviar = document.getElementById("btnEnviar");
 const spinner = document.getElementById("spinner");
 const resultado = document.getElementById("resultado");
+
 const modal = document.getElementById("pinModal");
 const confirmPin = document.getElementById("confirmPin");
 const cancelPin = document.getElementById("cancelPin");
 const pinError = document.getElementById("pinError");
+
+let equiposData = [];
+let pinActual = "";
+
+/* =========================
+   MODAL PIN
+========================= */
 
 cancelPin.onclick = () => {
   modal.style.display = "none";
   pinError.innerText = "";
 };
 
-confirmPin.onclick = validarPin;
+confirmPin.onclick = () => {
 
-async function validarPin() {
+  const pinInput = document.getElementById("teamPin").value.trim();
 
-  const equipo = dropdown.value;
-  const pinIntroducido = document.getElementById("teamPin").value.trim();
-
-  if (!pinIntroducido) {
+  if (!pinInput) {
     pinError.innerText = "Introduce el PIN";
     return;
   }
 
-  try {
+  pinActual = pinInput;
 
-    const response = await fetch("./JS/claves.txt");
-    const texto = await response.text();
+  modal.style.display = "none";
+  pinError.innerText = "";
 
-    const lineas = texto.split("\n");
+  enviarAApi();
+};
 
-    let pinCorrecto = null;
 
-    lineas.forEach(linea => {
-
-      const [id, pin] = linea.trim().split("=");
-
-      if (id === equipo) {
-        pinCorrecto = pin;
-      }
-
-    });
-
-    if (!pinCorrecto) {
-      pinError.innerText = "Equipo no encontrado";
-      return;
-    }
-
-    if (pinIntroducido !== pinCorrecto) {
-      pinError.innerText = "PIN incorrecto";
-      return;
-    }
-
-    modal.style.display = "none";
-
-    enviarAApi();
-
-  } catch (error) {
-
-    pinError.innerText = "Error verificando PIN";
-
-  }
-
-}
+/* =========================
+   VALIDAR ALINEACION
+========================= */
 
 btnValidar.addEventListener("click", validar);
 
@@ -95,16 +72,34 @@ function validar() {
   }
 
   validationSection.innerHTML =
-    "<span style='color:green;'>✔ Alineacion correcta.</span>";
+    "<span style='color:green;'>✔ Alineación correcta.</span>";
 
-  // ✅ Habilitar envío
   btnEnviar.disabled = false;
 }
 
-//btnEnviar.addEventListener("click", enviarAApi);
+
+/* =========================
+   ABRIR MODAL PIN
+========================= */
+
 btnEnviar.addEventListener("click", () => {
-  document.getElementById("pinModal").style.display = "flex";
+
+  const equipo = dropdown.value;
+
+  if (!equipo) {
+    alert("Selecciona un equipo primero.");
+    return;
+  }
+
+  document.getElementById("teamPin").value = "";
+  modal.style.display = "flex";
+
 });
+
+
+/* =========================
+   ENVIAR A API
+========================= */
 
 async function enviarAApi() {
 
@@ -116,40 +111,37 @@ async function enviarAApi() {
     return;
   }
 
-  // 🔒 Bloquear botón para evitar doble click
   btnEnviar.disabled = true;
   spinner.style.display = "block";
   resultado.innerHTML = "";
 
   const formData = new FormData();
   formData.append("alineacion", texto);
-  formData.append("filename", equipo + "sht");
+  formData.append("equipo", equipo);
+  formData.append("pin", pinActual);
 
   try {
 
-	const response = await fetch("https://superligalv.duckdns.org/api/alineacion", {
-	  method: "POST",
-	  body: formData
-	});
+    const response = await fetch("https://superligalv.duckdns.org/api/alineacion", {
+      method: "POST",
+      body: formData
+    });
 
     const data = await response.json();
-    
+
     if (response.ok) {
-	  console.log(data);
-      /*resultado.innerHTML = `
-        <div style="color:blue;">
-          🚀 <b>Alineación enviada correctamente</b><br>
-          📄 Archivo: ${data.archivo}<br>
-          🔗 Ruta: <a href="/alineaciones/${data.archivo}" target="_blank">
-                  Ver archivo
-                 </a>
+
+      resultado.innerHTML = `
+        <div style="color:green;">
+          ✔ Alineación enviada correctamente
         </div>
-      `;*/
+      `;
 
     } else {
 
       resultado.innerHTML =
-        `<span style="color:red;">❌ Error: ${data.error || "Error desconocido"}</span>`;
+        `<span style="color:red;">❌ ${data.error || "Error desconocido"}</span>`;
+
     }
 
   } catch (error) {
@@ -160,71 +152,52 @@ async function enviarAApi() {
   } finally {
 
     spinner.style.display = "none";
-    // 🔓 Permitir validar nuevamente si quieren modificar
     btnEnviar.disabled = true;
+
   }
 }
+
+
+/* =========================
+   RESETEAR ENVIO SI CAMBIA TEXTO
+========================= */
 
 textareasht.addEventListener("input", () => {
   btnEnviar.disabled = true;
 });
 
-let equiposData = [];
 
-// Cargar equipos desde JSON
+/* =========================
+   CARGAR EQUIPOS
+========================= */
+
 fetch('./JS/teams.json')
   .then(response => {
+
     if (!response.ok) {
       throw new Error('No se pudo cargar el JSON');
     }
+
     return response.json();
+
   })
   .then(equipos => {
+
     equiposData = equipos;
 
     equipos.forEach(e => {
+
       const option = document.createElement('option');
       option.value = e.id;
       option.textContent = e.team;
+
       dropdown.appendChild(option);
+
     });
+
   })
   .catch(error => {
+
     console.error('Error cargando equipos:', error);
+
   });
-
-
-// Cuando el usuario selecciona equipo
-/*dropdown.addEventListener('change', () => {
-
-  const selectedId = dropdown.value;
-  if (!selectedId) {
-    textarea.value = "";
-    return;
-  }
-
-  const equipo = equiposData.find(e => e.id === selectedId);
-
-  if (!equipo || !equipo.dropbox_dir) {
-    textarea.value = "No hay enlace disponible.";
-    return;
-  }
-
-  textarea.value = "Cargando plantilla...";
-
-  fetch(equipo.dropbox_dir)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error("No se pudo cargar la plantilla");
-      }
-      return response.text();
-    })
-    .then(data => {
-      textarea.value = data;
-    })
-    .catch(error => {
-      console.error("Error cargando plantilla:", error);
-      textarea.value = "Error cargando plantilla.";
-    });
-
-});*/
