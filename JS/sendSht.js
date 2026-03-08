@@ -39,6 +39,27 @@ confirmPin.onclick = () => {
 
   enviarAApi();
 };
+
+function validarJugadoresDisponibles(lines){
+
+  const titulares = lines.slice(2,13);
+  const suplentes = lines.slice(13,18);
+
+  const jugadores = [...titulares, ...suplentes].map(l => l.substring(3).trim());
+
+  const errores = [];
+
+  jugadores.forEach(j => {
+
+    if(!jugadoresDisponibles.includes(j)){
+      errores.push(`❌ ${j} no está disponible (lesión o sanción)`);
+    }
+
+  });
+
+  return errores;
+}
+
 /* =========================
    VALIDAR PK
 ========================= */
@@ -305,7 +326,20 @@ function validar() {
     checks.push("✔ 5 suplentes");
 
   }
+    /* =========================
+     VALIDAR DISPONIBLES
+  ========================= */
+const erroresDisponibilidad = validarJugadoresDisponibles(lines);
 
+if(erroresDisponibilidad.length){
+
+  errores.push(...erroresDisponibilidad);
+
+}else{
+
+  checks.push("✔ Todos los jugadores están disponibles");
+
+}
   /* =========================
      VALIDAR POSICIONES
   ========================= */
@@ -566,6 +600,68 @@ textareasht.addEventListener("input", () => {
 });
 
 
+let jugadoresDisponibles = [];
+
+function cargarPlantilla(dropboxUrl){
+
+  return fetch(dropboxUrl)
+    .then(response => {
+      if(!response.ok){
+        throw new Error("No se pudo cargar la plantilla");
+      }
+      return response.text();
+    })
+    .then(data => {
+
+      jugadoresDisponibles = parsearPlantilla(data);
+
+      return jugadoresDisponibles;
+
+    })
+    .catch(error => {
+      console.error("Error cargando plantilla:", error);
+      jugadoresDisponibles = [];
+      throw error;
+    });
+
+}
+
+function parsearPlantilla(data){
+
+  const lines = data.split("\n");
+
+  const disponibles = [];
+
+  lines.forEach(line => {
+
+    line = line.trim();
+
+    if(!line) return;
+
+    const tokens = line.split(/\s+/);
+
+    const pos = tokens[0];
+    const nombre = tokens[1];
+
+    if(!nombre) return;
+
+    const estado = tokens.slice(2).join(" ");
+
+    if(
+      estado.includes("INJ") ||
+      estado.includes("SUSP") ||
+      estado.includes("OUT")
+    ){
+      return;
+    }
+
+    disponibles.push(nombre);
+
+  });
+
+  return disponibles;
+}
+
 /* =========================
    CARGAR EQUIPOS
 ========================= */
@@ -600,3 +696,42 @@ fetch('./JS/teams.json')
     console.error('Error cargando equipos:', error);
 
   });
+  
+dropdown.addEventListener('change', async () => {
+
+  const selectedId = dropdown.value;
+
+  if (!selectedId) {
+    jugadoresDisponibles = [];
+    return;
+  }
+
+  const equipo = equiposData.find(e => e.id === selectedId);
+
+  if (!equipo || !equipo.dropbox_dir) {
+    return;
+  }
+
+  try {
+
+    const data = await fetch(equipo.dropbox_dir);
+
+    if (!data.ok) {
+      throw new Error("No se pudo cargar la plantilla");
+    }
+
+    const text = await data.text();
+
+    /* 👇 aquí guardamos los jugadores disponibles */
+    jugadoresDisponibles = parsearPlantilla(text);
+
+    console.log("Jugadores disponibles:", jugadoresDisponibles);
+
+  } catch (error) {
+
+    console.error("Error cargando plantilla:", error);
+    jugadoresDisponibles = [];
+
+  }
+
+});
