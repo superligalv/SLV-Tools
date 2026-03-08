@@ -140,7 +140,7 @@ function validar() {
   }
   
   validation.innerHTML = "✅ Táctica válida (" + res.tactic + ")"
-  const res = validarJugadores()
+  res = validarJugadores()
 
   if(!res.ok){
 
