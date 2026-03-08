@@ -625,7 +625,7 @@ function cargarPlantilla(dropboxUrl){
     });
 
 }
-
+/*
 function parsearPlantilla(data){
 
   const lines = data.split("\n");
@@ -644,7 +644,8 @@ function parsearPlantilla(data){
     const nombre = tokens[1];
 
     if(!nombre) return;
-    
+    const inj = tokens[tokens.length - 3];
+	const sus = tokens[tokens.length - 2]
     const estado = tokens.slice(2).join(" ");
     console.log(tokens.slice(2).join(" "));
     if(
@@ -658,6 +659,54 @@ function parsearPlantilla(data){
     disponibles.push(nombre);
 
   });
+
+  return disponibles;
+}*/
+
+function parsearPlantilla(data) {
+  const lines = data.split("\n");
+  const disponibles = [];
+  const noDisponibles = [];
+
+  lines.forEach(line => {
+    line = line.trim();
+    if (!line) return;
+
+    const tokens = line.split(/\s+/);
+
+    const pos = tokens[0];
+    const nombre = tokens[1];
+
+    if (!nombre) return;
+    
+    // Obtener valores
+    const inj = parseInt(tokens[tokens.length - 3]) || 0;
+    const sus = parseInt(tokens[tokens.length - 2]) || 0;
+    
+    // También podemos mantener el estado original si lo necesitas
+    const estado = tokens.slice(2).join(" ");
+    
+    // Validar disponibilidad
+    if (inj > 0 || sus > 0) {
+      noDisponibles.push({
+        nombre,
+        pos,
+        inj,
+        sus,
+        estado
+      });
+      return; // No disponible
+    }
+
+    // Jugador disponible
+    disponibles.push(nombre);
+  });
+
+  console.log(`Jugadores disponibles: ${disponibles.length}`);
+  console.log(`Jugadores NO disponibles: ${noDisponibles.length}`);
+  if (noDisponibles.length > 0) {
+    console.log('Detalle de no disponibles:', noDisponibles);
+  }
 
   return disponibles;
 }
