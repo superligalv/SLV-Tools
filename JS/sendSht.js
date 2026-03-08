@@ -68,10 +68,10 @@ async function enviarAApi() {
 	});
 
     const data = await response.json();
-
+    
     if (response.ok) {
-
-      resultado.innerHTML = `
+	  console.log(data);
+      /*resultado.innerHTML = `
         <div style="color:blue;">
           🚀 <b>Alineación enviada correctamente</b><br>
           📄 Archivo: ${data.archivo}<br>
@@ -79,7 +79,7 @@ async function enviarAApi() {
                   Ver archivo
                  </a>
         </div>
-      `;
+      `;*/
 
     } else {
 
