@@ -39,7 +39,41 @@ confirmPin.onclick = () => {
 
   enviarAApi();
 };
+/* =========================
+   VALIDAR PK
+========================= */
+function validarPK(lines){
 
+  let pkIndex = lines.findIndex(l => l.startsWith("PK:"))
+
+  if(pkIndex === -1){
+    return {ok:false, error:"Falta la línea PK:"}
+  }
+
+  const tokens = lines[pkIndex].split(/\s+/)
+
+  if(tokens.length < 2){
+    return {ok:false, error:"PK sin jugador especificado"}
+  }
+
+  const pkPlayer = tokens.slice(1).join(" ").trim()
+
+  /* jugadores de la alineación */
+
+  const starters = lines.slice(2,13)
+  const subs = lines.slice(13,18)
+
+  const jugadores = [...starters, ...subs].map(l => l.substring(3).trim())
+
+  if(!jugadores.includes(pkPlayer)){
+    return {
+      ok:false,
+      error:`El lanzador de PK (${pkPlayer}) no está en la alineación`
+    }
+  }
+
+  return {ok:true, player:pkPlayer, index:pkIndex}
+}
 /* =========================
    VALIDAR CONDICIONALES
 ========================= */
@@ -358,10 +392,25 @@ function validar() {
     checks.push("✔ Suplentes diferentes a titulares");
   }
 /* =========================
+   VALIDAR PK
+========================= */
+
+const resPK = validarPK(lines)
+
+if(!resPK.ok){
+
+  errores.push("❌ " + resPK.error)
+
+}else{
+
+  checks.push(`✔ Lanzador de PK válido (${resPK.player})`)
+
+}
+/* =========================
    VALIDAR CONDICIONALES
 ========================= */
 
-const conditionalLines = lines.slice(18)
+const conditionalLines =  lines.slice(resPK.index + 1)
 
 const erroresCond = validarCondicionales(conditionalLines)
 
