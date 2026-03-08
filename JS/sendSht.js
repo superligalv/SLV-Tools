@@ -10,7 +10,7 @@ const modal = document.getElementById("pinModal");
 const confirmPin = document.getElementById("confirmPin");
 const cancelPin = document.getElementById("cancelPin");
 const pinError = document.getElementById("pinError");
-
+const tactic_7 = true
 let equiposData = [];
 let pinActual = "";
 
@@ -60,7 +60,7 @@ function validar() {
       "<span style='color:red;'>⚠ El textarea está vacío.</span>";
     return;
   }
-
+  /*Validando nombre*/
   const primeraLinea = contenido.split("\n")[0].trim();
 
   if (primeraLinea.toLowerCase() !== selectedId.toLowerCase()) {
@@ -70,7 +70,15 @@ function validar() {
 
     return;
   }
+  /*Validando tactica*/
+  const res = validarTactica()
 
+  if(!res.ok){
+	  validation.innerHTML = "❌ " + res.error
+ 	  return
+  }
+
+validation.innerHTML = "✅ Táctica válida (" + res.tactic + ")"
   validationSection.innerHTML =
     "<span style='color:green;'>✔ Alineación correcta.</span>";
 
@@ -95,7 +103,38 @@ btnEnviar.addEventListener("click", () => {
   modal.style.display = "flex";
 
 });
+/* =========================
+   Validaciones
+========================= */
+/* TACTICA */
+function validTactic(tactic){
 
+  const valid = ["A","D","C","N","L","P","T"]
+
+  if(valid.includes(tactic)) return true
+
+  if(tactic_7 && tactic === "E") return true
+
+  return false
+}
+
+function validarTactica(){
+
+  const text = document.getElementById("shtData").value.trim()
+  const lines = text.split("\n").map(l => l.trim()).filter(l => l !== "")
+
+  if(lines.length < 2){
+    return {ok:false, error:"Formato incorrecto"}
+  }
+
+  const tactic = lines[1]
+
+  if(!validTactic(tactic)){
+    return {ok:false, error:`Táctica inválida: ${tactic}`}
+  }
+
+  return {ok:true, tactic}
+}
 
 /* =========================
    ENVIAR A API
