@@ -10,7 +10,7 @@ const modal = document.getElementById("pinModal");
 const confirmPin = document.getElementById("confirmPin");
 const cancelPin = document.getElementById("cancelPin");
 const pinError = document.getElementById("pinError");
-const tactic_7 = true
+const tactic_7 = true;
 let equiposData = [];
 let pinActual = "";
 
@@ -39,8 +39,69 @@ confirmPin.onclick = () => {
 
   enviarAApi();
 };
+/* =========================
+   VALIDAR JUGADORES
+========================= */
+function validarJugadores(){
 
+  const text = document.getElementById("shtData").value.trim()
 
+  const lines = text
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l !== "")
+
+  if(lines.length < 18){
+    return {ok:false, error:"Formato incompleto de alineación"}
+  }
+
+  const starters = lines.slice(2,13)
+  const subs = lines.slice(13,18)
+
+  const validPos = ["GK","DF","DM","MF","AM","FW"]
+
+  let errors = []
+
+  /* ---- validar titulares ---- */
+
+  if(starters.length !== 11){
+    errors.push("Debe haber exactamente 11 titulares")
+  }
+
+  starters.forEach((line,i)=>{
+
+    const parts = line.split(/\s+/)
+    const pos = parts[0]
+
+    if(!validPos.includes(pos)){
+      errors.push(`Posición inválida en titular ${i+1}: ${pos}`)
+    }
+
+  })
+
+  /* ---- validar suplentes ---- */
+
+  if(subs.length !== 5){
+    errors.push("Debe haber exactamente 5 suplentes")
+  }
+
+  subs.forEach((line,i)=>{
+
+    const parts = line.split(/\s+/)
+    const pos = parts[0]
+
+    if(!validPos.includes(pos)){
+      errors.push(`Posición inválida en suplente ${i+1}: ${pos}`)
+    }
+
+  })
+
+  if(errors.length > 0){
+    return {ok:false, errors}
+  }
+
+  return {ok:true}
+}
 /* =========================
    VALIDAR ALINEACION
 ========================= */
@@ -77,8 +138,19 @@ function validar() {
 	  validation.innerHTML = "❌ " + res.error
  	  return
   }
+  
+  validation.innerHTML = "✅ Táctica válida (" + res.tactic + ")"
+  const res = validarJugadores()
 
-validation.innerHTML = "✅ Táctica válida (" + res.tactic + ")"
+  if(!res.ok){
+
+    validation.innerHTML = res.errors
+		? "❌<br>" + res.errors.join("<br>")
+		: "❌ " + res.error
+
+    btnEnviar.disabled = true
+    return
+  }
   validationSection.innerHTML =
     "<span style='color:green;'>✔ Alineación correcta.</span>";
 
