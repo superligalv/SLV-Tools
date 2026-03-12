@@ -30,5 +30,13 @@
   { "id": "rom", "team": "AS Roma", "dropbox_dir": "https://dl.dropbox.com/scl/fi/fm2e6ex43cs8hshkuve9z/rom.txt?rlkey=nbmg5qj3d7s30nulf4u1lkr8w&dl=0" },
   { "id": "rso", "team": "Real Sociedad", "dropbox_dir": "https://dl.dropbox.com/scl/fi/srzrenaijor6yhgwvptft/rso.txt?rlkey=eoghxkkkb2r7p6v92vkoo32lo&dl=0" },
   { "id": "sev", "team": "Sevilla FC", "dropbox_dir": "https://dl.dropbox.com/scl/fi/ykyood1s26cps4oylwx3t/sev.txt?rlkey=b9q2q4ufmu8dtzjwa9935i1ci&dl=0" },
-  { "id": "tot", "team": "Tottenham Hotspur", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" }
+  { "id": "tot", "team": "Tottenham Hotspur", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
+  { "id": "ata", "team": "Atalanta", "dropbox_dir": "https://dl.dropbox.com/scl/fi/wnbbi3jznypuyh6lifyj3/ata.txt?rlkey=vhcvt369o1heuzj0s57shiobp&st=x0eq8333&dl=0" },
+  { "id": "bod", "team": "FK Bodo Glimt", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
+  { "id": "bru", "team": "Club Brujas KV", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
+  { "id": "com", "team": "Como 1907", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
+  { "id": "gal", "team": "Galatasaray", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
+  { "id": "lyo", "team": "Olympique Lyonnais", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
+  { "id": "mon", "team": "AS Monaco", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
+  { "id": "vil", "team": "Villarreal CF", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" }
 ]
