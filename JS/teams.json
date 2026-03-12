@@ -32,11 +32,11 @@
   { "id": "sev", "team": "Sevilla FC", "dropbox_dir": "https://dl.dropbox.com/scl/fi/ykyood1s26cps4oylwx3t/sev.txt?rlkey=b9q2q4ufmu8dtzjwa9935i1ci&dl=0" },
   { "id": "tot", "team": "Tottenham Hotspur", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
   { "id": "ata", "team": "Atalanta", "dropbox_dir": "https://dl.dropbox.com/scl/fi/wnbbi3jznypuyh6lifyj3/ata.txt?rlkey=vhcvt369o1heuzj0s57shiobp&st=x0eq8333&dl=0" },
-  { "id": "bod", "team": "FK Bodo Glimt", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
-  { "id": "bru", "team": "Club Brujas KV", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
-  { "id": "com", "team": "Como 1907", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
-  { "id": "gal", "team": "Galatasaray", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
-  { "id": "lyo", "team": "Olympique Lyonnais", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
-  { "id": "mon", "team": "AS Monaco", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" },
-  { "id": "vil", "team": "Villarreal CF", "dropbox_dir": "https://dl.dropbox.com/scl/fi/8n6yrq8u16rfri72aqyzs/tot.txt?rlkey=gmaodcsj37j7tjx075x927nfi&dl=0" }
+  { "id": "bod", "team": "FK Bodo Glimt", "dropbox_dir": "https://dl.dropbox.com/scl/fi/kxyzv4winspvz3yrpty2b/bod.txt?rlkey=l61x86cieq70otpc6gmkpixdw&st=0m1z427m&dl=0" },
+  { "id": "bru", "team": "Club Brujas KV", "dropbox_dir": "https://dl.dropbox.com/scl/fi/egp3hs18wt6o6qhedxrwg/bru.txt?rlkey=7mculxe0xn4ch2y8axnln3o08&st=pjxz1qqg&dl=0" },
+  { "id": "com", "team": "Como 1907", "dropbox_dir": "https://dl.dropbox.com/scl/fi/uv8r1gqyk0miuzmozgh8g/com.txt?rlkey=siib75waklagc8i0le3bqs2jl&st=55bifx3m&dl=0" },
+  { "id": "gal", "team": "Galatasaray", "dropbox_dir": "https://dl.dropbox.com/scl/fi/xtkii14ud3p5f0kouu283/gal.txt?rlkey=j56xr93m7iguj86tmr703wz1q&st=r7id1jv3&dl=0" },
+  { "id": "lyo", "team": "Olympique Lyonnais", "dropbox_dir": "https://dl.dropbox.com/scl/fi/ot381kvokw3sg9m42omnq/lyo.txt?rlkey=w6ldoxl5boa1dy9etolf6a9a1&st=6gj58nd3&dl=0" },
+  { "id": "mon", "team": "AS Monaco", "dropbox_dir": "https://dl.dropbox.com/scl/fi/bu0s08fxnag5vooh7rrdj/mon.txt?rlkey=jac4sy8q1x780w2yk7mxl35z0&st=p1vjrhox&dl=0" },
+  { "id": "vil", "team": "Villarreal CF", "dropbox_dir": "https://dl.dropbox.com/scl/fi/n7tqfwtpa4t7ogeb41ocl/vil.txt?rlkey=x36k0qhlv5n5y327h2fw0n9z6&st=qvraxkla&dl=0" }
 ]
