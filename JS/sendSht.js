@@ -473,9 +473,9 @@ if(erroresCond.length){
 
   validationSection.innerHTML = html;
 
-  /*if(errores.length === 0){
+  if(errores.length === 0){
     btnEnviar.disabled = false;
-  }*/
+  }
 
 }
 
