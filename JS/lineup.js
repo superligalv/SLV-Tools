@@ -9,6 +9,7 @@ const POSITIONS = {
 };
 
 const SUBSTITUTES = 5;
+const TOTAL_STARTERS = 11; // 1 + (mínimos) pero pueden ser más hasta 25
 
 // Datos de ejemplo
 const PLAYERS = [
@@ -55,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initSubstitutes();
     initEventListeners();
     
-    // Actualizar validación cada vez que cambia el lineup
-    setInterval(validateLineup, 500);
+    // Validar solo cuando sea necesario (cambios en el lineup)
+    // Eliminamos el setInterval que causaba el mensaje molesto
 });
 
 // Inicializar event listeners
@@ -186,16 +187,6 @@ function getAvailablePlayers(targetPosition) {
             
             // Si ya llegó al máximo, no permitir más
             if (currentCount >= maxCount) return false;
-            
-            // Validar mínimos por posición
-            if (targetPosition === 'DF') {
-                const dfCount = lineup.DF.filter(p => p !== null).length;
-                if (dfCount >= POSITIONS.DF.max) return false;
-            }
-            if (targetPosition === 'FW') {
-                const fwCount = lineup.FW.filter(p => p !== null).length;
-                if (fwCount >= POSITIONS.FW.max) return false;
-            }
         }
         
         return true;
@@ -233,8 +224,17 @@ function selectPlayer(player) {
     
     // Validar que el jugador pueda jugar en esa posición
     if (position !== 'SUB' && player.position !== position) {
-        alert(`Este jugador es ${player.position} y no puede jugar como ${position}`);
+        showTemporaryMessage(`❌ Este jugador es ${player.position} y no puede jugar como ${position}`, 'error');
         return;
+    }
+    
+    // Validar mínimos y máximos antes de asignar
+    if (position !== 'SUB') {
+        const validationError = validatePositionAssignment(position, player);
+        if (validationError) {
+            showTemporaryMessage(validationError, 'error');
+            return;
+        }
     }
     
     // Asignar jugador
@@ -254,6 +254,127 @@ function selectPlayer(player) {
     
     // Cerrar panel
     closePanel();
+    
+    // Mostrar estado actual del equipo
+    showTeamStatus();
+}
+
+// Validar asignación de posición
+function validatePositionAssignment(position, player) {
+    const currentCount = lineup[position].filter(p => p !== null).length;
+    const newCount = currentCount + 1; // Contando el que vamos a asignar
+    
+    // Verificar máximos
+    if (newCount > POSITIONS[position].max) {
+        return `❌ No puedes tener más de ${POSITIONS[position].max} ${position}`;
+    }
+    
+    return null; // No hay error
+}
+
+// Mostrar mensaje temporal (no persistente)
+function showTemporaryMessage(message, type = 'info') {
+    // Remover mensaje anterior si existe
+    const oldMessage = document.querySelector('.temporary-message');
+    if (oldMessage) oldMessage.remove();
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `temporary-message ${type}`;
+    messageDiv.textContent = message;
+    
+    // Estilos para el mensaje temporal
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${type === 'error' ? '#f44336' : '#4CAF50'};
+        color: white;
+        padding: 12px 24px;
+        border-radius: 50px;
+        font-weight: bold;
+        z-index: 2000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        animation: slideDown 0.3s ease;
+        max-width: 90%;
+        text-align: center;
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // Eliminar después de 2 segundos
+    setTimeout(() => {
+        if (messageDiv.parentNode) {
+            messageDiv.style.animation = 'slideUp 0.3s ease';
+            setTimeout(() => messageDiv.remove(), 300);
+        }
+    }, 2000);
+}
+
+// Mostrar estado actual del equipo
+function showTeamStatus() {
+    // Remover mensaje de estado anterior
+    const oldStatus = document.querySelector('.team-status');
+    if (oldStatus) oldStatus.remove();
+    
+    // Calcular estadísticas
+    const startersCount = Object.values(lineup).flat().filter(p => p !== null).length;
+    const subsCount = substitutes.filter(p => p !== null).length;
+    const totalPlayers = startersCount + subsCount;
+    
+    // Verificar mínimos requeridos
+    const dfCount = lineup.DF.filter(p => p !== null).length;
+    const fwCount = lineup.FW.filter(p => p !== null).length;
+    const gkCount = lineup.GK.filter(p => p !== null).length;
+    
+    const missingDF = Math.max(0, POSITIONS.DF.min - dfCount);
+    const missingFW = Math.max(0, POSITIONS.FW.min - fwCount);
+    const missingGK = Math.max(0, POSITIONS.GK.min - gkCount);
+    
+    const totalMissing = missingDF + missingFW + missingGK;
+    
+    // Crear mensaje de estado
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'team-status';
+    
+    let statusMessage = '';
+    let statusColor = '#ff9800'; // Naranja por defecto
+    
+    if (startersCount === 0 && subsCount === 0) {
+        statusMessage = '👆 Comienza seleccionando jugadores';
+        statusColor = '#2196F3'; // Azul
+    } else if (totalMissing > 0) {
+        statusMessage = `⚠️ Faltan: ${missingGK ? '1 POR ' : ''}${missingDF ? missingDF + ' DF ' : ''}${missingFW ? missingFW + ' FW' : ''}`;
+        statusColor = '#ff9800'; // Naranja
+    } else if (startersCount >= TOTAL_STARTERS && subsCount === SUBSTITUTES) {
+        statusMessage = '✅ Equipo completo!';
+        statusColor = '#4CAF50'; // Verde
+    } else if (startersCount >= TOTAL_STARTERS) {
+        statusMessage = `⚠️ Faltan ${SUBSTITUTES - subsCount} suplentes`;
+        statusColor = '#ff9800'; // Naranja
+    } else {
+        statusMessage = `📊 Titulares: ${startersCount}/11 | Suplentes: ${subsCount}/5`;
+        statusColor = '#2196F3'; // Azul
+    }
+    
+    statusDiv.style.cssText = `
+        background: ${statusColor};
+        color: white;
+        padding: 12px 16px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 16px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        animation: fadeIn 0.3s ease;
+    `;
+    
+    statusDiv.textContent = statusMessage;
+    
+    // Insertar al principio del container
+    const container = document.querySelector('.container');
+    container.insertBefore(statusDiv, container.firstChild);
 }
 
 // Cerrar panel
@@ -263,71 +384,98 @@ function closePanel() {
     selectedPosition = null;
 }
 
-// Validar lineup completo
-function validateLineup() {
-    const validationDiv = document.createElement('div');
-    validationDiv.className = 'validation-message';
-    
-    // Verificar mínimo de DF
-    const dfCount = lineup.DF.filter(p => p !== null).length;
-    if (dfCount < POSITIONS.DF.min) {
-        validationDiv.textContent = `❌ Faltan ${POSITIONS.DF.min - dfCount} defensores`;
+// Función para resetear el lineup
+function resetLineup() {
+    if (confirm('¿Seguro que quieres reiniciar el equipo?')) {
+        lineup = {
+            GK: Array(POSITIONS.GK.count).fill(null),
+            DF: Array(POSITIONS.DF.count).fill(null),
+            DM: Array(POSITIONS.DM.count).fill(null),
+            MF: Array(POSITIONS.MF.count).fill(null),
+            AM: Array(POSITIONS.AM.count).fill(null),
+            FW: Array(POSITIONS.FW.count).fill(null)
+        };
+        substitutes = Array(SUBSTITUTES).fill(null);
+        
+        // Re-inicializar todo
+        initField();
+        initSubstitutes();
+        closePanel();
+        showTeamStatus();
     }
-    // Verificar mínimo de FW
-    else {
-        const fwCount = lineup.FW.filter(p => p !== null).length;
-        if (fwCount < POSITIONS.FW.min) {
-            validationDiv.textContent = `❌ Faltan ${POSITIONS.FW.min - fwCount} delanteros`;
-        } else {
-            validationDiv.textContent = '✅ Lineup válido';
-            validationDiv.style.background = '#4CAF50';
+}
+
+// Añadir animaciones CSS adicionales
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, 0);
         }
     }
     
-    // Verificar máximos
-    if (lineup.DM.filter(p => p !== null).length > POSITIONS.DM.max) {
-        validationDiv.textContent = '❌ Demasiados mediocentros defensivos';
-        validationDiv.style.background = '#ff9800';
-    }
-    if (lineup.AM.filter(p => p !== null).length > POSITIONS.AM.max) {
-        validationDiv.textContent = '❌ Demasiados mediapuntas';
-        validationDiv.style.background = '#ff9800';
+    @keyframes slideUp {
+        from {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+        to {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+        }
     }
     
-    // Remover mensaje anterior
-    const oldMessage = document.querySelector('.validation-message');
-    if (oldMessage) oldMessage.remove();
-    
-    // Insertar nuevo mensaje
-    const field = document.querySelector('.field');
-    if (field) {
-        field.parentNode.insertBefore(validationDiv, field);
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
+    
+    .temporary-message {
+        font-size: 14px;
+        pointer-events: none;
+    }
+    
+    .team-status {
+        transition: all 0.3s ease;
+    }
+`;
+document.head.appendChild(style);
+
+// Añadir botón de reset al HTML
+function addResetButton() {
+    const container = document.querySelector('.container');
+    const resetBtn = document.createElement('button');
+    resetBtn.textContent = '🔄 Reiniciar Equipo';
+    resetBtn.style.cssText = `
+        background: #f44336;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 50px;
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 20px;
+        cursor: pointer;
+        width: 100%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transition: all 0.3s;
+    `;
+    
+    resetBtn.addEventListener('click', resetLineup);
+    resetBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        resetLineup();
+    });
+    
+    container.insertBefore(resetBtn, container.firstChild);
 }
 
-// Función para resetear el lineup (útil para pruebas)
-function resetLineup() {
-    lineup = {
-        GK: Array(POSITIONS.GK.count).fill(null),
-        DF: Array(POSITIONS.DF.count).fill(null),
-        DM: Array(POSITIONS.DM.count).fill(null),
-        MF: Array(POSITIONS.MF.count).fill(null),
-        AM: Array(POSITIONS.AM.count).fill(null),
-        FW: Array(POSITIONS.FW.count).fill(null)
-    };
-    substitutes = Array(SUBSTITUTES).fill(null);
-    
-    // Re-inicializar todo
-    initField();
-    initSubstitutes();
-    closePanel();
-}
-
-// Función para exportar lineup (útil para guardar)
-function exportLineup() {
-    return {
-        lineup: lineup,
-        substitutes: substitutes,
-        timestamp: new Date().toISOString()
-    };
-}
+// Llamar a la función después de que cargue el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    addResetButton();
+});

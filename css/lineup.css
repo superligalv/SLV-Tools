@@ -309,3 +309,53 @@ h1 {
         font-size: 20px;
     }
 }
+
+/* Añadir al final del archivo styles.css */
+
+/* Estilo para el botón de reinicio */
+.reset-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.reset-btn:active {
+    transform: scale(0.98);
+    background: #d32f2f;
+}
+
+/* Mejoras para el estado del equipo */
+.team-status {
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+/* Mejoras para los mensajes temporales */
+.temporary-message {
+    font-size: 14px;
+    pointer-events: none;
+    text-align: center;
+    word-break: break-word;
+    z-index: 2000;
+}
+
+/* Asegurar que los botones sean táctiles */
+.position, .sub-position, .player-item, .close-btn, .reset-btn {
+    min-height: 44px; /* Altura mínima recomendada para táctil */
+    -webkit-tap-highlight-color: transparent;
+}
+
+.position:active, .sub-position:active, .player-item:active {
+    opacity: 0.7;
+}
