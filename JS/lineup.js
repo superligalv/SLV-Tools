@@ -157,7 +157,19 @@ function procesarArchivoJugadores(txt) {
     // Procesar cabeceras (pueden tener espacios variables)
     const headers = headersLine.trim().split(/\s+/);
     
-    allPlayers = dataLines.map(line => {
+    // Mapear índices de columnas importantes
+    const nameIndex = headers.indexOf('Name');
+    const injIndex = headers.indexOf('Inj');
+    const susIndex = headers.indexOf('Sus');
+    const fitIndex = headers.indexOf('Fit');
+    
+    console.log('Índices - Name:', nameIndex, 'Inj:', injIndex, 'Sus:', susIndex, 'Fit:', fitIndex);
+    
+    // Filtrar y procesar jugadores
+    const jugadoresProcesados = [];
+    const jugadoresDescartados = [];
+    
+    dataLines.forEach((line, lineNum) => {
         const values = line.trim().split(/\s+/);
         const jugador = {};
         
@@ -166,23 +178,55 @@ function procesarArchivoJugadores(txt) {
             jugador[h] = values[i] || '';
         });
         
+        // Verificar si está lesionado o sancionado
+        const inj = parseInt(jugador.Inj, 10) || 0;
+        const sus = parseInt(jugador.Sus, 10) || 0;
+        
+        if (inj > 0 || sus > 0) {
+            // Jugador no disponible - lo guardamos para estadísticas
+            jugadoresDescartados.push({
+                nombre: jugador.Name || 'Desconocido',
+                inj: inj,
+                sus: sus,
+                razon: inj > 0 && sus > 0 ? 'Lesionado y Sancionado' : (inj > 0 ? 'Lesionado' : 'Sancionado')
+            });
+            return; // No lo incluimos en la lista
+        }
+        
         // Añadir posición calculada
         jugador.posicionCalculada = determinarPosicion(jugador);
         
         // El fit es el último valor numérico (después de Fit)
-        // En el ejemplo, Fit está al final
         jugador.Fit = parseInt(jugador.Fit, 10) || 100;
         
         // Asegurar que tenemos un ID único
         jugador.id = jugador.Name || `player_${Math.random().toString(36).substr(2, 9)}`;
         
-        return jugador;
+        jugadoresProcesados.push(jugador);
     });
 
+    allPlayers = jugadoresProcesados;
+
     console.log('Jugadores cargados:', allPlayers.length);
-    console.log('Primer jugador:', allPlayers[0]);
+    console.log('Jugadores descartados (lesionados/sancionados):', jugadoresDescartados.length);
     
-    showTemporaryMessage(`✅ ${allPlayers.length} jugadores cargados`, 'success');
+    if (jugadoresDescartados.length > 0) {
+        console.log('Jugadores no disponibles:', jugadoresDescartados);
+        
+        // Mostrar mensaje con los jugadores descartados
+        let mensaje = `✅ ${allPlayers.length} jugadores disponibles. `;
+        mensaje += `❌ ${jugadoresDescartados.length} no disponibles`;
+        
+        if (jugadoresDescartados.length <= 3) {
+            // Si son pocos, mostramos sus nombres
+            const nombres = jugadoresDescartados.map(j => j.nombre).join(', ');
+            mensaje += `: ${nombres}`;
+        }
+        
+        showTemporaryMessage(mensaje, 'warning');
+    } else {
+        showTemporaryMessage(`✅ ${allPlayers.length} jugadores disponibles`, 'success');
+    }
     
     // Mostrar estado inicial
     showTeamStatus();
