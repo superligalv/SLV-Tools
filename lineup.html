@@ -1,52 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Generador de Alineación</title>
-  <link rel="stylesheet" href="./css/lineup.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Lineup Creator - Fútbol</title>
+    <link rel="stylesheet" href="./css/lineup.css">
 </head>
 <body>
-<h1 id="teamName">
-    <img id="teamLogo" src="" alt="" style="height:40px; vertical-align:middle; margin-right:10px;">
-    <span id="teamNameText">Cargando...</span>
-  </h1>
- <div class="editor">
+    <div class="container">
+        <h1>⚽ Lineup Creator ⚽</h1>
 
-<div class="panel players">
-<h3>Jugadores disponibles</h3>
-<div id="playersList"></div>
-</div>
+        <!-- Campo de juego -->
+        <div class="field" id="field">
+            <!-- Las posiciones se generarán dinámicamente -->
+        </div>
 
-<div class="panel pitch-panel">
-<div id="pitch">
+        <!-- Suplentes -->
+        <div class="substitutes">
+            <h3>🔄 Suplentes</h3>
+            <div class="subs-grid" id="substitutes"></div>
+        </div>
 
-<div class="slot" data-pos="GK"></div>
+        <!-- Panel de jugadores -->
+        <div class="overlay" id="overlay"></div>
+        <div class="players-panel" id="playersPanel">
+            <div class="panel-header">
+                <h3 id="panelTitle">Seleccionar jugador</h3>
+                <button class="close-btn" id="closePanel">✕</button>
+            </div>
+            <div class="players-list" id="playersList"></div>
+        </div>
+    </div>
 
-<div class="slot" data-pos="DF"></div>
-<div class="slot" data-pos="DF"></div>
-<div class="slot" data-pos="DF"></div>
-<div class="slot" data-pos="DF"></div>
-
-<div class="slot" data-pos="DM"></div>
-
-<div class="slot" data-pos="MF"></div>
-<div class="slot" data-pos="MF"></div>
-
-<div class="slot" data-pos="AM"></div>
-
-<div class="slot" data-pos="FW"></div>
-<div class="slot" data-pos="FW"></div>
-
-</div>
-</div>
-
-<div class="panel lineup">
-<h3>Alineación</h3>
-<textarea id="lineupText"></textarea>
-</div>
-
-</div>
-
-  <script src="./JS/lineup.js"></script>
+    <script src="./JS/lineup.js"></script>
 </body>
 </html>

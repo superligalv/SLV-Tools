@@ -1,272 +1,333 @@
-// ===============================
-// FUNCIÓN PARA OBTENER PARÁMETROS DE URL
-// ===============================
-function getQueryParam(param) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(param);
-}
-
-// ===============================
-// FUNCIÓN POSICIÓN (¡NECESARIA!)
-// ===============================
-function posicion(jugador) {
-  const St = parseInt(jugador.St, 10) || 0;
-  const Tk = parseInt(jugador.Tk, 10) || 0;
-  const Ps = parseInt(jugador.Ps, 10) || 0;
-  const Sh = parseInt(jugador.Sh, 10) || 0;
-  
-  const maxValor = Math.max(St, Tk, Ps, Sh);
-  
-  if (maxValor === St) return "GK";
-  if (maxValor === Tk) return "DF";
-  if (maxValor === Sh) return "FW";
-  
-  if (Tk > Sh && Tk >= 9) return "DM";
-  if (Sh > Tk && Sh >= 9) return "AM";
-  
-  return "MF";
-}
-
-// ===============================
-// CONFIGURACIÓN DE LÍMITES
-// ===============================
-const teamId = getQueryParam('id');
-
-const limits = {
-  GK: { min: 1, max: 1 },
-  DF: { min: 2, max: 7 },
-  DM: { min: 0, max: 3 },
-  MF: { min: 0, max: 6 },
-  AM: { min: 0, max: 3 },
-  FW: { min: 1, max: 5 },
-  BENCH: { min: 0, max: 5 }
+// Configuración de posiciones
+const POSITIONS = {
+    GK: { label: 'GK', min: 1, max: 1, count: 1 },
+    DF: { label: 'DF', min: 2, max: 7, count: 7 },
+    DM: { label: 'DM', min: 0, max: 3, count: 3 },
+    MF: { label: 'MF', min: 0, max: 6, count: 6 },
+    AM: { label: 'AM', min: 0, max: 3, count: 3 },
+    FW: { label: 'FW', min: 1, max: 5, count: 5 }
 };
 
-const MAX_STARTERS = 11;
+const SUBSTITUTES = 5;
 
-// ===============================
-// VARIABLES (se inicializarán después)
-// ===============================
-let players = [];
-let zones = [];
-let playersPanel = null;
-let playersContainer = null;
-let draggedPlayer = null;
+// Datos de ejemplo
+const PLAYERS = [
+    { id: 1, name: 'Courtois', position: 'GK' },
+    { id: 2, name: 'Ter Stegen', position: 'GK' },
+    { id: 3, name: 'Carvajal', position: 'DF' },
+    { id: 4, name: 'Alaba', position: 'DF' },
+    { id: 5, name: 'Militao', position: 'DF' },
+    { id: 6, name: 'Mendy', position: 'DF' },
+    { id: 7, name: 'Rüdiger', position: 'DF' },
+    { id: 8, name: 'Casemiro', position: 'DM' },
+    { id: 9, name: 'Modric', position: 'MF' },
+    { id: 10, name: 'Kroos', position: 'MF' },
+    { id: 11, name: 'Valverde', position: 'MF' },
+    { id: 12, name: 'Bellingham', position: 'AM' },
+    { id: 13, name: 'Müller', position: 'AM' },
+    { id: 14, name: 'Vinicius', position: 'FW' },
+    { id: 15, name: 'Rodrygo', position: 'FW' },
+    { id: 16, name: 'Benzema', position: 'FW' },
+    { id: 17, name: 'Haaland', position: 'FW' },
+    { id: 18, name: 'Mbappé', position: 'FW' },
+    { id: 19, name: 'Pedri', position: 'MF' },
+    { id: 20, name: 'Gavi', position: 'MF' },
+    { id: 21, name: 'De Bruyne', position: 'AM' },
+    { id: 22, name: 'Kimmich', position: 'DM' },
+    { id: 23, name: 'Goretzka', position: 'DM' }
+];
 
-// Elementos del DOM
-const teamNameEl = document.getElementById('teamName');
-const teamNameTextEl = document.getElementById('teamNameText');
-const teamLogoEl = document.getElementById('teamLogo');
+// Estado de la aplicación
+let selectedPosition = null;
+let lineup = {
+    GK: Array(POSITIONS.GK.count).fill(null),
+    DF: Array(POSITIONS.DF.count).fill(null),
+    DM: Array(POSITIONS.DM.count).fill(null),
+    MF: Array(POSITIONS.MF.count).fill(null),
+    AM: Array(POSITIONS.AM.count).fill(null),
+    FW: Array(POSITIONS.FW.count).fill(null)
+};
+let substitutes = Array(SUBSTITUTES).fill(null);
 
-// ===============================
-// INICIALIZAR CUANDO EL DOM ESTÉ LISTO
-// ===============================
-document.addEventListener('DOMContentLoaded', function() {
-  // Obtener referencias a elementos del DOM
-  zones = document.querySelectorAll(".zone");
-  playersPanel = document.querySelector(".players-panel");
-  playersContainer = document.getElementById('players-container');
-  
-  // Inicializar drag and drop para zonas (sin jugadores aún)
-  initDropZones();
-  
-  // Cargar equipo
-  cargarEquipo();
+// Inicializar la aplicación
+document.addEventListener('DOMContentLoaded', () => {
+    initField();
+    initSubstitutes();
+    initEventListeners();
+    
+    // Actualizar validación cada vez que cambia el lineup
+    setInterval(validateLineup, 500);
 });
 
-// ===============================
-// INICIALIZAR ZONAS DE DROP
-// ===============================
-function initDropZones() {
-  zones.forEach(zone => {
-    zone.addEventListener("dragover", e => {
-      e.preventDefault(); // OBLIGATORIO
-    });
-
-    zone.addEventListener("drop", e => {
-      e.preventDefault();
-      if (!draggedPlayer) return;
-
-      if (!canDrop(zone)) {
-        alert("No permitido por límites de formación");
-        return;
-      }
-
-      zone.appendChild(draggedPlayer);
-      draggedPlayer = null;
-    });
-  });
-
-  if (playersPanel) {
-    playersPanel.addEventListener("dragover", e => {
-      e.preventDefault();
-    });
-
-    playersPanel.addEventListener("drop", e => {
-      e.preventDefault();
-      if (!draggedPlayer) return;
-
-      // Si hay contenedor específico, usar ese
-      if (playersContainer) {
-        playersContainer.appendChild(draggedPlayer);
-      } else {
-        playersPanel.appendChild(draggedPlayer);
-      }
-      draggedPlayer = null;
-    });
-  }
+// Inicializar event listeners
+function initEventListeners() {
+    document.getElementById('overlay').addEventListener('click', closePanel);
+    document.getElementById('closePanel').addEventListener('click', closePanel);
 }
 
-// ===============================
-// FUNCIONES AUXILIARES
-// ===============================
-function getZonePlayers(zoneElement) {
-  return zoneElement.querySelectorAll(".player").length;
+// Inicializar el campo
+function initField() {
+    const field = document.getElementById('field');
+    field.innerHTML = '';
+
+    // Generar filas por cada posición
+    for (const [pos, config] of Object.entries(POSITIONS)) {
+        const row = document.createElement('div');
+        row.className = `field-row ${pos.toLowerCase()}-row`;
+        
+        for (let i = 0; i < config.count; i++) {
+            const positionDiv = createPositionElement(pos, i);
+            row.appendChild(positionDiv);
+        }
+        
+        field.appendChild(row);
+    }
 }
 
-function getTotalStarters() {
-  return document.querySelectorAll(".field .zone:not(.bench) .player").length;
-}
-
-function canDrop(zoneElement) {
-  const zoneName = zoneElement.dataset.zone;
-  const currentCount = getZonePlayers(zoneElement);
-
-  if (!draggedPlayer) return false;
-
-  // Si es suplente
-  if (zoneName === "BENCH") {
-    return currentCount < limits.BENCH.max;
-  }
-
-  // Verificar total titulares
-  const totalStarters = getTotalStarters();
-  const isAlreadyStarter = draggedPlayer.closest(".field");
-
-  if (!isAlreadyStarter && totalStarters >= MAX_STARTERS) {
-    alert("Ya tienes 11 titulares");
-    return false;
-  }
-
-  // Verificar máximo por posición
-  if (currentCount >= limits[zoneName]?.max) {
-    alert(`Máximo ${limits[zoneName].max} en ${zoneName}`);
-    return false;
-  }
-
-  return true;
-}
-
-// ===============================
-// RENDERIZAR JUGADORES EN EL PANEL
-// ===============================
-function renderizarJugadoresPanel(jugadores, containerEl) {
-  if (!containerEl) {
-    console.error('Container element not found');
-    return;
-  }
-  
-  containerEl.innerHTML = "";
-  
-  jugadores.forEach(j => {
-    const pos = posicion(j).toLowerCase();
-    // Buscar el nombre (ajusta según tus datos)
-	console.log(j);
-    const nombre = j.Name;
-    
+// Crear elemento de posición
+function createPositionElement(position, index) {
     const div = document.createElement('div');
-    div.className = `player ${pos}`;
-    div.draggable = true;
-    div.textContent = nombre;
-    div.setAttribute('data-role', pos.toUpperCase());
+    div.className = `position empty`;
+    div.dataset.position = position;
+    div.dataset.index = index;
     
-    // Guardar datos completos como atributo (opcional)
-    div.setAttribute('data-st', j.St || 0);
-    div.setAttribute('data-tk', j.Tk || 0);
-    div.setAttribute('data-ps', j.Ps || 0);
-    div.setAttribute('data-sh', j.Sh || 0);
+    updatePositionDisplay(div, position, index);
     
-    containerEl.appendChild(div);
-  });
-  
-  // Reinicializar drag start para los nuevos jugadores
-  initPlayerDrag();
-  console.log(`Renderizados ${jugadores.length} jugadores`);
+    div.addEventListener('click', () => openPlayerSelection(position, index));
+    
+    return div;
 }
 
-// ===============================
-// INICIALIZAR DRAG DE JUGADORES
-// ===============================
-function initPlayerDrag() {
-  const playerElements = document.querySelectorAll(".player");
-  playerElements.forEach(player => {
-    player.addEventListener("dragstart", () => {
-      draggedPlayer = player;
-    });
-  });
+// Actualizar display de posición
+function updatePositionDisplay(element, position, index) {
+    const player = lineup[position][index];
+    
+    element.innerHTML = '';
+    
+    if (player) {
+        element.className = 'position filled';
+        element.innerHTML = `
+            <span class="pos-label">${position}</span>
+            <span class="player-name">${player.name}</span>
+            <span class="number">#${index + 1}</span>
+        `;
+    } else {
+        element.className = 'position empty';
+        element.innerHTML = `
+            <span class="pos-label">${position}</span>
+            <span class="player-name">Vacante</span>
+            <span class="number">#${index + 1}</span>
+        `;
+    }
 }
 
-// ===============================
-// CARGA DE EQUIPO Y JUGADORES
-// ===============================
-function cargarEquipo() {
-  if (!teamId) {
-    if (teamNameTextEl) teamNameTextEl.textContent = "Equipo no especificado";
-    return;
-  }
+// Inicializar suplentes
+function initSubstitutes() {
+    const subsContainer = document.getElementById('substitutes');
+    subsContainer.innerHTML = '';
+    
+    for (let i = 0; i < SUBSTITUTES; i++) {
+        const subDiv = document.createElement('div');
+        subDiv.className = `sub-position ${substitutes[i] ? 'filled' : ''}`;
+        subDiv.dataset.subIndex = i;
+        
+        if (substitutes[i]) {
+            subDiv.textContent = substitutes[i].name;
+        } else {
+            subDiv.textContent = `SUP ${i + 1}`;
+        }
+        
+        subDiv.addEventListener('click', () => openPlayerSelection('SUB', i));
+        subsContainer.appendChild(subDiv);
+    }
+}
 
-  fetch('./JS/teams.json')
-    .then(res => {
-      if (!res.ok) throw new Error('Error cargando teams.json');
-      return res.json();
-    })
-    .then(equipos => {
-      const team = equipos.find(e => e.id === teamId.toLowerCase());
-      if (!team) throw new Error('Equipo no encontrado');
+// Abrir panel de selección de jugadores
+function openPlayerSelection(position, index) {
+    selectedPosition = { position, index };
+    
+    const panel = document.getElementById('playersPanel');
+    const overlay = document.getElementById('overlay');
+    const title = document.getElementById('panelTitle');
+    
+    title.textContent = `Seleccionar jugador para ${position}${index !== undefined ? ' #' + (index + 1) : ''}`;
+    
+    // Filtrar jugadores disponibles
+    const availablePlayers = getAvailablePlayers(position);
+    displayPlayersList(availablePlayers);
+    
+    panel.classList.add('active');
+    overlay.classList.add('active');
+}
 
-      // Nombre del equipo
-      if (teamNameTextEl) teamNameTextEl.textContent = team.team;
-
-      // Logo del equipo
-      if (teamLogoEl) {
-        teamLogoEl.src = `./images/flags/headerRund/${team.id}.png`;
-        teamLogoEl.alt = team.team;
-      }
-
-      return fetch(team.dropbox_dir);
-    })
-    .then(resp => {
-      if (!resp.ok) throw new Error('Error cargando TXT');
-      return resp.text();
-    })
-    .then(txt => {
-      const lines = txt.trim().split('\n');
-      const sep = lines.findIndex(l => l.includes('---'));
-      const headersLine = sep >= 0 ? lines[0] : lines[0];
-      const dataLines = sep >= 0 ? lines.slice(sep + 1) : lines.slice(1);
-      const headers = headersLine.trim().split(/\s+/);
-
-      const jugadores = dataLines
-        .filter(l => l.trim() !== '')
-        .map(line => {
-          const values = line.trim().split(/\s+/);
-          const j = {};
-          headers.forEach((h, i) => j[h] = values[i] || '');
-          return j;
+// Obtener jugadores disponibles
+function getAvailablePlayers(targetPosition) {
+    const usedPlayers = new Set();
+    
+    // Recoger jugadores ya usados
+    Object.values(lineup).forEach(posArray => {
+        posArray.forEach(player => {
+            if (player) usedPlayers.add(player.id);
         });
-
-      // Renderizar jugadores en el panel
-      if (playersContainer) {
-        renderizarJugadoresPanel(jugadores, playersContainer);
-      } else {
-        console.error('No se encontró players-container');
-      }
-
-      // Aquí puedes llamar a otras funciones como crearTabla, etc.
-      console.log('Jugadores cargados:', jugadores.length);
-    })
-    .catch(err => {
-      console.error('Error:', err);
-      if (teamNameTextEl) teamNameTextEl.textContent = "Error cargando equipo";
     });
+    
+    substitutes.forEach(player => {
+        if (player) usedPlayers.add(player.id);
+    });
+    
+    // Filtrar jugadores disponibles
+    return PLAYERS.filter(player => {
+        if (usedPlayers.has(player.id)) return false;
+        
+        // Validar límites por posición
+        if (targetPosition !== 'SUB') {
+            const currentCount = lineup[targetPosition].filter(p => p !== null).length;
+            const maxCount = POSITIONS[targetPosition].max;
+            
+            // Si ya llegó al máximo, no permitir más
+            if (currentCount >= maxCount) return false;
+            
+            // Validar mínimos por posición
+            if (targetPosition === 'DF') {
+                const dfCount = lineup.DF.filter(p => p !== null).length;
+                if (dfCount >= POSITIONS.DF.max) return false;
+            }
+            if (targetPosition === 'FW') {
+                const fwCount = lineup.FW.filter(p => p !== null).length;
+                if (fwCount >= POSITIONS.FW.max) return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
+// Mostrar lista de jugadores
+function displayPlayersList(players) {
+    const list = document.getElementById('playersList');
+    list.innerHTML = '';
+    
+    if (players.length === 0) {
+        list.innerHTML = '<div class="player-item" style="justify-content: center;">No hay jugadores disponibles</div>';
+        return;
+    }
+    
+    players.forEach(player => {
+        const div = document.createElement('div');
+        div.className = 'player-item';
+        div.innerHTML = `
+            <span class="player-name">${player.name}</span>
+            <span class="player-pos">${player.position}</span>
+        `;
+        
+        div.addEventListener('click', () => selectPlayer(player));
+        list.appendChild(div);
+    });
+}
+
+// Seleccionar jugador
+function selectPlayer(player) {
+    if (!selectedPosition) return;
+    
+    const { position, index } = selectedPosition;
+    
+    // Validar que el jugador pueda jugar en esa posición
+    if (position !== 'SUB' && player.position !== position) {
+        alert(`Este jugador es ${player.position} y no puede jugar como ${position}`);
+        return;
+    }
+    
+    // Asignar jugador
+    if (position === 'SUB') {
+        substitutes[index] = player;
+    } else {
+        lineup[position][index] = player;
+        updatePositionDisplay(
+            document.querySelector(`[data-position="${position}"][data-index="${index}"]`),
+            position,
+            index
+        );
+    }
+    
+    // Actualizar suplentes
+    initSubstitutes();
+    
+    // Cerrar panel
+    closePanel();
+}
+
+// Cerrar panel
+function closePanel() {
+    document.getElementById('playersPanel').classList.remove('active');
+    document.getElementById('overlay').classList.remove('active');
+    selectedPosition = null;
+}
+
+// Validar lineup completo
+function validateLineup() {
+    const validationDiv = document.createElement('div');
+    validationDiv.className = 'validation-message';
+    
+    // Verificar mínimo de DF
+    const dfCount = lineup.DF.filter(p => p !== null).length;
+    if (dfCount < POSITIONS.DF.min) {
+        validationDiv.textContent = `❌ Faltan ${POSITIONS.DF.min - dfCount} defensores`;
+    }
+    // Verificar mínimo de FW
+    else {
+        const fwCount = lineup.FW.filter(p => p !== null).length;
+        if (fwCount < POSITIONS.FW.min) {
+            validationDiv.textContent = `❌ Faltan ${POSITIONS.FW.min - fwCount} delanteros`;
+        } else {
+            validationDiv.textContent = '✅ Lineup válido';
+            validationDiv.style.background = '#4CAF50';
+        }
+    }
+    
+    // Verificar máximos
+    if (lineup.DM.filter(p => p !== null).length > POSITIONS.DM.max) {
+        validationDiv.textContent = '❌ Demasiados mediocentros defensivos';
+        validationDiv.style.background = '#ff9800';
+    }
+    if (lineup.AM.filter(p => p !== null).length > POSITIONS.AM.max) {
+        validationDiv.textContent = '❌ Demasiados mediapuntas';
+        validationDiv.style.background = '#ff9800';
+    }
+    
+    // Remover mensaje anterior
+    const oldMessage = document.querySelector('.validation-message');
+    if (oldMessage) oldMessage.remove();
+    
+    // Insertar nuevo mensaje
+    const field = document.querySelector('.field');
+    if (field) {
+        field.parentNode.insertBefore(validationDiv, field);
+    }
+}
+
+// Función para resetear el lineup (útil para pruebas)
+function resetLineup() {
+    lineup = {
+        GK: Array(POSITIONS.GK.count).fill(null),
+        DF: Array(POSITIONS.DF.count).fill(null),
+        DM: Array(POSITIONS.DM.count).fill(null),
+        MF: Array(POSITIONS.MF.count).fill(null),
+        AM: Array(POSITIONS.AM.count).fill(null),
+        FW: Array(POSITIONS.FW.count).fill(null)
+    };
+    substitutes = Array(SUBSTITUTES).fill(null);
+    
+    // Re-inicializar todo
+    initField();
+    initSubstitutes();
+    closePanel();
+}
+
+// Función para exportar lineup (útil para guardar)
+function exportLineup() {
+    return {
+        lineup: lineup,
+        substitutes: substitutes,
+        timestamp: new Date().toISOString()
+    };
 }
