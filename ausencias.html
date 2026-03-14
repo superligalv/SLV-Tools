@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrar ausencia</title>
+
+<link rel="stylesheet" href="./css/main.css">
+<link rel="stylesheet" href="./css/sendSht.css">
+
+</head>
+
+<body>
+
+<h1 id="teamName">
+  <img id="teamLogo" src="" alt="" style="height:40px; vertical-align:middle; margin-right:10px;">
+  <span id="teamNameText">Registrar ausencia</span>
+</h1>
+
+<details open>
+
+<summary>Ausencia</summary>
+
+<section style="margin-top:15px;">
+
+<select id="teamsDropdown">
+<option value="">-- Selecciona un equipo --</option>
+</select>
+
+<p>Fecha fin de ausencia</p>
+
+<input type="date" id="fechaAusencia">
+
+<div style="margin-top:15px;">
+<button id="btnEnviar">REGISTRAR AUSENCIA</button>
+</div>
+
+<h2>Ausencias registradas</h2>
+
+<table id="tablaAusencias" border="1" style="margin-top:10px;border-collapse:collapse;">
+<thead>
+<tr>
+<th>Equipo</th>
+<th>Ausente hasta</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<div id="spinner" style="display:none;margin-top:10px;">
+🔄 Enviando ausencia...
+</div>
+
+</section>
+
+<section id="resultado" style="margin-top:15px;"></section>
+
+</details>
+
+
+<!-- MODAL PIN -->
+
+<div id="pinModal" class="modal">
+<div class="modal-content">
+
+<h3>🔐 Introduce el PIN</h3>
+
+<input type="password" id="teamPin" placeholder="PIN del equipo">
+
+<div class="modal-buttons">
+<button id="confirmPin">Confirmar</button>
+<button id="cancelPin">Cancelar</button>
+</div>
+
+<div id="pinError"></div>
+
+</div>
+</div>
+
+
+<script type="module">
+
+const dropdown = document.getElementById("teamsDropdown");
+const btnEnviar = document.getElementById("btnEnviar");
+const spinner = document.getElementById("spinner");
+const resultado = document.getElementById("resultado");
+
+const modal = document.getElementById("pinModal");
+const confirmPin = document.getElementById("confirmPin");
+const cancelPin = document.getElementById("cancelPin");
+const pinError = document.getElementById("pinError");
+
+let equiposData = [];
+let pinActual = "";
+
+
+/* =========================
+   CARGAR EQUIPOS
+========================= */
+
+fetch('./JS/teams.json')
+.then(response => response.json())
+.then(equipos => {
+
+equiposData = equipos;
+
+equipos.forEach(e => {
+
+const option = document.createElement("option");
+option.value = e.id;
+option.textContent = e.team;
+
+dropdown.appendChild(option);
+
+});
+
+});
+
+
+/* =========================
+   ABRIR MODAL PIN
+========================= */
+
+btnEnviar.addEventListener("click", () => {
+
+const equipo = dropdown.value;
+const fecha = document.getElementById("fechaAusencia").value;
+
+if(!equipo){
+alert("Selecciona un equipo");
+return;
+}
+
+if(!fecha){
+alert("Selecciona la fecha de fin de ausencia");
+return;
+}
+
+document.getElementById("teamPin").value = "";
+modal.style.display = "flex";
+
+});
+
+
+/* =========================
+   CANCELAR PIN
+========================= */
+
+cancelPin.onclick = () => {
+
+modal.style.display = "none";
+pinError.innerText = "";
+
+};
+
+
+/* =========================
+   CONFIRMAR PIN
+========================= */
+
+confirmPin.onclick = () => {
+
+const pinInput = document.getElementById("teamPin").value.trim();
+
+if(!pinInput){
+pinError.innerText = "Introduce el PIN";
+return;
+}
+
+pinActual = pinInput;
+
+modal.style.display = "none";
+pinError.innerText = "";
+
+enviarAusencia();
+
+};
+
+
+/* =========================
+   ENVIAR A API
+========================= */
+
+async function enviarAusencia(){
+
+const equipo = dropdown.value;
+const fecha = document.getElementById("fechaAusencia").value;
+
+spinner.style.display = "block";
+resultado.innerHTML = "";
+
+const formData = new FormData();
+formData.append("equipo", equipo);
+formData.append("fecha", fecha);
+formData.append("pin", pinActual);
+
+try{
+
+const response = await fetch("https://superligalv.duckdns.org/api/ausencia",{
+method:"POST",
+body:formData
+});
+
+const data = await response.json();
+
+if(response.ok){
+
+resultado.innerHTML = `
+<div style="color:green;">
+✔ Ausencia registrada correctamente
+</div>
+`;
+
+}else{
+
+resultado.innerHTML = `
+<span style="color:red;">❌ ${data.error || "Error desconocido"}</span>
+`;
+
+}
+
+}catch(error){
+
+resultado.innerHTML = `
+<span style="color:red;">❌ Error de conexión con la API</span>
+`;
+
+}
+
+spinner.style.display = "none";
+cargarAusencias();
+}
+
+async function cargarAusencias(){
+
+  try{
+
+    const response = await fetch("https://superligalv.duckdns.org/api/ausencias")
+
+    const data = await response.json()
+
+    const tbody = document.querySelector("#tablaAusencias tbody")
+
+    tbody.innerHTML = ""
+
+    data.forEach(a => {
+
+      const tr = document.createElement("tr")
+
+      const tdEquipo = document.createElement("td")
+      tdEquipo.textContent = a.equipo
+
+      const tdFecha = document.createElement("td")
+      tdFecha.textContent = a.fecha
+
+      tr.appendChild(tdEquipo)
+      tr.appendChild(tdFecha)
+
+      tbody.appendChild(tr)
+
+    })
+
+  }catch(e){
+
+    console.error("Error cargando ausencias", e)
+
+  }
+
+}
+cargarAusencias();
+</script>
+
+</body>
+</html>
