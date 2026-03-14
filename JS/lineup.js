@@ -58,40 +58,14 @@ function determinarPosicion(jugador) {
 }
 
 // ===============================
-// CALCULAR FIT DEL JUGADOR PARA UNA POSICIÓN
-// ===============================
-function calcularFit(jugador, posicion) {
-    const St = parseInt(jugador.St, 10) || 0;
-    const Tk = parseInt(jugador.Tk, 10) || 0;
-    const Ps = parseInt(jugador.Ps, 10) || 0;
-    const Sh = parseInt(jugador.Sh, 10) || 0;
-    
-    switch(posicion) {
-        case 'GK':
-            return Math.min(100, Math.round((St / 20) * 100));
-        case 'DF':
-            return Math.min(100, Math.round(((Tk * 1.5 + Ps * 0.5) / 30) * 100));
-        case 'DM':
-            return Math.min(100, Math.round(((Tk + Ps) / 40) * 100));
-        case 'MF':
-            return Math.min(100, Math.round(((Ps * 1.5 + Tk * 0.5 + Sh * 0.5) / 50) * 100));
-        case 'AM':
-            return Math.min(100, Math.round(((Ps + Sh) / 40) * 100));
-        case 'FW':
-            return Math.min(100, Math.round(((Sh * 1.5 + Ps * 0.5) / 30) * 100));
-        default:
-            return 50;
-    }
-}
-
-// ===============================
 // OBTENER COLOR DEL FIT
 // ===============================
 function getFitColor(fit) {
-    if (fit >= 80) return '#4CAF50'; // Verde
-    if (fit >= 60) return '#8BC34A'; // Verde claro
-    if (fit >= 40) return '#FFC107'; // Amarillo
-    if (fit >= 20) return '#FF9800'; // Naranja
+    const fitNum = parseInt(fit, 10) || 0;
+    if (fitNum >= 80) return '#4CAF50'; // Verde
+    if (fitNum >= 60) return '#8BC34A'; // Verde claro
+    if (fitNum >= 40) return '#FFC107'; // Amarillo
+    if (fitNum >= 20) return '#FF9800'; // Naranja
     return '#F44336'; // Rojo
 }
 
@@ -113,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         cargarEquipo();
     } else {
         showTemporaryMessage('❌ No se especificó ID de equipo', 'error');
-        // Cargar datos de ejemplo como fallback
         cargarDatosEjemplo();
     }
 });
@@ -157,41 +130,57 @@ function cargarEquipo() {
         })
         .catch(err => {
             console.error('Error:', err);
-            showTemporaryMessage('❌ Error cargando equipo', 'error');
+            showTemporaryMessage('❌ Error cargando equipo: ' + err.message, 'error');
             cargarDatosEjemplo();
         });
 }
 
 // ===============================
-// PROCESAR ARCHIVO DE JUGADORES
+// PROCESAR ARCHIVO DE JUGADORES (formato TXT con columnas)
 // ===============================
 function procesarArchivoJugadores(txt) {
     const lines = txt.trim().split('\n');
-    const sep = lines.findIndex(l => l.includes('---'));
-    const headersLine = sep >= 0 ? lines[0] : lines[0];
-    const dataLines = sep >= 0 ? lines.slice(sep + 1) : lines.slice(1);
+    
+    // Buscar la línea de separador (---)
+    const sepIndex = lines.findIndex(l => l.includes('---'));
+    
+    if (sepIndex === -1) {
+        console.error('Formato de archivo no válido: no se encontró separador ---');
+        return;
+    }
+    
+    // Las cabeceras están justo antes del separador
+    const headersLine = lines[sepIndex - 1];
+    const dataLines = lines.slice(sepIndex + 1).filter(l => l.trim() !== '');
+    
+    // Procesar cabeceras (pueden tener espacios variables)
     const headers = headersLine.trim().split(/\s+/);
-
-    allPlayers = dataLines
-        .filter(l => l.trim() !== '')
-        .map(line => {
-            const values = line.trim().split(/\s+/);
-            const jugador = {};
-            headers.forEach((h, i) => jugador[h] = values[i] || '');
-            
-            // Añadir posición calculada
-            jugador.posicionCalculada = determinarPosicion(jugador);
-            
-            // Añadir ID único si no tiene
-            jugador.id = jugador.ID || `player_${Math.random().toString(36).substr(2, 9)}`;
-            
-            // Asegurar que Name existe
-            jugador.Name = jugador.Name || `${jugador.posicionCalculada}_${jugador.id}`;
-            
-            return jugador;
+    
+    allPlayers = dataLines.map(line => {
+        const values = line.trim().split(/\s+/);
+        const jugador = {};
+        
+        // Asignar cada valor a su cabecera correspondiente
+        headers.forEach((h, i) => {
+            jugador[h] = values[i] || '';
         });
+        
+        // Añadir posición calculada
+        jugador.posicionCalculada = determinarPosicion(jugador);
+        
+        // El fit es el último valor numérico (después de Fit)
+        // En el ejemplo, Fit está al final
+        jugador.Fit = parseInt(jugador.Fit, 10) || 100;
+        
+        // Asegurar que tenemos un ID único
+        jugador.id = jugador.Name || `player_${Math.random().toString(36).substr(2, 9)}`;
+        
+        return jugador;
+    });
 
     console.log('Jugadores cargados:', allPlayers.length);
+    console.log('Primer jugador:', allPlayers[0]);
+    
     showTemporaryMessage(`✅ ${allPlayers.length} jugadores cargados`, 'success');
     
     // Mostrar estado inicial
@@ -199,22 +188,31 @@ function procesarArchivoJugadores(txt) {
 }
 
 // ===============================
-// CARGAR DATOS DE EJEMPLO (FALLBACK)
+// CARGAR DATOS DE EJEMPLO (basado en el formato real)
 // ===============================
 function cargarDatosEjemplo() {
+    // Simulamos los datos del ejemplo que mostraste
     allPlayers = [
-        { id: 1, Name: 'Courtois', St: '19', Tk: '3', Ps: '5', Sh: '2', posicionCalculada: 'GK' },
-        { id: 2, Name: 'Ter Stegen', St: '18', Tk: '4', Ps: '6', Sh: '3', posicionCalculada: 'GK' },
-        { id: 3, Name: 'Carvajal', St: '2', Tk: '16', Ps: '12', Sh: '5', posicionCalculada: 'DF' },
-        { id: 4, Name: 'Alaba', St: '1', Tk: '15', Ps: '14', Sh: '6', posicionCalculada: 'DF' },
-        { id: 5, Name: 'Militao', St: '2', Tk: '17', Ps: '8', Sh: '4', posicionCalculada: 'DF' },
-        { id: 6, Name: 'Mendy', St: '1', Tk: '16', Ps: '10', Sh: '5', posicionCalculada: 'DF' },
-        { id: 7, Name: 'Casemiro', St: '3', Tk: '17', Ps: '13', Sh: '7', posicionCalculada: 'DM' },
-        { id: 8, Name: 'Modric', St: '2', Tk: '10', Ps: '18', Sh: '12', posicionCalculada: 'MF' },
-        { id: 9, Name: 'Kroos', St: '1', Tk: '8', Ps: '19', Sh: '11', posicionCalculada: 'MF' },
-        { id: 10, Name: 'Bellingham', St: '2', Tk: '12', Ps: '16', Sh: '14', posicionCalculada: 'AM' },
-        { id: 11, Name: 'Vinicius', St: '1', Tk: '5', Ps: '13', Sh: '18', posicionCalculada: 'FW' },
-        { id: 12, Name: 'Benzema', St: '2', Tk: '6', Ps: '15', Sh: '19', posicionCalculada: 'FW' },
+        { Name: 'E_Martinez', Age: '33', Nat: 'arg', St: '20', Tk: '1', Ps: '1', Sh: '1', Ag: '20', Fit: '100', posicionCalculada: 'GK', id: 'E_Martinez' },
+        { Name: 'Mike_Penders', Age: '20', Nat: 'bel', St: '14', Tk: '1', Ps: '1', Sh: '1', Ag: '20', Fit: '100', posicionCalculada: 'GK', id: 'Mike_Penders' },
+        { Name: 'O_Zinchenko', Age: '29', Nat: 'ucr', St: '1', Tk: '16', Ps: '13', Sh: '7', Ag: '20', Fit: '100', posicionCalculada: 'DF', id: 'O_Zinchenko' },
+        { Name: 'D_Carvajal', Age: '34', Nat: 'esp', St: '1', Tk: '16', Ps: '9', Sh: '5', Ag: '20', Fit: '100', posicionCalculada: 'DF', id: 'D_Carvajal' },
+        { Name: 'Danilo', Age: '34', Nat: 'bra', St: '1', Tk: '16', Ps: '8', Sh: '4', Ag: '20', Fit: '91', posicionCalculada: 'DF', id: 'Danilo' },
+        { Name: 'Mauro_Junior', Age: '26', Nat: 'bra', St: '1', Tk: '15', Ps: '9', Sh: '4', Ag: '20', Fit: '100', posicionCalculada: 'DF', id: 'Mauro_Junior' },
+        { Name: 'Yarek', Age: '21', Nat: 'esp', St: '1', Tk: '15', Ps: '7', Sh: '4', Ag: '20', Fit: '96', posicionCalculada: 'DF', id: 'Yarek' },
+        { Name: 'M_De_Sciglio', Age: '33', Nat: 'ita', St: '1', Tk: '15', Ps: '10', Sh: '4', Ag: '20', Fit: '96', posicionCalculada: 'DF', id: 'M_De_Sciglio' },
+        { Name: 'D_Rugani', Age: '31', Nat: 'ita', St: '1', Tk: '15', Ps: '5', Sh: '2', Ag: '20', Fit: '96', posicionCalculada: 'DF', id: 'D_Rugani' },
+        { Name: 'M_Locatelli', Age: '28', Nat: 'ita', St: '1', Tk: '11', Ps: '16', Sh: '1', Ag: '20', Fit: '100', posicionCalculada: 'DM', id: 'M_Locatelli' },
+        { Name: 'S_Magassa', Age: '22', Nat: 'fra', St: '1', Tk: '12', Ps: '15', Sh: '1', Ag: '20', Fit: '96', posicionCalculada: 'DM', id: 'S_Magassa' },
+        { Name: 'D_Szoboszlai', Age: '25', Nat: 'hun', St: '1', Tk: '4', Ps: '16', Sh: '9', Ag: '20', Fit: '91', posicionCalculada: 'AM', id: 'D_Szoboszlai' },
+        { Name: 'Adrien_Rabiot', Age: '30', Nat: 'fra', St: '1', Tk: '7', Ps: '16', Sh: '5', Ag: '20', Fit: '96', posicionCalculada: 'MF', id: 'Adrien_Rabiot' },
+        { Name: 'Fabio_Miretti', Age: '22', Nat: 'ita', St: '1', Tk: '5', Ps: '16', Sh: '6', Ag: '20', Fit: '100', posicionCalculada: 'MF', id: 'Fabio_Miretti' },
+        { Name: 'N_Fagioli', Age: '25', Nat: 'ita', St: '1', Tk: '5', Ps: '14', Sh: '3', Ag: '20', Fit: '100', posicionCalculada: 'MF', id: 'N_Fagioli' },
+        { Name: 'C_Nkunku', Age: '28', Nat: 'fra', St: '1', Tk: '1', Ps: '16', Sh: '11', Ag: '20', Fit: '96', posicionCalculada: 'AM', id: 'C_Nkunku' },
+        { Name: 'Mohamed_Salah', Age: '33', Nat: 'egi', St: '1', Tk: '1', Ps: '12', Sh: '16', Ag: '20', Fit: '96', posicionCalculada: 'FW', id: 'Mohamed_Salah' },
+        { Name: 'M_Rashford', Age: '28', Nat: 'ing', St: '1', Tk: '1', Ps: '11', Sh: '16', Ag: '20', Fit: '100', posicionCalculada: 'FW', id: 'M_Rashford' },
+        { Name: 'Marco_Asensio', Age: '30', Nat: 'esp', St: '1', Tk: '1', Ps: '11', Sh: '16', Ag: '20', Fit: '100', posicionCalculada: 'FW', id: 'Marco_Asensio' },
+        { Name: 'Valery', Age: '26', Nat: 'esp', St: '1', Tk: '1', Ps: '9', Sh: '15', Ag: '20', Fit: '100', posicionCalculada: 'FW', id: 'Valery' }
     ];
     
     showTemporaryMessage('⚠️ Usando datos de ejemplo', 'warning');
@@ -225,8 +223,11 @@ function cargarDatosEjemplo() {
 // INICIALIZAR EVENT LISTENERS
 // ===============================
 function initEventListeners() {
-    document.getElementById('overlay').addEventListener('click', closePanel);
-    document.getElementById('closePanel').addEventListener('click', closePanel);
+    const overlay = document.getElementById('overlay');
+    const closeBtn = document.getElementById('closePanel');
+    
+    if (overlay) overlay.addEventListener('click', closePanel);
+    if (closeBtn) closeBtn.addEventListener('click', closePanel);
 }
 
 // ===============================
@@ -234,6 +235,8 @@ function initEventListeners() {
 // ===============================
 function initField() {
     const field = document.getElementById('field');
+    if (!field) return;
+    
     field.innerHTML = '';
 
     // Generar filas por cada posición
@@ -269,7 +272,7 @@ function createPositionElement(position, index) {
 }
 
 // ===============================
-// ACTUALIZAR DISPLAY DE POSICIÓN
+// ACTUALIZAR DISPLAY DE POSICIÓN (usando el fit del jugador)
 // ===============================
 function updatePositionDisplay(element, position, index) {
     const player = lineup[position][index];
@@ -277,12 +280,12 @@ function updatePositionDisplay(element, position, index) {
     element.innerHTML = '';
     
     if (player) {
-        const fit = calcularFit(player, position);
+        const fit = parseInt(player.Fit, 10) || 0;
         element.className = 'position filled';
         element.innerHTML = `
             <span class="pos-label">${position}</span>
             <span class="player-name">${player.Name || player.name}</span>
-            <span class="fit-indicator" style="background: ${getFitColor(fit)}; width: ${fit}%; height: 3px; margin-top: 4px; border-radius: 2px;"></span>
+            <div class="fit-indicator" style="background: ${getFitColor(fit)}; width: ${fit}%; height: 3px; margin-top: 4px; border-radius: 2px;"></div>
             <span class="number">#${index + 1}</span>
         `;
     } else {
@@ -300,6 +303,8 @@ function updatePositionDisplay(element, position, index) {
 // ===============================
 function initSubstitutes() {
     const subsContainer = document.getElementById('substitutes');
+    if (!subsContainer) return;
+    
     subsContainer.innerHTML = '';
     
     for (let i = 0; i < limits.BENCH.count; i++) {
@@ -309,10 +314,10 @@ function initSubstitutes() {
         
         if (substitutes[i]) {
             const player = substitutes[i];
-            const fit = calcularFit(player, 'BENCH');
+            const fit = parseInt(player.Fit, 10) || 0;
             subDiv.innerHTML = `
                 ${player.Name || player.name}
-                <span class="fit-indicator" style="background: ${getFitColor(fit)}; width: ${fit}%; height: 3px; margin-top: 4px; border-radius: 2px; display: block;"></span>
+                <div class="fit-indicator" style="background: ${getFitColor(fit)}; width: ${fit}%; height: 3px; margin-top: 4px; border-radius: 2px;"></div>
             `;
         } else {
             subDiv.textContent = `SUP ${i + 1}`;
@@ -332,6 +337,8 @@ function openPlayerSelection(position, index) {
     const panel = document.getElementById('playersPanel');
     const overlay = document.getElementById('overlay');
     const title = document.getElementById('panelTitle');
+    
+    if (!panel || !overlay || !title) return;
     
     title.textContent = `Seleccionar para ${position}${index !== undefined ? ' #' + (index + 1) : ''}`;
     
@@ -385,10 +392,12 @@ function getAvailablePlayers(targetPosition) {
 }
 
 // ===============================
-// MOSTRAR LISTA DE JUGADORES
+// MOSTRAR LISTA DE JUGADORES (con fit del archivo)
 // ===============================
 function displayPlayersList(players, targetPosition) {
     const list = document.getElementById('playersList');
+    if (!list) return;
+    
     list.innerHTML = '';
     
     if (players.length === 0) {
@@ -400,8 +409,8 @@ function displayPlayersList(players, targetPosition) {
         const div = document.createElement('div');
         div.className = 'player-item';
         
-        // Calcular fit para la posición objetivo
-        const fit = targetPosition !== 'SUB' ? calcularFit(player, targetPosition) : 50;
+        // Usar el fit del archivo
+        const fit = parseInt(player.Fit, 10) || 0;
         
         div.innerHTML = `
             <div style="flex: 1;">
@@ -411,11 +420,12 @@ function displayPlayersList(players, targetPosition) {
                         ${player.posicionCalculada} | ${fit}%
                     </span>
                 </div>
-                <div style="display: flex; gap: 16px; font-size: 12px; color: #666; margin-bottom: 8px;">
+                <div style="display: flex; gap: 16px; font-size: 12px; color: #666; margin-bottom: 8px; flex-wrap: wrap;">
                     <span>⚽ St: ${player.St || 0}</span>
                     <span>🛡️ Tk: ${player.Tk || 0}</span>
                     <span>📊 Ps: ${player.Ps || 0}</span>
                     <span>🎯 Sh: ${player.Sh || 0}</span>
+                    <span>🔋 Fit: ${player.Fit || 0}%</span>
                 </div>
                 <div style="width: 100%; height: 6px; background: #eee; border-radius: 3px; overflow: hidden;">
                     <div style="height: 100%; width: ${fit}%; background: ${getFitColor(fit)}; transition: width 0.3s;"></div>
@@ -565,15 +575,21 @@ function showTeamStatus() {
     statusDiv.textContent = statusMessage;
     
     const container = document.querySelector('.container');
-    container.insertBefore(statusDiv, container.firstChild);
+    if (container) {
+        container.insertBefore(statusDiv, container.firstChild);
+    }
 }
 
 // ===============================
 // CERRAR PANEL
 // ===============================
 function closePanel() {
-    document.getElementById('playersPanel').classList.remove('active');
-    document.getElementById('overlay').classList.remove('active');
+    const panel = document.getElementById('playersPanel');
+    const overlay = document.getElementById('overlay');
+    
+    if (panel) panel.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
+    
     selectedPosition = null;
 }
 
@@ -596,20 +612,7 @@ function showTemporaryMessage(message, type = 'info') {
     };
     
     messageDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
         background: ${colors[type] || colors.info};
-        color: white;
-        padding: 12px 24px;
-        border-radius: 50px;
-        font-weight: bold;
-        z-index: 2000;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        animation: slideDown 0.3s ease;
-        max-width: 90%;
-        text-align: center;
     `;
     
     document.body.appendChild(messageDiv);
@@ -627,6 +630,11 @@ function showTemporaryMessage(message, type = 'info') {
 // ===============================
 function addResetButton() {
     const container = document.querySelector('.container');
+    if (!container) return;
+    
+    // Verificar si ya existe
+    if (document.querySelector('.reset-btn')) return;
+    
     const resetBtn = document.createElement('button');
     resetBtn.className = 'reset-btn';
     resetBtn.textContent = '🔄 Reiniciar Equipo';
@@ -656,50 +664,3 @@ function resetLineup() {
         showTemporaryMessage('✅ Equipo reiniciado', 'success');
     }
 }
-
-// ===============================
-// AÑADIR ANIMACIONES CSS
-// ===============================
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideDown {
-        from { opacity: 0; transform: translate(-50%, -20px); }
-        to { opacity: 1; transform: translate(-50%, 0); }
-    }
-    
-    @keyframes slideUp {
-        from { opacity: 1; transform: translate(-50%, 0); }
-        to { opacity: 0; transform: translate(-50%, -20px); }
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .reset-btn {
-        background: #f44336;
-        color: white;
-        border: none;
-        padding: 12px 20px;
-        border-radius: 50px;
-        font-weight: bold;
-        font-size: 16px;
-        margin-bottom: 20px;
-        cursor: pointer;
-        width: 100%;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        transition: all 0.3s;
-        -webkit-tap-highlight-color: transparent;
-    }
-    
-    .reset-btn:active {
-        transform: scale(0.98);
-        background: #d32f2f;
-    }
-    
-    .fit-indicator {
-        transition: width 0.3s ease;
-    }
-`;
-document.head.appendChild(style);
