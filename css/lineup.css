@@ -97,3 +97,86 @@ body {
   align-items: center;
   font-weight: bold;
 }
+
+.editor{
+display:grid;
+grid-template-columns:260px 1fr 320px;
+height:90vh;
+font-family:Arial;
+}
+
+.panel{
+padding:10px;
+border-right:1px solid #ccc;
+}
+
+.players{
+overflow-y:auto;
+background:#fafafa;
+}
+
+#lineupText{
+width:100%;
+height:100%;
+font-family:monospace;
+}
+
+.pitch-panel{
+display:flex;
+justify-content:center;
+align-items:center;
+background:#1e1e1e;
+}
+
+#pitch{
+position:relative;
+width:520px;
+height:780px;
+background:linear-gradient(#3a9d3a,#2e8b2e);
+border:3px solid white;
+}
+
+.slot{
+position:absolute;
+width:90px;
+height:42px;
+border:2px dashed white;
+color:white;
+text-align:center;
+line-height:42px;
+font-size:12px;
+border-radius:6px;
+}
+
+/* GK */
+.slot:nth-child(1){ bottom:20px; left:215px; }
+
+/* DF */
+.slot:nth-child(2){ bottom:150px; left:40px; }
+.slot:nth-child(3){ bottom:150px; left:160px; }
+.slot:nth-child(4){ bottom:150px; left:280px; }
+.slot:nth-child(5){ bottom:150px; left:400px; }
+
+/* DM */
+.slot:nth-child(6){ bottom:270px; left:215px; }
+
+/* MF */
+.slot:nth-child(7){ bottom:400px; left:120px; }
+.slot:nth-child(8){ bottom:400px; left:310px; }
+
+/* AM */
+.slot:nth-child(9){ bottom:520px; left:215px; }
+
+/* FW */
+.slot:nth-child(10){ bottom:650px; left:140px; }
+.slot:nth-child(11){ bottom:650px; left:290px; }
+
+.playerItem{
+background:white;
+border:1px solid #ccc;
+padding:6px;
+margin-bottom:6px;
+cursor:grab;
+border-radius:4px;
+font-size:13px;
+}

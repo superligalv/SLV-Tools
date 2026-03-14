@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Alineación</title>
+  <link rel="stylesheet" href="./css/lineup.css">
+</head>
+<body>
+<h1 id="teamName">
+    <img id="teamLogo" src="" alt="" style="height:40px; vertical-align:middle; margin-right:10px;">
+    <span id="teamNameText">Cargando...</span>
+  </h1>
+  <div class="app">
+
+    <!-- PANEL JUGADORES -->
+    <aside class="players-panel">
+	  <h2>Jugadores</h2>
+	  <div id="players-container"></div> <!-- Este es el contenedor -->
+	</aside>
+
+    <!-- CAMPO -->
+    <main class="field">
+
+      <div class="zone" data-zone="GK">
+        <div class="zone-title">Portero (1)</div>
+      </div>
+
+      <div class="zone" data-zone="DF">
+        <div class="zone-title">Defensas (2–7)</div>
+      </div>
+
+      <div class="zone" data-zone="DM">
+        <div class="zone-title">Mediocentro Def (0–3)</div>
+      </div>
+
+      <div class="zone" data-zone="MF">
+        <div class="zone-title">Mediocentro (0–6)</div>
+      </div>
+
+      <div class="zone" data-zone="AM">
+        <div class="zone-title">Mediapunta (0–3)</div>
+      </div>
+
+      <div class="zone" data-zone="FW">
+        <div class="zone-title">Delanteros (1–5)</div>
+      </div>
+
+      <h3 class="bench-title">Suplentes (máx 5)</h3>
+
+      <div class="zone bench" data-zone="BENCH"></div>
+
+    </main>
+	 <aside class="players-panel">
+      <h2>Alineacion</h2>
+
+    </aside>
+
+  </div>
+
+  <script src="./JS/lineup.js"></script>
+</body>
+</html>
