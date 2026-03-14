@@ -391,3 +391,58 @@ body {
         flex-wrap: wrap;
     }
 }
+
+/* Botón de enviar */
+.enviar-btn {
+    background: #cccccc;
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 18px;
+    margin: 20px 0;
+    cursor: not-allowed;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s;
+    -webkit-tap-highlight-color: transparent;
+    border: 2px solid transparent;
+}
+
+.enviar-btn.enabled {
+    background: #4CAF50;
+    cursor: pointer;
+    animation: pulse 2s infinite;
+}
+
+.enviar-btn.enabled:active {
+    transform: scale(0.98);
+    background: #45a049;
+}
+
+.enviar-btn.enabled:hover {
+    box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    }
+}
+
+/* Ajustar espacio entre botones */
+.reset-btn {
+    margin-bottom: 10px;
+}
+
+.enviar-btn {
+    margin-top: 0;
+    margin-bottom: 20px;
+}

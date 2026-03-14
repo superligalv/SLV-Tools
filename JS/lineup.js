@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSubstitutes();
     initEventListeners();
     addResetButton();
+    addEnviarButton(); // NUEVO: Añadir botón de enviar
     
     // Cargar equipo
     if (teamId) {
@@ -523,6 +524,30 @@ function showTeamStatus() {
     const startersCount = Object.values(lineup).flat().filter(p => p !== null).length;
     const subsCount = substitutes.filter(p => p !== null).length;
     
+    // Verificar jugadores repetidos
+    const usedPlayerIds = new Set();
+    let hasDuplicates = false;
+    
+    // Comprobar titulares
+    Object.values(lineup).flat().forEach(player => {
+        if (player) {
+            if (usedPlayerIds.has(player.id)) {
+                hasDuplicates = true;
+            }
+            usedPlayerIds.add(player.id);
+        }
+    });
+    
+    // Comprobar suplentes
+    substitutes.forEach(player => {
+        if (player) {
+            if (usedPlayerIds.has(player.id)) {
+                hasDuplicates = true;
+            }
+            usedPlayerIds.add(player.id);
+        }
+    });
+    
     // Verificar mínimos requeridos
     const gkCount = lineup.GK.filter(p => p !== null).length;
     const dfCount = lineup.DF.filter(p => p !== null).length;
@@ -537,10 +562,11 @@ function showTeamStatus() {
     
     let statusMessage = '';
     let statusColor = '#2196F3';
+    let isComplete = false;
     
-    if (startersCount === 0 && subsCount === 0) {
-        statusMessage = '👆 Selecciona jugadores para formar tu equipo';
-        statusColor = '#2196F3';
+    if (hasDuplicates) {
+        statusMessage = '❌ Hay jugadores repetidos en el equipo';
+        statusColor = '#f44336';
     } else if (missingGK > 0 || missingDF > 0 || missingFW > 0) {
         const faltan = [];
         if (missingGK > 0) faltan.push('1 POR');
@@ -552,11 +578,12 @@ function showTeamStatus() {
         statusMessage = `📊 Titulares: ${startersCount}/${MAX_STARTERS} | Suplentes: ${subsCount}/${limits.BENCH.max}`;
         statusColor = '#2196F3';
     } else if (subsCount < limits.BENCH.max) {
-        statusMessage = `📊 Equipo completo. Faltan ${limits.BENCH.max - subsCount} suplentes`;
+        statusMessage = `📊 Faltan ${limits.BENCH.max - subsCount} suplentes`;
         statusColor = '#ff9800';
     } else {
-        statusMessage = '✅ ¡Equipo completo!';
+        statusMessage = '✅ ¡Equipo completo! Ya puedes enviar la alineación';
         statusColor = '#4CAF50';
+        isComplete = true;
     }
     
     statusDiv.style.cssText = `
@@ -576,8 +603,21 @@ function showTeamStatus() {
     
     const container = document.querySelector('.container');
     if (container) {
-        container.insertBefore(statusDiv, container.firstChild);
+        // Eliminar status anterior si existe
+        const oldStatus = document.querySelector('.team-status');
+        if (oldStatus) oldStatus.remove();
+        
+        // Insertar después del botón de enviar o al principio
+        const enviarBtn = document.querySelector('.enviar-btn');
+        if (enviarBtn) {
+            enviarBtn.insertAdjacentElement('beforebegin', statusDiv);
+        } else {
+            container.insertBefore(statusDiv, container.firstChild);
+        }
     }
+    
+    // Actualizar estado del botón de enviar
+    updateEnviarButtonState(isComplete && !hasDuplicates);
 }
 
 // ===============================
@@ -661,6 +701,187 @@ function resetLineup() {
         initSubstitutes();
         closePanel();
         showTeamStatus();
+        updateEnviarButtonState(false);
         showTemporaryMessage('✅ Equipo reiniciado', 'success');
     }
 }
+
+// ===============================
+// AÑADIR ESTAS VARIABLES GLOBALES NUEVAS
+// ===============================
+let enviarBtn = null; // Referencia al botón de enviar
+
+
+// ===============================
+// NUEVA FUNCIÓN: AÑADIR BOTÓN DE ENVIAR
+// ===============================
+function addEnviarButton() {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    
+    // Verificar si ya existe
+    if (document.querySelector('.enviar-btn')) return;
+    
+    enviarBtn = document.createElement('button');
+    enviarBtn.className = 'enviar-btn';
+    enviarBtn.textContent = '📤 Enviar Alineación';
+    enviarBtn.disabled = true; // Comienza deshabilitado
+    enviarBtn.addEventListener('click', enviarAlineacion);
+    
+    // Insertar después del botón de reset o al final
+    const resetBtn = document.querySelector('.reset-btn');
+    if (resetBtn) {
+        resetBtn.insertAdjacentElement('afterend', enviarBtn);
+    } else {
+        container.appendChild(enviarBtn);
+    }
+}
+
+// ===============================
+// NUEVA FUNCIÓN: VERIFICAR SI EL EQUIPO ESTÁ COMPLETO
+// ===============================
+function isTeamComplete() {
+    // Verificar que no haya jugadores repetidos
+    const usedPlayerIds = new Set();
+    
+    // Verificar titulares (deben ser 11 exactamente)
+    let totalStarters = 0;
+    for (const [pos, players] of Object.entries(lineup)) {
+        for (const player of players) {
+            if (player) {
+                totalStarters++;
+                if (usedPlayerIds.has(player.id)) {
+                    return false; // Jugador repetido
+                }
+                usedPlayerIds.add(player.id);
+            }
+        }
+    }
+    
+    // Verificar que haya exactamente 11 titulares
+    if (totalStarters !== MAX_STARTERS) return false;
+    
+    // Verificar suplentes (deben ser 5 exactamente)
+    let totalSubs = 0;
+    for (const player of substitutes) {
+        if (player) {
+            totalSubs++;
+            if (usedPlayerIds.has(player.id)) {
+                return false; // Jugador repetido
+            }
+            usedPlayerIds.add(player.id);
+        }
+    }
+    
+    // Verificar que haya exactamente 5 suplentes
+    if (totalSubs !== limits.BENCH.count) return false;
+    
+    return true;
+}
+
+// ===============================
+// NUEVA FUNCIÓN: ACTUALIZAR ESTADO DEL BOTÓN ENVIAR
+// ===============================
+function updateEnviarButtonState(enable) {
+    if (enviarBtn) {
+        enviarBtn.disabled = !enable;
+        if (enable) {
+            enviarBtn.classList.add('enabled');
+            enviarBtn.style.background = '#4CAF50';
+            enviarBtn.style.cursor = 'pointer';
+        } else {
+            enviarBtn.classList.remove('enabled');
+            enviarBtn.style.background = '#cccccc';
+            enviarBtn.style.cursor = 'not-allowed';
+        }
+    }
+}
+
+// ===============================
+// NUEVA FUNCIÓN: ENVIAR ALINEACIÓN
+// ===============================
+function enviarAlineacion() {
+    if (!isTeamComplete()) {
+        showTemporaryMessage('❌ El equipo no está completo o tiene jugadores repetidos', 'error');
+        return;
+    }
+    
+    // Preparar datos para enviar
+    const formData = {
+        teamId: teamId,
+        teamName: teamData ? teamData.team : 'Equipo sin nombre',
+        timestamp: new Date().toISOString(),
+        titulares: [],
+        suplentes: []
+    };
+    
+    // Recoger titulares por posición
+    for (const [pos, players] of Object.entries(lineup)) {
+        players.forEach((player, index) => {
+            if (player) {
+                formData.titulares.push({
+                    posicion: pos,
+                    numero: index + 1,
+                    nombre: player.Name || player.name,
+                    fit: player.Fit,
+                    stats: {
+                        St: player.St,
+                        Tk: player.Tk,
+                        Ps: player.Ps,
+                        Sh: player.Sh
+                    }
+                });
+            }
+        });
+    }
+    
+    // Recoger suplentes
+    substitutes.forEach((player, index) => {
+        if (player) {
+            formData.suplentes.push({
+                numero: index + 1,
+                nombre: player.Name || player.name,
+                fit: player.Fit,
+                stats: {
+                    St: player.St,
+                    Tk: player.Tk,
+                    Ps: player.Ps,
+                    Sh: player.Sh
+                }
+            });
+        }
+    });
+    
+    // Mostrar los datos en consola (para depuración)
+    console.log('Datos a enviar:', formData);
+    
+    // Aquí puedes añadir la lógica para enviar los datos a un servidor
+    // Por ejemplo, usando fetch:
+    
+    showTemporaryMessage('📤 Enviando alineación...', 'info');
+    
+    // Ejemplo de envío (comentado por ahora)
+    /*
+    fetch('https://tu-servidor.com/api/alineacion', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        showTemporaryMessage('✅ ¡Alineación enviada con éxito!', 'success');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showTemporaryMessage('❌ Error al enviar la alineación', 'error');
+    });
+    */
+    
+    // Simular envío exitoso (temporal)
+    setTimeout(() => {
+        showTemporaryMessage('✅ ¡Alineación enviada con éxito! (modo demo)', 'success');
+    }, 1000);
+}
+
