@@ -79,9 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar UI
     initField();
     initSubstitutes();
+    initCondicionales(); // NUEVO: Inicializar sección de condicionales
     initEventListeners();
     addResetButton();
-    addEnviarButton(); // NUEVO: Añadir botón de enviar
+    addEnviarButton();
     
     // Cargar equipo
     if (teamId) {
@@ -740,16 +741,17 @@ function resetLineup() {
             FW: Array(limits.FW.count).fill(null)
         };
         substitutes = Array(limits.BENCH.count).fill(null);
+        condicionales = []; // Limpiar condicionales
         
         initField();
         initSubstitutes();
+        renderizarCondicionales(); // Actualizar lista de condicionales
         closePanel();
         showTeamStatus();
         updateEnviarButtonState(false);
         showTemporaryMessage('✅ Equipo reiniciado', 'success');
     }
 }
-
 // ===============================
 // AÑADIR ESTAS VARIABLES GLOBALES NUEVAS
 // ===============================
@@ -856,7 +858,8 @@ function enviarAlineacion() {
         teamName: teamData ? teamData.team : 'Equipo sin nombre',
         timestamp: new Date().toISOString(),
         titulares: [],
-        suplentes: []
+        suplentes: [],
+        condicionales: condicionales // Incluir condicionales
     };
     
     // Recoger titulares por posición
@@ -899,33 +902,308 @@ function enviarAlineacion() {
     // Mostrar los datos en consola (para depuración)
     console.log('Datos a enviar:', formData);
     
-    // Aquí puedes añadir la lógica para enviar los datos a un servidor
-    // Por ejemplo, usando fetch:
-    
     showTemporaryMessage('📤 Enviando alineación...', 'info');
     
-    // Ejemplo de envío (comentado por ahora)
-    /*
-    fetch('https://tu-servidor.com/api/alineacion', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        showTemporaryMessage('✅ ¡Alineación enviada con éxito!', 'success');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showTemporaryMessage('❌ Error al enviar la alineación', 'error');
-    });
-    */
-    
-    // Simular envío exitoso (temporal)
+    // Simular envío exitoso
     setTimeout(() => {
-        showTemporaryMessage('✅ ¡Alineación enviada con éxito! (modo demo)', 'success');
+        showTemporaryMessage('✅ ¡Alineación enviada con éxito!', 'success');
     }, 1000);
+}
+
+
+
+
+
+
+
+// ===============================
+// AÑADIR ESTAS VARIABLES GLOBALES NUEVAS
+// ===============================
+let condicionales = []; // Array para guardar los condicionales
+
+
+
+// ===============================
+// NUEVA FUNCIÓN: INICIALIZAR SECCIÓN DE CONDICIONALES
+// ===============================
+function initCondicionales() {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    
+    // Verificar si ya existe
+    if (document.querySelector('.condicionales-section')) return;
+    
+    // Crear la sección
+    const section = document.createElement('div');
+    section.className = 'condicionales-section';
+    section.innerHTML = `
+        <div class="condicionales-header">
+            <h3>🔄 Condicionales</h3>
+            <button class="add-cond-btn" id="addCondicional">+ Añadir Condicional</button>
+        </div>
+        <div class="condicionales-list" id="condicionalesList">
+            <!-- Los condicionales se generarán dinámicamente -->
+        </div>
+    `;
+    
+    // Insertar después de los suplentes
+    const substitutes = document.querySelector('.substitutes');
+    if (substitutes) {
+        substitutes.insertAdjacentElement('afterend', section);
+    } else {
+        container.appendChild(section);
+    }
+    
+    // Añadir event listener al botón de añadir
+    document.getElementById('addCondicional').addEventListener('click', abrirModalCondicional);
+    
+    // Renderizar condicionales existentes
+    renderizarCondicionales();
+}
+
+// ===============================
+// NUEVA FUNCIÓN: RENDERIZAR CONDICIONALES
+// ===============================
+function renderizarCondicionales() {
+    const lista = document.getElementById('condicionalesList');
+    if (!lista) return;
+    
+    lista.innerHTML = '';
+    
+    if (condicionales.length === 0) {
+        lista.innerHTML = '<div class="condicional-empty">No hay condicionales configurados</div>';
+        return;
+    }
+    
+    condicionales.forEach((cond, index) => {
+        const condDiv = document.createElement('div');
+        condDiv.className = 'condicional-item';
+        
+        // Formatear el texto del condicional
+        let textoCond = '';
+        if (cond.tipo === 'SUB') {
+            textoCond = `SUB ${cond.minuto} ${cond.jugadorSale} ${cond.jugadorEntra} ${cond.posicion} IF ${cond.condicion.tipo} ${cond.condicion.operador} ${cond.condicion.valor}`;
+        }
+        
+        condDiv.innerHTML = `
+            <div class="condicional-texto">${textoCond}</div>
+            <button class="delete-cond-btn" data-index="${index}">✕</button>
+        `;
+        
+        lista.appendChild(condDiv);
+    });
+    
+    // Añadir event listeners a los botones de borrar
+    document.querySelectorAll('.delete-cond-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = e.target.dataset.index;
+            borrarCondicional(index);
+        });
+    });
+}
+
+// ===============================
+// NUEVA FUNCIÓN: ABRIR MODAL PARA AÑADIR CONDICIONAL
+// ===============================
+function abrirModalCondicional() {
+    // Crear modal
+    const modal = document.createElement('div');
+    modal.className = 'cond-modal';
+    modal.id = 'condModal';
+    
+    // Obtener lista de jugadores para los selects
+    const jugadoresTitulares = obtenerJugadoresTitulares();
+    const jugadoresSuplentes = obtenerJugadoresSuplentes();
+    
+    modal.innerHTML = `
+        <div class="cond-modal-content">
+            <div class="cond-modal-header">
+                <h3>Nuevo Condicional</h3>
+                <button class="close-modal-btn">✕</button>
+            </div>
+            <div class="cond-modal-body">
+                <div class="cond-form-group">
+                    <label>Tipo:</label>
+                    <select id="condTipo" class="cond-select">
+                        <option value="SUB">SUB (Sustitución)</option>
+                    </select>
+                </div>
+                
+                <div class="cond-form-group">
+                    <label>Minuto:</label>
+                    <input type="number" id="condMinuto" class="cond-input" min="1" max="120" value="67">
+                </div>
+                
+                <div class="cond-form-group">
+                    <label>Jugador que sale:</label>
+                    <select id="condJugadorSale" class="cond-select">
+                        <option value="">Seleccionar jugador</option>
+                        ${jugadoresTitulares.map(j => `<option value="${j.numero}">${j.nombre} (${j.posicion} #${j.numero})</option>`).join('')}
+                    </select>
+                </div>
+                
+                <div class="cond-form-group">
+                    <label>Jugador que entra:</label>
+                    <select id="condJugadorEntra" class="cond-select">
+                        <option value="">Seleccionar jugador</option>
+                        ${jugadoresSuplentes.map(j => `<option value="${j.numero}">${j.nombre} (${j.posicion})</option>`).join('')}
+                    </select>
+                </div>
+                
+                <div class="cond-form-group">
+                    <label>Posición:</label>
+                    <select id="condPosicion" class="cond-select">
+                        <option value="GK">GK - Portero</option>
+                        <option value="DF">DF - Defensa</option>
+                        <option value="DM">DM - Mediocentro defensivo</option>
+                        <option value="MF">MF - Centrocampista</option>
+                        <option value="AM">AM - Mediapunta</option>
+                        <option value="FW">FW - Delantero</option>
+                    </select>
+                </div>
+                
+                <div class="cond-form-group">
+                    <label>Condición:</label>
+                    <div class="cond-condition-row">
+                        <select id="condTipoCondicion" class="cond-select-small">
+                            <option value="MIN">MIN (Minuto)</option>
+                            <option value="SCORE">SCORE (Resultado)</option>
+                        </select>
+                        <select id="condOperador" class="cond-select-small">
+                            <option value="=">=</option>
+                            <option value=">=">>=</option>
+                            <option value="<="><=</option>
+                            <option value=">">></option>
+                            <option value="<"><</option>
+                        </select>
+                        <input type="number" id="condValor" class="cond-input-small" value="67">
+                    </div>
+                </div>
+            </div>
+            <div class="cond-modal-footer">
+                <button class="cancel-cond-btn">Cancelar</button>
+                <button class="save-cond-btn">Guardar Condicional</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Event listeners del modal
+    modal.querySelector('.close-modal-btn').addEventListener('click', () => modal.remove());
+    modal.querySelector('.cancel-cond-btn').addEventListener('click', () => modal.remove());
+    modal.querySelector('.save-cond-btn').addEventListener('click', guardarCondicional);
+    
+    // Cerrar al hacer clic fuera
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+    });
+}
+
+// ===============================
+// NUEVA FUNCIÓN: OBTENER JUGADORES TITULARES
+// ===============================
+function obtenerJugadoresTitulares() {
+    const titulares = [];
+    let numero = 1;
+    
+    for (const [pos, players] of Object.entries(lineup)) {
+        players.forEach((player, index) => {
+            if (player) {
+                titulares.push({
+                    numero: numero,
+                    nombre: player.Name || player.name,
+                    posicion: pos,
+                    index: index
+                });
+                numero++;
+            }
+        });
+    }
+    
+    return titulares;
+}
+
+// ===============================
+// NUEVA FUNCIÓN: OBTENER JUGADORES SUPLENTES
+// ===============================
+function obtenerJugadoresSuplentes() {
+    const suplentes = [];
+    
+    substitutes.forEach((player, index) => {
+        if (player) {
+            suplentes.push({
+                numero: index + 1,
+                nombre: player.Name || player.name,
+                posicion: player.posicionCalculada
+            });
+        }
+    });
+    
+    return suplentes;
+}
+
+// ===============================
+// NUEVA FUNCIÓN: GUARDAR CONDICIONAL
+// ===============================
+function guardarCondicional() {
+    const tipo = document.getElementById('condTipo').value;
+    const minuto = parseInt(document.getElementById('condMinuto').value, 10);
+    const jugadorSale = document.getElementById('condJugadorSale').value;
+    const jugadorEntra = document.getElementById('condJugadorEntra').value;
+    const posicion = document.getElementById('condPosicion').value;
+    const tipoCondicion = document.getElementById('condTipoCondicion').value;
+    const operador = document.getElementById('condOperador').value;
+    const valor = document.getElementById('condValor').value;
+    
+    // Validaciones
+    if (!jugadorSale) {
+        showTemporaryMessage('❌ Debes seleccionar un jugador que sale', 'error');
+        return;
+    }
+    
+    if (!jugadorEntra) {
+        showTemporaryMessage('❌ Debes seleccionar un jugador que entra', 'error');
+        return;
+    }
+    
+    if (jugadorSale === jugadorEntra) {
+        showTemporaryMessage('❌ El jugador que sale no puede ser el mismo que entra', 'error');
+        return;
+    }
+    
+    // Crear objeto condicional
+    const nuevoCondicional = {
+        tipo: tipo,
+        minuto: minuto,
+        jugadorSale: jugadorSale,
+        jugadorEntra: jugadorEntra,
+        posicion: posicion,
+        condicion: {
+            tipo: tipoCondicion,
+            operador: operador,
+            valor: tipoCondicion === 'MIN' ? parseInt(valor, 10) : parseFloat(valor)
+        }
+    };
+    
+    // Añadir a la lista
+    condicionales.push(nuevoCondicional);
+    
+    // Cerrar modal y renderizar
+    document.getElementById('condModal').remove();
+    renderizarCondicionales();
+    
+    showTemporaryMessage('✅ Condicional añadido correctamente', 'success');
+}
+
+// ===============================
+// NUEVA FUNCIÓN: BORRAR CONDICIONAL
+// ===============================
+function borrarCondicional(index) {
+    if (confirm('¿Seguro que quieres eliminar este condicional?')) {
+        condicionales.splice(index, 1);
+        renderizarCondicionales();
+        showTemporaryMessage('✅ Condicional eliminado', 'success');
+    }
 }
 
