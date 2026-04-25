@@ -52,24 +52,17 @@ function calcularPuntosExperiencia(edad, minutos) {
 // ===============================
 // MINUTOS PARA NO PERDER EXP
 // ===============================
-function minutosParaNoPerderExp(minutos, edad) {
-  const rangoEdad = getRangoEdad(edad);
+function minutosParaNoPerderExp(minutosActuales,edad) {
+  const expActual = calcularPuntosExperiencia(edad, minutosActuales);
 
-  if (!rangoEdad) return 0;
+  // buscamos hacia arriba hasta 3000
+  for (let m = minutosActuales + 1; m <= 3000; m++) {
+    const exp = calcularPuntosExperiencia(edad, m);
 
-  // Casos donde ya está en el mejor tramo posible
-  if (minutos >= 3000) return 0;
+    // cuando deja de empeorar → punto seguro
+    if (exp < expActual) continue;
 
-  // buscamos el primer punto donde la EXP baja menos o igual que la actual
-  const actualExp = calcularPuntosExperiencia(edad, minutos);
-
-  for (let umbral of [500, 1000, 2000, 3000]) {
-    const expEnUmbral = calcularPuntosExperiencia(edad, umbral);
-
-    // cuando deja de empeorar → ya no pierde EXP relevante
-    if (expEnUmbral <= actualExp) {
-      return Math.max(0, umbral - minutos);
-    }
+    return m - minutosActuales;
   }
 
   return 0;
