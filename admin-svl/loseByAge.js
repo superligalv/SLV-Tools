@@ -130,121 +130,75 @@ async function renderTeams(teams) {
     return;
   }
 
-  // Mostrar tabla de referencia al inicio
-  let html = `
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                color: white; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
-      <h2 style="margin: 0 0 15px 0;">📊 Tabla de Experiencia - Puntos que BAJA cada jugador</h2>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; font-size: 14px;">
-        <div><strong>Edad</strong></div>
-        <div style="text-align: center;"><strong>0-499</strong></div>
-        <div style="text-align: center;"><strong>500-999</strong></div>
-        <div style="text-align: center;"><strong>1000-1999</strong></div>
-        <div style="text-align: center;"><strong>2000-2999</strong></div>
-        <div style="text-align: center;"><strong>&ge;3000</strong></div>
-        
-        <div>30-32</div><div>300</div><div>150</div><div>-</div><div>-</div><div>-</div>
-        <div>33-34</div><div>650</div><div>400</div><div>250</div><div>-</div><div>-</div>
-        <div>35-36</div><div>1000</div><div>700</div><div>450</div><div>200</div><div>-</div>
-        <div>&ge;37</div><div>1500</div><div>1100</div><div>850</div><div>600</div><div>350</div>
-      </div>
-    </div>
-  `;
-
-  html += `
-    <div style="margin-bottom: 30px;">
-      <h2>📋 Jugadores 30+ años - Puntos de Experiencia</h2>
-    </div>
-  `;
+  let filas = [];
 
   for (const team of teams) {
     const jugadores = await procesarEquipo(team);
-    
-    if (jugadores.length === 0) continue;
+    if (!jugadores.length) continue;
 
     const mayores30 = obtenerJugadoresMayores30(jugadores);
-    
-    if (mayores30.length > 0) {
-      html += `
-        <div style="margin-bottom: 25px; padding: 20px; border: 2px solid #ddd; border-radius: 8px;">
-          <div style="display: flex; align-items: center; margin-bottom: 15px;">
-            <img src="../images/flags/headerRund/${team.id}.png" width="40" height="40" style="margin-right: 15px; border-radius: 50%;"/>
-            <h3 style="margin: 0; color: #333;">
-              <a href="../ver_equipo.html?id=${team.id}" target="_blank" style="text-decoration: none; color: #007bff;">
-                ${team.team} (${mayores30.length} jugadores 30+)
-              </a>
-            </h3>
-          </div>
-          
-          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-            <thead>
-              <tr style="background-color: #f8f9fa;">
-                <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">Jugador</th>
-                <th style="border: 1px solid #ddd; padding: 10px; text-align: center;">Edad</th>
-                <th style="border: 1px solid #ddd; padding: 10px; text-align: center;">Minutos</th>
-                <th style="border: 1px solid #ddd; padding: 10px; text-align: center; background-color: #fff3cd;">Puntos EXP ↓</th>
-              </tr>
-            </thead>
-            <tbody>
-      `;
 
-      let totalPuntosExp = 0;
-      let totalMinutos = 0;
+    for (const j of mayores30) {
+      // ❌ excluir los que no bajan EXP
+      if (j.puntosExp <= 0) continue;
 
-      for (const jugador of mayores30) {
-        totalPuntosExp += jugador.puntosExp;
-        totalMinutos += jugador.minutos;
-
-        const colorRow = jugador.puntosExp >= 1000 ? '#fff3cd' : 
-                        jugador.puntosExp >= 500 ? '#fff8dc' : 'white';
-
-        html += `
-          <tr style="background-color: ${colorRow};">
-            <td style="border: 1px solid #ddd; padding: 8px; font-weight: 500;">
-              ${jugador.name} 
-              <small style="color: #666;">(${jugador.rangoEdad}/${jugador.rangoMinutos})</small>
-            </td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold;">${jugador.age}</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${jugador.minutos.toLocaleString()}</td>
-            <td style="border: 1px solid #ddd; padding: 8px; text-align: center; font-weight: bold; color: #d63384; font-size: 16px;">
-              <strong>${jugador.puntosExp}</strong>
-            </td>
-          </tr>
-        `;
-      }
-      
-      html += `
-            </tbody>
-            <tfoot>
-              <tr style="background-color: #e9ecef; font-weight: bold; font-size: 16px;">
-                <td style="border: 1px solid #ddd; padding: 12px;">TOTAL</td>
-                <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">${mayores30.length}</td>
-                <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">${totalMinutos.toLocaleString()}</td>
-                <td style="border: 1px solid #ddd; padding: 12px; text-align: center; 
-                           background-color: #fff3cd; color: #d63384;">
-                  <strong>${totalPuntosExp}</strong>
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      `;
+      filas.push({
+        escudo: `../images/flags/headerRund/${team.id}.png`,
+        abrev: team.id,
+        equipo: team.team,
+        jugador: j.name,
+        minutos: j.minutos,
+        rango: `${j.rangoEdad}/${j.rangoMinutos}`,
+        exp: j.puntosExp
+      });
     }
   }
 
-  if (html.includes("jugadores 30+")) {
+  // ordenar opcional (más impacto arriba)
+  filas.sort((a, b) => b.exp - a.exp);
+
+  let html = `
+    <div style="padding: 10px;">
+      <h2>📊 Bajada de Experiencia (jugadores 30+)</h2>
+
+      <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+        <thead>
+          <tr style="background:#f2f2f2;">
+            <th>Escudo</th>
+            <th>Abrev</th>
+            <th>Equipo</th>
+            <th>Jugador</th>
+            <th>Min</th>
+            <th>Umbral</th>
+            <th>EXP ↓</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  for (const f of filas) {
     html += `
-      <div style="text-align: center; padding: 20px; background: #f8f9fa; border-radius: 8px; margin-top: 30px;">
-        <h3>🏆 RESUMEN: Total puntos de experiencia que BAJAN</h3>
-        <p style="font-size: 24px; font-weight: bold; color: #d63384; margin: 10px 0;">
-          ${html.match(/<strong>(\d+)<\/strong>/g)?.reduce((sum, match) => {
-            // Esto es un cálculo aproximado, pero funciona para el demo
-            return sum + parseInt(match.match(/\d+/)[0]);
-          }, 0) || 'Calculando...'}
-        </p>
-      </div>
+      <tr>
+        <td style="text-align:center;">
+          <img src="${f.escudo}" width="28" height="28"/>
+        </td>
+        <td style="text-align:center; font-weight:bold;">${f.abrev}</td>
+        <td>${f.equipo}</td>
+        <td style="font-weight:500;">${f.jugador}</td>
+        <td style="text-align:center;">${f.minutos.toLocaleString()}</td>
+        <td style="text-align:center; font-size:12px; color:#666;">${f.rango}</td>
+        <td style="text-align:center; font-weight:bold; color:#d63384;">
+          ${f.exp}
+        </td>
+      </tr>
     `;
   }
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
 
   container.innerHTML = html;
 }
