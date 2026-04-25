@@ -49,28 +49,35 @@ function calcularPuntosExperiencia(edad, minutos) {
   return TABLA_EXPERIENCIA[rangoEdad][rangoMinutos] || 0;
 }
 
-function calcularMaxMins(edad) {
-  const rangoEdad = getRangoEdad(edad);
-  if (!rangoEdad) return 0;
-  return TABLA_EXPERIENCIA[rangoEdad][] || 0;
-}
-
 // ===============================
 // MINUTOS PARA NO PERDER EXP
 // ===============================
 function minutosParaNoPerderExp(edad, minutos) {
-
   let objetivo = null;
 
   if (edad >= 30 && edad <= 32) objetivo = 1000;
   else if (edad >= 33 && edad <= 34) objetivo = 2000;
   else if (edad >= 35 && edad <= 36) objetivo = 3000;
-  else if (edad >= 37) return null; // imposible
+  else return null; // >=37
 
-  // ya cumple
   if (minutos >= objetivo) return 0;
 
   return objetivo - minutos;
+}
+
+// ===============================
+// % PROGRESO HACIA SALVAR EXP
+// ===============================
+function porcentajeSalvarExp(edad, minutos) {
+  let objetivo = null;
+
+  if (edad >= 30 && edad <= 32) objetivo = 1000;
+  else if (edad >= 33 && edad <= 34) objetivo = 2000;
+  else if (edad >= 35 && edad <= 36) objetivo = 3000;
+  else return null;
+
+  const porcentaje = (minutos / objetivo) * 100;
+  return Math.min(100, porcentaje);
 }
 
 // ===============================
@@ -87,7 +94,6 @@ async function procesarEquipo(team) {
 
     const headersLine = lines[0];
     const dataLines = sep >= 0 ? lines.slice(sep + 1) : lines.slice(1);
-
     const headers = headersLine.trim().split(/\s+/);
 
     return dataLines
@@ -161,19 +167,20 @@ async function renderTeams(teams) {
         minutos: j.minutos,
         rango: `${j.rangoEdad}/${j.rangoMinutos}`,
         exp: j.puntosExp,
-        faltanMin: minutosParaNoPerderExp(j.age, j.minutos)
+        faltanMin: minutosParaNoPerderExp(j.age, j.minutos),
+        porcentaje: porcentajeSalvarExp(j.age, j.minutos)
       });
     }
   }
 
   filasGlobal = filas;
-  renderTabla(filasGlobal);
+  renderTabla();
 }
 
 // ===============================
-// TABLA + FILTRO
+// RENDER TABLA
 // ===============================
-function renderTabla(filas) {
+function renderTabla() {
 
   let html = `
     <div style="padding:10px;">
@@ -197,47 +204,46 @@ function renderTabla(filas) {
             <th>Min</th>
             <th>Umbral</th>
             <th>Faltan min</th>
+            <th>% salvar</th>
             <th>EXP ↓</th>
           </tr>
         </thead>
         <tbody>
   `;
 
-  for (const f of filas) {
+  for (const f of filasGlobal) {
     html += `
       <tr data-team="${f.equipo}">
-        <td style="text-align:center;">
-          <img src="${f.escudo}" width="28" height="28"/>
-        </td>
-        <td style="text-align:center; font-weight:bold;">${f.abrev}</td>
+        <td><img src="${f.escudo}" width="28"></td>
+        <td>${f.abrev}</td>
         <td>${f.equipo}</td>
         <td>${f.jugador}</td>
-        <td style="text-align:center; font-weight:bold;">${f.edad}</td>
-        <td style="text-align:center;">${f.minutos.toLocaleString()}</td>
-        <td style="text-align:center; color:#666;">${f.rango}</td>
-        <td style="text-align:center; color:#0d6efd; font-weight:bold;">
-          ${f.faltanMin === null ? '-' : f.faltanMin.toLocaleString()}
+        <td>${f.edad}</td>
+        <td>${f.minutos}</td>
+        <td>${f.rango}</td>
+        <td>${f.faltanMin === null ? '-' : f.faltanMin}</td>
+        <td style="font-weight:bold;
+          color:${
+            f.porcentaje === null ? '#999' :
+            f.porcentaje < 50 ? '#dc3545' :
+            f.porcentaje < 80 ? '#ffc107' :
+            '#198754'
+          };">
+          ${f.porcentaje === null ? '-' : f.porcentaje.toFixed(0) + '%'}
         </td>
-        <td style="text-align:center; font-weight:bold; color:#d63384;">
-          ${f.exp}
-        </td>
+        <td>${f.exp}</td>
       </tr>
     `;
   }
 
-  html += `
-        </tbody>
-      </table>
-    </div>
-  `;
-
+  html += `</tbody></table></div>`;
   container.innerHTML = html;
 
   activarFiltro();
 }
 
 // ===============================
-// FILTRO EN TIEMPO REAL
+// FILTRO
 // ===============================
 function activarFiltro() {
   const select = document.getElementById("teamFilter");
