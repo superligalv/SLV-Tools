@@ -147,15 +147,13 @@ async function renderTeams(teams) {
         abrev: team.id,
         equipo: team.team,
         jugador: j.name,
+        edad: j.age,
         minutos: j.minutos,
         rango: `${j.rangoEdad}/${j.rangoMinutos}`,
         exp: j.puntosExp
       });
     }
   }
-
-  // ordenar opcional (más impacto arriba)
-  filas.sort((a, b) => b.exp - a.exp);
 
   let html = `
     <div style="padding: 10px;">
@@ -168,6 +166,7 @@ async function renderTeams(teams) {
             <th>Abrev</th>
             <th>Equipo</th>
             <th>Jugador</th>
+            <th>Edad</th>
             <th>Min</th>
             <th>Umbral</th>
             <th>EXP ↓</th>
@@ -185,6 +184,7 @@ async function renderTeams(teams) {
         <td style="text-align:center; font-weight:bold;">${f.abrev}</td>
         <td>${f.equipo}</td>
         <td style="font-weight:500;">${f.jugador}</td>
+        <td style="text-align:center; font-weight:bold;">${f.edad}</td>
         <td style="text-align:center;">${f.minutos.toLocaleString()}</td>
         <td style="text-align:center; font-size:12px; color:#666;">${f.rango}</td>
         <td style="text-align:center; font-weight:bold; color:#d63384;">
