@@ -52,11 +52,26 @@ function calcularPuntosExperiencia(edad, minutos) {
 // ===============================
 // MINUTOS PARA NO PERDER EXP
 // ===============================
-function minutosParaNoPerderExp(minutos) {
-  if (minutos < 500) return 500 - minutos;
-  if (minutos < 1000) return 1000 - minutos;
-  if (minutos < 2000) return 2000 - minutos;
-  if (minutos < 3000) return 3000 - minutos;
+function minutosParaNoPerderExp(minutos, edad) {
+  const rangoEdad = getRangoEdad(edad);
+
+  if (!rangoEdad) return 0;
+
+  // Casos donde ya está en el mejor tramo posible
+  if (minutos >= 3000) return 0;
+
+  // buscamos el primer punto donde la EXP baja menos o igual que la actual
+  const actualExp = calcularPuntosExperiencia(edad, minutos);
+
+  for (let umbral of [500, 1000, 2000, 3000]) {
+    const expEnUmbral = calcularPuntosExperiencia(edad, umbral);
+
+    // cuando deja de empeorar → ya no pierde EXP relevante
+    if (expEnUmbral <= actualExp) {
+      return Math.max(0, umbral - minutos);
+    }
+  }
+
   return 0;
 }
 
@@ -148,7 +163,7 @@ async function renderTeams(teams) {
         minutos: j.minutos,
         rango: `${j.rangoEdad}/${j.rangoMinutos}`,
         exp: j.puntosExp,
-        faltanMin: minutosParaNoPerderExp(j.minutos)
+        faltanMin: minutosParaNoPerderExp(j.minutos, j.age)
       });
     }
   }
