@@ -49,23 +49,28 @@ function calcularPuntosExperiencia(edad, minutos) {
   return TABLA_EXPERIENCIA[rangoEdad][rangoMinutos] || 0;
 }
 
+function calcularMaxMins(edad) {
+  const rangoEdad = getRangoEdad(edad);
+  if (!rangoEdad) return 0;
+  return TABLA_EXPERIENCIA[rangoEdad][] || 0;
+}
+
 // ===============================
 // MINUTOS PARA NO PERDER EXP
 // ===============================
-function minutosParaNoPerderExp(minutosActuales,edad) {
-  const expActual = calcularPuntosExperiencia(edad, minutosActuales);
+function minutosParaNoPerderExp(edad, minutos) {
 
-  // buscamos hacia arriba hasta 3000
-  for (let m = minutosActuales + 1; m <= 3000; m++) {
-    const exp = calcularPuntosExperiencia(edad, m);
+  let objetivo = null;
 
-    // cuando deja de empeorar → punto seguro
-    if (exp < expActual) continue;
+  if (edad >= 30 && edad <= 32) objetivo = 1000;
+  else if (edad >= 33 && edad <= 34) objetivo = 2000;
+  else if (edad >= 35 && edad <= 36) objetivo = 3000;
+  else if (edad >= 37) return null; // imposible
 
-    return m - minutosActuales;
-  }
+  // ya cumple
+  if (minutos >= objetivo) return 0;
 
-  return 0;
+  return objetivo - minutos;
 }
 
 // ===============================
@@ -156,7 +161,7 @@ async function renderTeams(teams) {
         minutos: j.minutos,
         rango: `${j.rangoEdad}/${j.rangoMinutos}`,
         exp: j.puntosExp,
-        faltanMin: minutosParaNoPerderExp(j.minutos, j.age)
+        faltanMin: minutosParaNoPerderExp(j.age, j.minutos)
       });
     }
   }
@@ -211,7 +216,7 @@ function renderTabla(filas) {
         <td style="text-align:center;">${f.minutos.toLocaleString()}</td>
         <td style="text-align:center; color:#666;">${f.rango}</td>
         <td style="text-align:center; color:#0d6efd; font-weight:bold;">
-          ${f.faltanMin > 0 ? f.faltanMin.toLocaleString() : '-'}
+          ${f.faltanMin === null ? '-' : f.faltanMin.toLocaleString()}
         </td>
         <td style="text-align:center; font-weight:bold; color:#d63384;">
           ${f.exp}
