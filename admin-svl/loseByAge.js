@@ -1,13 +1,20 @@
-import { getQueryParam, crearTabla, esSub21, esMayor30,
-         porteros, defensas, delanteros, mediocampistas,mediapuntas, pivotes, posicion, parsearTablaSalarios,
-		 avgporteros,avgdefensas,avgdelanteros,avgmediocampistas,avgmediapuntas, avgpivotes, totalPotencial,avgage,
-  calcularSalarioJugador, potencialJugador,extremosPorteros,extremosDefensas,extremosDelanteros,extremosMedios,extremosPivotes,extremosMediapuntas,
-  calcularSalarioTotal } from '../JS/utils.js';
+import {
+  getQueryParam, crearTabla, esSub21, esMayor30,
+  porteros, defensas, delanteros, mediocampistas, mediapuntas, pivotes, posicion,
+  parsearTablaSalarios,
+  avgporteros, avgdefensas, avgdelanteros, avgmediocampistas, avgmediapuntas, avgpivotes,
+  totalPotencial, avgage,
+  calcularSalarioJugador, potencialJugador,
+  extremosPorteros, extremosDefensas, extremosDelanteros, extremosMedios, extremosPivotes, extremosMediapuntas,
+  calcularSalarioTotal
+} from '../JS/utils.js';
 
 const container = document.getElementById("teamsContainer");
 
+let filasGlobal = [];
+
 // ===============================
-/* TABLA DE EXPERIENCIA - PUNTOS QUE BAJA */
+// TABLA EXPERIENCIA
 // ===============================
 const TABLA_EXPERIENCIA = {
   '30-32': { '0-499': 300, '500-999': 150 },
@@ -16,7 +23,9 @@ const TABLA_EXPERIENCIA = {
   '>=37':  { '0-499': 1500, '500-999': 1100, '1000-1999': 850, '2000-2999': 600, '>=3000': 350 }
 };
 
-// Función para calcular rango de edad
+// ===============================
+// RANGOS
+// ===============================
 function getRangoEdad(edad) {
   if (edad >= 37) return '>=37';
   if (edad >= 35) return '35-36';
@@ -25,7 +34,6 @@ function getRangoEdad(edad) {
   return null;
 }
 
-// Función para calcular rango de minutos
 function getRangoMinutos(minutos) {
   if (minutos >= 3000) return '>=3000';
   if (minutos >= 2000) return '2000-2999';
@@ -34,34 +42,42 @@ function getRangoMinutos(minutos) {
   return '0-499';
 }
 
-// Función para calcular puntos de experiencia que baja
 function calcularPuntosExperiencia(edad, minutos) {
   const rangoEdad = getRangoEdad(edad);
   const rangoMinutos = getRangoMinutos(minutos);
-  
   if (!rangoEdad) return 0;
-  
-  const puntos = TABLA_EXPERIENCIA[rangoEdad][rangoMinutos];
-  return puntos || 0;
+  return TABLA_EXPERIENCIA[rangoEdad][rangoMinutos] || 0;
 }
 
 // ===============================
-// Cargar y procesar un equipo
+// MINUTOS PARA NO PERDER EXP
+// ===============================
+function minutosParaNoPerderExp(minutos) {
+  if (minutos < 500) return 500 - minutos;
+  if (minutos < 1000) return 1000 - minutos;
+  if (minutos < 2000) return 2000 - minutos;
+  if (minutos < 3000) return 3000 - minutos;
+  return 0;
+}
+
+// ===============================
+// PROCESAR EQUIPO
 // ===============================
 async function procesarEquipo(team) {
   try {
-    container.innerHTML = `Cargando equipo: <strong>${team.team}</strong>...`;
     const response = await fetch(team.dropbox_dir);
     if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
 
     const txt = await response.text();
     const lines = txt.trim().split('\n');
     const sep = lines.findIndex(l => l.includes('---'));
-    const headersLine = sep >= 0 ? lines[0] : lines[0];
+
+    const headersLine = lines[0];
     const dataLines = sep >= 0 ? lines.slice(sep + 1) : lines.slice(1);
+
     const headers = headersLine.trim().split(/\s+/);
 
-    const jugadores = dataLines
+    return dataLines
       .filter(l => l.trim() !== '')
       .map(line => {
         const values = line.trim().split(/\s+/);
@@ -70,65 +86,47 @@ async function procesarEquipo(team) {
         return jugador;
       });
 
-    return jugadores;
-
   } catch (error) {
     console.error(`Error procesando ${team.team}:`, error);
     return [];
   }
 }
 
-// Nueva función para filtrar jugadores >= 30 años + calcular experiencia
+// ===============================
+// FILTRAR + EXP
+// ===============================
 function obtenerJugadoresMayores30(jugadores) {
   return jugadores
     .filter(j => parseInt(j.Age) >= 30)
     .map(j => {
       const edad = parseInt(j.Age);
       const minutos = parseInt(j.Min) || 0;
-      const partidos = parseInt(j.Gam) || 0;
-      
+
       return {
         name: j.Name,
         age: edad,
         minutos,
-        partidos,
         puntosExp: calcularPuntosExperiencia(edad, minutos),
         rangoEdad: getRangoEdad(edad),
         rangoMinutos: getRangoMinutos(minutos)
       };
-    })
-    .sort((a, b) => b.puntosExp - a.puntosExp || b.minutos - a.minutos);
+    });
 }
 
 // ===============================
-// Cargar lista de equipos
+// CARGAR TEAMS
 // ===============================
 fetch("../JS/teams.json")
-  .then(res => {
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status} - No se pudo cargar teams.json`);
-    }
-    return res.json();
-  })
+  .then(res => res.json())
   .then(teams => renderTeams(teams))
   .catch(err => {
-    console.error("Error completo:", err);
-    container.innerHTML = `
-      <div style="color: red; padding: 20px; border: 1px solid red;">
-        <h3>Error cargando equipos</h3>
-        <p>${err.message}</p>
-      </div>
-    `;
+    container.innerHTML = `<p style="color:red;">${err.message}</p>`;
   });
 
 // ===============================
-// Render tabla de equipos
+// RENDER GLOBAL
 // ===============================
 async function renderTeams(teams) {
-  if (!teams || !teams.length) {
-    container.innerHTML = "<p>No hay equipos disponibles.</p>";
-    return;
-  }
 
   let filas = [];
 
@@ -139,7 +137,6 @@ async function renderTeams(teams) {
     const mayores30 = obtenerJugadoresMayores30(jugadores);
 
     for (const j of mayores30) {
-      // ❌ excluir los que no bajan EXP
       if (j.puntosExp <= 0) continue;
 
       filas.push({
@@ -150,16 +147,33 @@ async function renderTeams(teams) {
         edad: j.age,
         minutos: j.minutos,
         rango: `${j.rangoEdad}/${j.rangoMinutos}`,
-        exp: j.puntosExp
+        exp: j.puntosExp,
+        faltanMin: minutosParaNoPerderExp(j.minutos)
       });
     }
   }
 
-  let html = `
-    <div style="padding: 10px;">
-      <h2>📊 Bajada de Experiencia (jugadores 30+)</h2>
+  filasGlobal = filas;
+  renderTabla(filasGlobal);
+}
 
-      <table style="width:100%; border-collapse: collapse; font-size: 13px;">
+// ===============================
+// TABLA + FILTRO
+// ===============================
+function renderTabla(filas) {
+
+  let html = `
+    <div style="padding:10px;">
+      <h2>📊 Bajada de Experiencia (30+)</h2>
+
+      <div style="margin-bottom:10px;">
+        <label><strong>Filtrar equipo:</strong></label>
+        <select id="teamFilter" style="margin-left:10px; padding:5px;">
+          <option value="ALL">Todos</option>
+        </select>
+      </div>
+
+      <table style="width:100%; border-collapse: collapse; font-size:13px;">
         <thead>
           <tr style="background:#f2f2f2;">
             <th>Escudo</th>
@@ -169,6 +183,7 @@ async function renderTeams(teams) {
             <th>Edad</th>
             <th>Min</th>
             <th>Umbral</th>
+            <th>Faltan min</th>
             <th>EXP ↓</th>
           </tr>
         </thead>
@@ -177,16 +192,19 @@ async function renderTeams(teams) {
 
   for (const f of filas) {
     html += `
-      <tr>
+      <tr data-team="${f.equipo}">
         <td style="text-align:center;">
           <img src="${f.escudo}" width="28" height="28"/>
         </td>
         <td style="text-align:center; font-weight:bold;">${f.abrev}</td>
         <td>${f.equipo}</td>
-        <td style="font-weight:500;">${f.jugador}</td>
+        <td>${f.jugador}</td>
         <td style="text-align:center; font-weight:bold;">${f.edad}</td>
         <td style="text-align:center;">${f.minutos.toLocaleString()}</td>
-        <td style="text-align:center; font-size:12px; color:#666;">${f.rango}</td>
+        <td style="text-align:center; color:#666;">${f.rango}</td>
+        <td style="text-align:center; color:#0d6efd; font-weight:bold;">
+          ${f.faltanMin > 0 ? f.faltanMin.toLocaleString() : '-'}
+        </td>
         <td style="text-align:center; font-weight:bold; color:#d63384;">
           ${f.exp}
         </td>
@@ -201,4 +219,32 @@ async function renderTeams(teams) {
   `;
 
   container.innerHTML = html;
+
+  activarFiltro();
+}
+
+// ===============================
+// FILTRO EN TIEMPO REAL
+// ===============================
+function activarFiltro() {
+  const select = document.getElementById("teamFilter");
+
+  const equipos = [...new Set(filasGlobal.map(f => f.equipo))];
+
+  equipos.forEach(eq => {
+    const opt = document.createElement("option");
+    opt.value = eq;
+    opt.textContent = eq;
+    select.appendChild(opt);
+  });
+
+  select.addEventListener("change", (e) => {
+    const value = e.target.value;
+    const rows = document.querySelectorAll("tbody tr");
+
+    rows.forEach(row => {
+      const team = row.getAttribute("data-team");
+      row.style.display = (value === "ALL" || team === value) ? "" : "none";
+    });
+  });
 }
