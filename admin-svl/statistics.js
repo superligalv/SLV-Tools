@@ -240,7 +240,7 @@ fetch("../JS/teams.json")
     const goleadores = crearTop(
       jugadores,
       "Gl",
-      25
+      10
     );
 
     // ==================================
@@ -248,8 +248,8 @@ fetch("../JS/teams.json")
     // ==================================
     const asistentes = crearTop(
       jugadores,
-      "Ast",
-      25
+      "Ass",
+      10
     );
 
     // ==================================
@@ -257,8 +257,8 @@ fetch("../JS/teams.json")
     // ==================================
     const cortes = crearTop(
       jugadores,
-      "Tk",
-      25
+      "Ktk",
+      10
     );
 
     // ==================================
@@ -266,8 +266,8 @@ fetch("../JS/teams.json")
     // ==================================
     const porteros = crearTop(
       jugadores,
-      "St",
-      15,
+      "Sav",
+      10,
       j => posicion(j) === "GK"
     );
 
@@ -277,7 +277,7 @@ fetch("../JS/teams.json")
     const moms = crearTop(
       jugadores,
       "MoM",
-      25
+      10
     );
 
     // ==================================
@@ -295,25 +295,25 @@ fetch("../JS/teams.json")
     html += renderRanking(
       "⚽ Top Goleadores",
       goleadores,
-      "Gl"
+      "Gls"
     );
 
     html += renderRanking(
       "🎯 Top Asistentes",
       asistentes,
-      "Ast"
+      "Ass"
     );
 
     html += renderRanking(
       "🛡️ Top Cortes",
       cortes,
-      "Tk"
+      "Ktk"
     );
 
     html += renderRanking(
-      "🧤 Mejores Porteros",
+      "🧤 Top Paradas",
       porteros,
-      "St"
+      "Sav"
     );
 
     html += renderRanking(
