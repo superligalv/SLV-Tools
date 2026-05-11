@@ -317,9 +317,9 @@ fetch("../JS/teams.json")
     );
 
     html += renderRanking(
-      "⭐ Más MoMs",
+      "Top Man of the Match",
       moms,
-      "MoM"
+      "Mom"
     );
 
     container.innerHTML = html;
