@@ -1,6 +1,6 @@
 import {
   posicion
-} from './utils.js';
+} from '../JS/utils.js';
 
 const container = document.getElementById("teamsContainer");
 
