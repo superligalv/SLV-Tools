@@ -89,7 +89,7 @@ async function cargarTodosLosJugadores(teams) {
 function crearTop(
   jugadores,
   campo,
-  limite = 20,
+  limite = 5,
   filtro = null
 ) {
 
@@ -110,10 +110,14 @@ function crearTop(
     .slice(0, limite);
 }
 
+// ======================================
+// Crear TOP Custom
+// ======================================
+
 function crearTopCustom(
   jugadores,
   calculo,
-  limite = 20,
+  limite = 5,
   filtro = null
 ) {
 
@@ -275,7 +279,7 @@ fetch("../JS/teams.json")
 	  j => {
 
 		const goles = parseInt(j.gls || 0);
-		const mins = parseInt(j.mins || 1);
+		const mins = parseInt(j.min || 1);
 
 		return goles / mins;
 	  }
