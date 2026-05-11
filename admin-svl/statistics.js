@@ -265,7 +265,7 @@ function renderRanking(
 // ======================================
 // MAIN
 // ======================================
-fetch("./teams.json")
+fetch("../JS/teams.json")
 
   .then(res => {
 
