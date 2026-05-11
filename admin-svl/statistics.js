@@ -275,7 +275,7 @@ fetch("../JS/teams.json")
 	  j => {
 
 		const goles = parseInt(j.gls || 0);
-		const mins = parseInt(j.mins || 0);
+		const mins = parseInt(j.mins || 1);
 
 		return goles / mins;
 	  }
@@ -334,6 +334,12 @@ fetch("../JS/teams.json")
       "⚽ Top Goleadores",
       goleadores,
       "Gls"
+    );
+
+	html += renderRanking(
+      "⚽ Top Goleadores/Min",
+      golesPorMinuto,
+      "Goles/Min"
     );
 
     html += renderRanking(
