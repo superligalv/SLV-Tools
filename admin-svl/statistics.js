@@ -110,6 +110,33 @@ function crearTop(
     .slice(0, limite);
 }
 
+function crearTopCustom(
+  jugadores,
+  calculo,
+  limite = 20,
+  filtro = null
+) {
+
+  let lista = [...jugadores];
+
+  if (filtro) {
+    lista = lista.filter(filtro);
+  }
+
+  return lista
+    .map(j => {
+
+      const valor = calculo(j);
+
+      return {
+        ...j,
+        rankingValue: valor
+      };
+    })
+    .sort((a, b) => b.rankingValue - a.rankingValue)
+    .slice(0, limite);
+}
+
 // ======================================
 // Render tabla ranking
 // ======================================
@@ -242,7 +269,18 @@ fetch("../JS/teams.json")
       "Gls",
       5
     );
+	
+	const golesPorMinuto = crearTopCustom(
+	  jugadores,
+	  j => {
 
+		const goles = parseInt(j.gls || 0);
+		const mins = parseInt(j.mins || 0);
+
+		return goles / mins;
+	  }
+	);
+	
     // ==================================
     // TOP ASISTENTES
     // ==================================
