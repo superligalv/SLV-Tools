@@ -1,11 +1,11 @@
 import {
   posicion
-} from '../JS/utils.js';
+} from './utils.js';
 
 const container = document.getElementById("teamsContainer");
 
 // ======================================
-// Procesar un equipo
+// Procesar equipo
 // ======================================
 async function procesarEquipo(team) {
 
@@ -27,7 +27,7 @@ async function procesarEquipo(team) {
 
     const sep = lines.findIndex(l => l.includes('---'));
 
-    const headersLine = sep >= 0 ? lines[0] : lines[0];
+    const headersLine = lines[0];
 
     const dataLines = sep >= 0
       ? lines.slice(sep + 1)
@@ -46,14 +46,16 @@ async function procesarEquipo(team) {
         headers.forEach((h, i) => {
           jugador[h] = values[i] || '';
         });
-		console.log(jugador);
+
         return jugador;
       });
 
     // Añadir datos del equipo
     jugadores.forEach(j => {
+
       j.team = team.team;
       j.teamId = team.id;
+
     });
 
     return jugadores;
@@ -67,7 +69,7 @@ async function procesarEquipo(team) {
 }
 
 // ======================================
-// Cargar TODOS los jugadores
+// Cargar todos jugadores
 // ======================================
 async function cargarTodosLosJugadores(teams) {
 
@@ -84,12 +86,12 @@ async function cargarTodosLosJugadores(teams) {
 }
 
 // ======================================
-// Crear TOP genérico
+// TOP normal
 // ======================================
 function crearTop(
   jugadores,
   campo,
-  limite = 5,
+  limite = 10,
   filtro = null
 ) {
 
@@ -111,13 +113,12 @@ function crearTop(
 }
 
 // ======================================
-// Crear TOP Custom
+// TOP custom
 // ======================================
-
 function crearTopCustom(
   jugadores,
   calculo,
-  limite = 5,
+  limite = 10,
   filtro = null
 ) {
 
@@ -142,17 +143,21 @@ function crearTopCustom(
 }
 
 // ======================================
-// Render tabla ranking
+// Render Ranking
 // ======================================
 function renderRanking(
   titulo,
   jugadores,
-  campo
+  campo,
+  decimales = 0
 ) {
 
   let html = `
   
-    <h2 style="margin-top:40px;">
+    <h2 style="
+      margin-top:40px;
+      margin-bottom:10px;
+    ">
       ${titulo}
     </h2>
 
@@ -160,6 +165,7 @@ function renderRanking(
       width:100%;
       border-collapse: collapse;
       margin-bottom:40px;
+      background:white;
     ">
 
       <thead>
@@ -195,6 +201,19 @@ function renderRanking(
 
   jugadores.forEach((j, idx) => {
 
+    let valor = 0;
+
+    // Rankings custom
+    if (j.rankingValue !== undefined) {
+
+      valor = Number(j.rankingValue)
+        .toFixed(decimales);
+
+    } else {
+
+      valor = j[campo] || 0;
+    }
+
     html += `
     
       <tr>
@@ -211,9 +230,12 @@ function renderRanking(
 
           <img
             src="../images/flags/headerRund/${j.teamId}.png"
-            width="20"
-            height="20"
-            style="vertical-align:middle;margin-right:5px;"
+            width="22"
+            height="22"
+            style="
+              vertical-align:middle;
+              margin-right:6px;
+            "
           />
 
           ${j.team}
@@ -225,7 +247,7 @@ function renderRanking(
         </td>
 
         <td style="border:1px solid #ddd;padding:8px;">
-          ${j[campo] || 0}
+          ${valor}
         </td>
 
       </tr>
@@ -243,11 +265,12 @@ function renderRanking(
 // ======================================
 // MAIN
 // ======================================
-fetch("../JS/teams.json")
+fetch("./teams.json")
 
   .then(res => {
 
     if (!res.ok) {
+
       throw new Error(
         `HTTP ${res.status} - Error cargando teams.json`
       );
@@ -263,76 +286,190 @@ fetch("../JS/teams.json")
     // ==================================
     const jugadores = await cargarTodosLosJugadores(teams);
 
-    console.log("Jugadores cargados:", jugadores.length);
+    console.log(
+      "Jugadores cargados:",
+      jugadores.length
+    );
 
     // ==================================
-    // TOP GOLEADORES
+    // GOLEADORES
     // ==================================
     const goleadores = crearTop(
       jugadores,
       "Gls",
-      5
+      10
     );
-	
-	const golesPorMinuto  = crearTopCustom(
 
-	  jugadores,
-
-	  j => {
-
-		const goles = parseInt(j.Gls || 0);
-		const mins = parseInt(j.Min || 1);
-
-		return (goles / mins) * 90;
-	  },
-
-	  10,
-
-	  j => parseInt(j.Min || 0) >= 800
-	);
-	
     // ==================================
-    // TOP ASISTENTES
+    // GOLES POR 90
+    // ==================================
+    const golesPor90 = crearTopCustom(
+
+      jugadores,
+
+      j => {
+
+        const goles = parseInt(j.Gls || 0);
+        const mins = parseInt(j.Min || 1);
+
+        return (goles / mins) * 90;
+      },
+
+      10,
+
+      j => parseInt(j.Min || 0) >= 800
+    );
+
+    // ==================================
+    // ASISTENCIAS
     // ==================================
     const asistentes = crearTop(
       jugadores,
       "Ass",
-      5
+      10
     );
 
     // ==================================
-    // TOP CORTES
+    // ASISTENCIAS POR 90
+    // ==================================
+    const asistenciasPor90 = crearTopCustom(
+
+      jugadores,
+
+      j => {
+
+        const assists = parseInt(j.Ass || 0);
+        const mins = parseInt(j.Min || 1);
+
+        return (assists / mins) * 90;
+      },
+
+      10,
+
+      j => parseInt(j.Min || 0) >= 800
+    );
+
+    // ==================================
+    // CORTES
     // ==================================
     const cortes = crearTop(
       jugadores,
       "Ktk",
-      5
+      10
     );
 
     // ==================================
-    // TOP PORTEROS
+    // CORTES POR 90
+    // ==================================
+    const cortesPor90 = crearTopCustom(
+
+      jugadores,
+
+      j => {
+
+        const tackles = parseInt(j.Ktk || 0);
+        const mins = parseInt(j.Min || 1);
+
+        return (tackles / mins) * 90;
+      },
+
+      10,
+
+      j => parseInt(j.Min || 0) >= 800
+    );
+
+    // ==================================
+    // PORTEROS
     // ==================================
     const porteros = crearTop(
       jugadores,
       "Sav",
-      5,
+      10,
       j => posicion(j) === "GK"
     );
 
     // ==================================
-    // TOP MoMs
+    // PARADAS POR 90
+    // ==================================
+    const savesPor90 = crearTopCustom(
+
+      jugadores,
+
+      j => {
+
+        const saves = parseInt(j.Sav || 0);
+        const mins = parseInt(j.Min || 1);
+
+        return (saves / mins) * 90;
+      },
+
+      10,
+
+      j =>
+        posicion(j) === "GK" &&
+        parseInt(j.Min || 0) >= 500
+    );
+
+    // ==================================
+    // EFECTIVIDAD PORTEROS
+    // ==================================
+    const efectividadPortero = crearTopCustom(
+
+      jugadores,
+
+      j => {
+
+        const saves = parseInt(j.Sav || 0);
+        const conceded = parseInt(j.Con || 1);
+
+        return saves / conceded;
+      },
+
+      10,
+
+      j =>
+        posicion(j) === "GK" &&
+        parseInt(j.Con || 0) > 0
+    );
+
+    // ==================================
+    // MOMs
     // ==================================
     const moms = crearTop(
       jugadores,
       "MoM",
-      5
+      10
     );
 
     // ==================================
-    // Render HTML
+    // CONTRIBUCIÓN OFENSIVA
+    // ==================================
+    const contribucionOfensiva = crearTopCustom(
+
+      jugadores,
+
+      j => {
+
+        const goles = parseInt(j.Gls || 0);
+        const assists = parseInt(j.Ass || 0);
+        const mins = parseInt(j.Min || 1);
+
+        return (
+          ((goles + assists) / mins) * 90
+        );
+      },
+
+      10,
+
+      j => parseInt(j.Min || 0) >= 800
+    );
+
+    // ==================================
+    // HTML
     // ==================================
     let html = `
-      <h1>Rankings Globales</h1>
+    
+      <h1>⚽ Rankings Globales</h1>
 
       <p>
         Total jugadores analizados:
@@ -340,22 +477,33 @@ fetch("../JS/teams.json")
       </p>
     `;
 
+    // ==================================
+    // Render rankings
+    // ==================================
     html += renderRanking(
       "⚽ Top Goleadores",
       goleadores,
       "Gls"
     );
 
-	html += renderRanking(
-      "⚽ Top Goleadores/Min",
-      golesPorMinuto,
-      "Goles/Min"
+    html += renderRanking(
+      "⚽ Goles por 90",
+      golesPor90,
+      "Gls/90",
+      2
     );
 
     html += renderRanking(
-      "🎯 Top Asistentes",
+      "🎯 Top Asistencias",
       asistentes,
       "Ass"
+    );
+
+    html += renderRanking(
+      "🎯 Asistencias por 90",
+      asistenciasPor90,
+      "Ass/90",
+      2
     );
 
     html += renderRanking(
@@ -365,17 +513,48 @@ fetch("../JS/teams.json")
     );
 
     html += renderRanking(
+      "🛡️ Cortes por 90",
+      cortesPor90,
+      "Ktk/90",
+      2
+    );
+
+    html += renderRanking(
       "🧤 Top Paradas",
       porteros,
       "Sav"
     );
 
     html += renderRanking(
-      "Top Man of the Match",
-      moms,
-      "Mom"
+      "🧤 Paradas por 90",
+      savesPor90,
+      "Sav/90",
+      2
     );
 
+    html += renderRanking(
+      "🧤 Efectividad Porteros",
+      efectividadPortero,
+      "Sav/Con",
+      2
+    );
+
+    html += renderRanking(
+      "⭐ Top MoMs",
+      moms,
+      "MoM"
+    );
+
+    html += renderRanking(
+      "🔥 Contribución Ofensiva",
+      contribucionOfensiva,
+      "(G+A)/90",
+      2
+    );
+
+    // ==================================
+    // Pintar HTML
+    // ==================================
     container.innerHTML = html;
   })
 
@@ -389,6 +568,7 @@ fetch("../JS/teams.json")
         color:red;
         border:1px solid red;
         padding:20px;
+        background:#fff0f0;
       ">
 
         <h3>Error cargando datos</h3>
