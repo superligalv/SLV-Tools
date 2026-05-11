@@ -280,7 +280,7 @@ fetch("../JS/teams.json")
 
 		const goles = parseInt(j.gls || 0);
 		const mins = parseInt(j.min || 1);
-
+		console.log(j.Min + " " +j.Gls)
 		return goles / mins;
 	  }
 	);
