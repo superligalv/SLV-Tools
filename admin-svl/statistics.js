@@ -46,7 +46,7 @@ async function procesarEquipo(team) {
         headers.forEach((h, i) => {
           jugador[h] = values[i] || '';
         });
-
+		console.log(jugador);
         return jugador;
       });
 
@@ -239,8 +239,8 @@ fetch("../JS/teams.json")
     // ==================================
     const goleadores = crearTop(
       jugadores,
-      "Gl",
-      10
+      "Gls",
+      5
     );
 
     // ==================================
@@ -249,7 +249,7 @@ fetch("../JS/teams.json")
     const asistentes = crearTop(
       jugadores,
       "Ass",
-      10
+      5
     );
 
     // ==================================
@@ -258,7 +258,7 @@ fetch("../JS/teams.json")
     const cortes = crearTop(
       jugadores,
       "Ktk",
-      10
+      5
     );
 
     // ==================================
@@ -267,7 +267,7 @@ fetch("../JS/teams.json")
     const porteros = crearTop(
       jugadores,
       "Sav",
-      10,
+      5,
       j => posicion(j) === "GK"
     );
 
@@ -277,7 +277,7 @@ fetch("../JS/teams.json")
     const moms = crearTop(
       jugadores,
       "MoM",
-      10
+      5
     );
 
     // ==================================
