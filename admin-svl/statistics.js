@@ -274,15 +274,21 @@ fetch("../JS/teams.json")
       5
     );
 	
-	const golesPorMinuto = crearTopCustom(
+	const golesPorMinuto  = crearTopCustom(
+
 	  jugadores,
+
 	  j => {
 
-		const goles = parseInt(j.gls || 0);
-		const mins = parseInt(j.min || 1);
-		console.log(j.Min + " " +j.Gls)
-		return goles / mins;
-	  }
+		const goles = parseInt(j.Gls || 0);
+		const mins = parseInt(j.Min || 1);
+
+		return (goles / mins) * 90;
+	  },
+
+	  10,
+
+	  j => parseInt(j.Min || 0) >= 800
 	);
 	
     // ==================================
