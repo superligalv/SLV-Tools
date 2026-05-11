@@ -437,7 +437,7 @@ fetch("../JS/teams.json")
     // ==================================
     const moms = crearTop(
       jugadores,
-      "MoM",
+      "Mom",
       10
     );
 
@@ -542,7 +542,7 @@ fetch("../JS/teams.json")
     html += renderRanking(
       "⭐ Top MoMs",
       moms,
-      "MoM"
+      "Mom"
     );
 
     html += renderRanking(
