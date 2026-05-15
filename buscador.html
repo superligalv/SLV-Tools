@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏆 Scouting Superliga LV</title>
+
+<style>
+
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>🏆 Scouting Superliga LV</h1>
+  <p class="subtitle">Encuentra los mejores talentos con filtros avanzados</p>
+
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <div>Cargando base de datos de jugadores...</div>
+    <div style="font-size: 0.9rem; color: #64748b;">Esto puede tomar unos segundos</div>
+  </div>
+
+  <div id="controls" style="display: none;">
+    <div class="panel">
+      <div class="search-row">
+        <div class="filter-group">
+          <label class="filter-label">🔍 Buscar jugador</label>
+          <div class="input-wrapper">
+            <input type="text" id="nameSearch" placeholder="Escribe el nombre del jugador...">
+          </div>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">⚽ Equipo</label>
+          <select id="teamFilter">
+            <option value="all">Todos los equipos</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">🏳️ Nacionalidad</label>
+          <select id="natFilter">
+            <option value="all">Todas las nacionalidades</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filters-grid">
+  <div class="filter-group">
+    <label class="filter-label">📏 Edad</label>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="range" id="ageMin" min="16" max="40" value="16" style="flex: 1;">
+      <span class="range-value" id="ageMinVal">16</span>
+      <input type="range" id="ageMax" min="16" max="40" value="40" style="flex: 1;">
+      <span class="range-value" id="ageMaxVal">40</span>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label class="filter-label">⭐ ST</label>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="range" id="stMin" min="0" max="20" value="0" style="flex: 1;">
+      <span class="range-value" id="stMinVal">0</span>
+      <input type="range" id="stMax" min="0" max="20" value="20" style="flex: 1;">
+      <span class="range-value" id="stMaxVal">20</span>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label class="filter-label">⚔️ TK</label>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="range" id="tkMin" min="0" max="20" value="0" style="flex: 1;">
+      <span class="range-value" id="tkMinVal">0</span>
+      <input type="range" id="tkMax" min="0" max="20" value="20" style="flex: 1;">
+      <span class="range-value" id="tkMaxVal">20</span>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label class="filter-label">🎯 PS</label>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="range" id="psMin" min="0" max="20" value="0" style="flex: 1;">
+      <span class="range-value" id="psMinVal">0</span>
+      <input type="range" id="psMax" min="0" max="20" value="20" style="flex: 1;">
+      <span class="range-value" id="psMaxVal">20</span>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <label class="filter-label">💥 SH</label>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <input type="range" id="shMin" min="0" max="20" value="0" style="flex: 1;">
+      <span class="range-value" id="shMinVal">0</span>
+      <input type="range" id="shMax" min="0" max="20" value="20" style="flex: 1;">
+      <span class="range-value" id="shMaxVal">20</span>
+    </div>
+  </div>
+</div>
+
+      <div class="position-grid">
+        <button class="pos-btn active" data-pos="all">TODOS</button>
+        <button class="pos-btn" data-pos="GK">🧤 GK</button>
+        <button class="pos-btn" data-pos="DF">🛡️ DF</button>
+        <button class="pos-btn" data-pos="MF">⚙️ MF</button>
+        <button class="pos-btn" data-pos="FW">⚽ FW</button>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="updateAll()">🔍 BUSCAR JUGADORES</button>
+        <button class="btn btn-secondary" onclick="resetFilters()">🔄 Resetear todo</button>
+        <button class="btn btn-secondary" onclick="exportResults()">📊 Exportar CSV</button>
+      </div>
+
+      <div class="stats-row" id="statsRow" style="display: none;">
+        <div class="stat-card">
+          <div class="stat-number" id="totalPlayers">0</div>
+          <div class="stat-label">Jugadores encontrados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="avgAge">-</div>
+          <div class="stat-label">Edad promedio</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="topStat">-</div>
+          <div class="stat-label">Mejor stat</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tableContainer" class="table-container" style="display: none;">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Equipo</th>
+          <th>Edad</th>
+          <th>NAT</th>
+          <th>ST</th>
+          <th>TK</th>
+          <th>PS</th>
+          <th>SH</th>
+          <th>AG</th>
+          <th>KAb</th>
+          <th>TAb</th>
+          <th>PAb</th>
+          <th>SAb</th>
+        </tr>
+      </thead>
+      <tbody id="results"></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="./JS/buscador.js"></script>
+</body>
+</html>
