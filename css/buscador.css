@@ -59,7 +59,8 @@
   }
 
   .panel {
-    background: rgba(17, 28, 51, 0.8);
+    /*background: rgba(17, 28, 51, 0.8);*/
+	background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(59, 130, 246, 0.2);
     border-radius: 20px;
@@ -244,7 +245,8 @@
   }
 
   .stat-card {
-    background: rgba(30, 41, 59, 0.6);
+    /*background: rgba(30, 41, 59, 0.6);*/
+	background: rgba(255, 255, 255, 0.8);
     padding: 15px 25px;
     border-radius: 12px;
     text-align: center;
@@ -265,7 +267,7 @@
   }
 
   .table-container {
-    background: rgba(17, 28, 51, 0.8);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
     border-radius: 20px;
     overflow: hidden;
