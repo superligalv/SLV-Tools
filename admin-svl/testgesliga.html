@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Gesliga Widget</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { border: 1px solid #ccc; padding: 6px; }
+  </style>
+</head>
+<body>
+
+<h2>Clasificación</h2>
+<div id="output">Cargando...</div>
+
+<script>
+// 🔥 LEER ID DESDE URL
+const params = new URLSearchParams(window.location.search);
+const ligaId = params.get("id");
+
+// fallback si no hay id
+if (!ligaId) {
+  document.getElementById("output").innerHTML = "Falta parámetro ?id=";
+  throw new Error("No id provided");
+}
+
+// URL dinámica
+const url = `https://gesliga.com/Clasificacion.aspx?Liga=${ligaId}`;
+
+fetch(url)
+  .then(res => res.text())
+  .then(html => {
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+
+    const table = doc.querySelector("table");
+
+    if (!table) {
+      document.getElementById("output").innerHTML = "No se encontró tabla";
+      return;
+    }
+
+    let output = "<table>";
+
+    table.querySelectorAll("tr").forEach(row => {
+      const cells = row.querySelectorAll("td, th");
+      if (!cells.length) return;
+
+      output += "<tr>";
+      cells.forEach(cell => {
+        output += `<td>${cell.innerText.trim()}</td>`;
+      });
+      output += "</tr>";
+    });
+
+    output += "</table>";
+
+    document.getElementById("output").innerHTML = output;
+
+  })
+  .catch(err => {
+    document.getElementById("output").innerHTML = "Error cargando datos";
+    console.error(err);
+  });
+</script>
+
+</body>
+</html>
