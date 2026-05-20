@@ -1,0 +1,66 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* WRAPPER */
+.wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* SLIDER */
+.slider {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.track {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+
+/* CARD */
+.card {
+  min-width: 100%;
+  background: #303030;
+  padding: 20px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.team {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.score {
+  font-size: 32px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+/* BUTTONS */
+.btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  font-size: 24px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+#prev { left: -50px; }
+#next { right: -50px; }
+
+

@@ -86,14 +86,14 @@ body {
   <button class="btn" id="next">›</button>
 
 </div>
-
 <script>
 
 let index = 0;
 let matches = [];
+let interval;
 
 /* -------------------------
-   GET PARAM ?json=
+   PARAM JSON
 --------------------------*/
 function getParam(name) {
   const url = new URL(window.location.href);
@@ -101,12 +101,11 @@ function getParam(name) {
 }
 
 /* -------------------------
-   LOAD DATA DYNAMIC
+   LOAD DATA
 --------------------------*/
 async function loadData() {
 
   const file = getParam("json") || "slast";
-
   const path = `data/${file}.json`;
 
   const res = await fetch(path);
@@ -124,24 +123,50 @@ async function loadData() {
     </div>
   `).join("");
 
+  startAuto();
   update();
 }
 
 /* -------------------------
-   SLIDE
+   UPDATE SLIDE
 --------------------------*/
 function update() {
   const track = document.getElementById("track");
   track.style.transform = `translateX(-${index * 100}%)`;
 }
 
+/* -------------------------
+   AUTOPLAY LOOP
+--------------------------*/
+function startAuto() {
+
+  if (interval) clearInterval(interval);
+
+  interval = setInterval(() => {
+
+    if (matches.length === 0) return;
+
+    index++;
+
+    if (index >= matches.length) {
+      index = 0; // 🔥 LOOP INFINITO
+    }
+
+    update();
+
+  }, 3000); // cada 3 segundos
+}
+
+/* -------------------------
+   BOTONES MANUAL
+--------------------------*/
 document.getElementById("next").onclick = () => {
-  if (index < matches.length - 1) index++;
+  index = (index + 1) % matches.length;
   update();
 };
 
 document.getElementById("prev").onclick = () => {
-  if (index > 0) index--;
+  index = (index - 1 + matches.length) % matches.length;
   update();
 };
 
