@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>SLV Matches Slider</title>
+<title>SLV Slider</title>
 
 <style>
 body {
@@ -16,14 +16,19 @@ body {
   height: 100vh;
 }
 
-/* CONTENEDOR */
-.slider {
-  width: 90%;
+/* WRAPPER */
+.wrapper {
+  position: relative;
+  width: 100%;
   max-width: 500px;
-  overflow: hidden;
 }
 
-/* TRACK */
+/* SLIDER */
+.slider {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
 .track {
   display: flex;
   transition: transform 0.4s ease;
@@ -33,10 +38,9 @@ body {
 .card {
   min-width: 100%;
   background: #1a1a1a;
-  border-radius: 12px;
   padding: 20px;
-  box-sizing: border-box;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .team {
@@ -50,7 +54,7 @@ body {
   color: #00ff88;
 }
 
-/* BOTONES */
+/* BUTTONS */
 .btn {
   position: absolute;
   top: 50%;
@@ -64,15 +68,9 @@ body {
   border-radius: 8px;
 }
 
-#prev { left: 10px; }
-#next { right: 10px; }
+#prev { left: -50px; }
+#next { right: -50px; }
 
-.wrapper {
-  position: relative;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
 </style>
 </head>
 
@@ -95,26 +93,44 @@ body {
 let index = 0;
 let matches = [];
 
+/* -------------------------
+   GET PARAM ?json=
+--------------------------*/
+function getParam(name) {
+  const url = new URL(window.location.href);
+  return url.searchParams.get(name);
+}
+
+/* -------------------------
+   LOAD DATA DYNAMIC
+--------------------------*/
 async function loadData() {
 
-  const res = await fetch("data/slast.json");
+  const file = getParam("json") || "slast";
+
+  const path = `data/${file}.json`;
+
+  const res = await fetch(path);
   const data = await res.json();
 
-  matches = data.partidos;
+  matches = data.partidos || [];
 
   const track = document.getElementById("track");
 
   track.innerHTML = matches.map(m => `
     <div class="card">
-      <div class="team">${m.local}</div>
+      <div class="team">${m.local || "?"}</div>
       <div class="score">${m.resultado || "VS"}</div>
-      <div class="team">${m.visitante}</div>
+      <div class="team">${m.visitante || "?"}</div>
     </div>
   `).join("");
 
   update();
 }
 
+/* -------------------------
+   SLIDE
+--------------------------*/
 function update() {
   const track = document.getElementById("track");
   track.style.transform = `translateX(-${index * 100}%)`;
