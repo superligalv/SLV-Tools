@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SLV Matches Slider</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* CONTENEDOR */
+.slider {
+  width: 90%;
+  max-width: 500px;
+  overflow: hidden;
+}
+
+/* TRACK */
+.track {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+
+/* CARD */
+.card {
+  min-width: 100%;
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.team {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.score {
+  font-size: 32px;
+  font-weight: bold;
+  color: #00ff88;
+}
+
+/* BOTONES */
+.btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  font-size: 24px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+#prev { left: 10px; }
+#next { right: 10px; }
+
+.wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <button class="btn" id="prev">‹</button>
+
+  <div class="slider">
+    <div class="track" id="track"></div>
+  </div>
+
+  <button class="btn" id="next">›</button>
+
+</div>
+
+<script>
+
+let index = 0;
+let matches = [];
+
+async function loadData() {
+
+  const res = await fetch("data/slast.json");
+  const data = await res.json();
+
+  matches = data.partidos;
+
+  const track = document.getElementById("track");
+
+  track.innerHTML = matches.map(m => `
+    <div class="card">
+      <div class="team">${m.local}</div>
+      <div class="score">${m.resultado || "VS"}</div>
+      <div class="team">${m.visitante}</div>
+    </div>
+  `).join("");
+
+  update();
+}
+
+function update() {
+  const track = document.getElementById("track");
+  track.style.transform = `translateX(-${index * 100}%)`;
+}
+
+document.getElementById("next").onclick = () => {
+  if (index < matches.length - 1) index++;
+  update();
+};
+
+document.getElementById("prev").onclick = () => {
+  if (index > 0) index--;
+  update();
+};
+
+loadData();
+
+</script>
+
+</body>
+</html>
