@@ -1,0 +1,52 @@
+{
+  "liga": "502760",
+  "jornada": 30,
+  "updated": "2026-05-20T14:35:49.973777",
+  "partidos": [
+    {
+      "local": "Chelsea",
+      "resultado": null,
+      "visitante": "FC Bayern"
+    },
+    {
+      "local": "Girona FC",
+      "resultado": null,
+      "visitante": "SL Benfica"
+    },
+    {
+      "local": "Liverpool",
+      "resultado": null,
+      "visitante": "Brighton"
+    },
+    {
+      "local": "Newcastle",
+      "resultado": null,
+      "visitante": "FC Barcelona"
+    },
+    {
+      "local": "PSG",
+      "resultado": null,
+      "visitante": "Inter de Milan"
+    },
+    {
+      "local": "Real Madrid",
+      "resultado": null,
+      "visitante": "Manchester City"
+    },
+    {
+      "local": "Sevilla FC",
+      "resultado": null,
+      "visitante": "FC Porto"
+    },
+    {
+      "local": "Real Sociedad",
+      "resultado": null,
+      "visitante": "RB Leipzig"
+    },
+    {
+      "local": "Contactar",
+      "resultado": null,
+      "visitante": "Política de privacidad"
+    }
+  ]
+}
