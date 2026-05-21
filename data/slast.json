@@ -1,47 +1,52 @@
 {
   "liga": "502761",
-  "jornada": 29,
-  "updated": "2026-05-20T14:54:31.382526",
+  "jornada": 30,
+  "updated": "2026-05-21T06:47:26.090151",
   "partidos": [
     {
-      "local": "Ajax",
-      "resultado": "3-2",
-      "visitante": "B. Dortmund"
-    },
-    {
       "local": "Atletico de Madrid",
-      "resultado": "0-1",
-      "visitante": "B. Leverkusen"
-    },
-    {
-      "local": "Arsenal",
-      "resultado": "0-1",
-      "visitante": "O. Marsella"
-    },
-    {
-      "local": "Aston Villa",
-      "resultado": "4-2",
-      "visitante": "Manchester United"
-    },
-    {
-      "local": "Real Betis",
       "resultado": "0-0",
-      "visitante": "PSV"
+      "visitante": "Ajax"
     },
     {
-      "local": "Juventus",
-      "resultado": "0-2",
-      "visitante": "Tottenham"
+      "local": "B. Dortmund",
+      "resultado": "0-3",
+      "visitante": "Arsenal"
     },
     {
-      "local": "S. Lisboa",
-      "resultado": "1-2",
-      "visitante": "AS Roma"
-    },
-    {
-      "local": "AC Milan",
+      "local": "B. Leverkusen",
       "resultado": "2-0",
+      "visitante": "Aston Villa"
+    },
+    {
+      "local": "O. Marsella",
+      "resultado": "1-3",
+      "visitante": "Real Betis"
+    },
+    {
+      "local": "Manchester United",
+      "resultado": "1-0",
+      "visitante": "Juventus"
+    },
+    {
+      "local": "PSV",
+      "resultado": "0-0",
+      "visitante": "S. Lisboa"
+    },
+    {
+      "local": "Tottenham",
+      "resultado": "2-0",
+      "visitante": "AC Milan"
+    },
+    {
+      "local": "AS Roma",
+      "resultado": "3-0",
       "visitante": "SSC Napoli"
+    },
+    {
+      "local": "Contactar",
+      "resultado": null,
+      "visitante": "Política de privacidad"
     }
   ]
 }
