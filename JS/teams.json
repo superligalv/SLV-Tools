@@ -39,4 +39,5 @@
   { "id": "lyo", "team": "Olympique Lyonnais", "dropbox_dir": "https://dl.dropbox.com/scl/fi/ot381kvokw3sg9m42omnq/lyo.txt?rlkey=w6ldoxl5boa1dy9etolf6a9a1&st=6gj58nd3&dl=0" },
   { "id": "mon", "team": "AS Monaco", "dropbox_dir": "https://dl.dropbox.com/scl/fi/bu0s08fxnag5vooh7rrdj/mon.txt?rlkey=jac4sy8q1x780w2yk7mxl35z0&st=p1vjrhox&dl=0" },
   { "id": "vil", "team": "Villarreal CF", "dropbox_dir": "https://dl.dropbox.com/scl/fi/n7tqfwtpa4t7ogeb41ocl/vil.txt?rlkey=x36k0qhlv5n5y327h2fw0n9z6&st=qvraxkla&dl=0" }
+  { "id": "ray", "team": "Rayo Vallecano", "dropbox_dir": "https://dl.dropbox.com/scl/fi/n7tqfwtpa4t7ogeb41ocl/vil.txt?rlkey=x36k0qhlv5n5y327h2fw0n9z6&st=qvraxkla&dl=0" }
 ]
