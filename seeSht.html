@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validar alineacion</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/positions.css">
+  <link rel="stylesheet" href="./css/sendSht.css">
+</head>
+<body>
+
+<h1>Ver alineación enviada</h1>
+
+<select id="teamsDropdown">
+    <option value="">-- Selecciona un equipo --</option>
+</select>
+
+<button id="btnVer">VER</button>
+
+<div id="resultado" style="margin-top:20px;"></div>
+
+<textarea
+    id="shtData"
+    rows="20"
+    cols="80"
+    readonly
+    style="margin-top:10px;">
+</textarea>
+
+<div id="pinModal" class="modal">
+    <div class="modal-content">
+        <h3>🔐 Introduce el PIN</h3>
+
+        <input type="password" id="teamPin">
+
+        <button id="confirmPin">Confirmar</button>
+        <button id="cancelPin">Cancelar</button>
+
+        <div id="pinError"></div>
+    </div>
+</div>
+
+<script type="module" src="./JS/seeSht.js"></script>
+
+</body>
+</html>
