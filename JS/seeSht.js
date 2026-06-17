@@ -1,7 +1,27 @@
 const btnVer = document.getElementById("btnVer");
 const pinModal = document.getElementById("pinModal");
 const confirmPin = document.getElementById("confirmPin");
+const dropdown = document.getElementById('teamsDropdown');
 
+let equiposData = [];
+
+fetch('./JS/teams.json')
+  .then(response => response.json())
+  .then(equipos => {
+
+    equiposData = equipos;
+
+    equipos.forEach(e => {
+
+      const option = document.createElement('option');
+      option.value = e.id;
+      option.textContent = e.team;
+
+      dropdown.appendChild(option);
+
+    });
+
+  });
 btnVer.addEventListener("click", () => {
 
     const equipo = document.getElementById("teamsDropdown").value;
