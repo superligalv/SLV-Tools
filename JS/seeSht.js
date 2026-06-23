@@ -56,11 +56,10 @@ confirmPin.addEventListener("click", async () => {
     try {
         // Asegúrate de que la URL apunte correctamente a tu API de Flask
         // Si la web corre en otro puerto diferente al de Flask (5000), pon "http://127.0.0.1:5000/alineacion/ver"
-        const response = await fetch("/alineacion/ver", {
-            method: "POST",
-            body: formData
-        });
-
+	const response = await fetch("/https://superligalv.duckdns.org/alineacion/ver", {
+	    method: "POST",
+	    body: formData
+	});
         const data = await response.json();
 
         if (!response.ok) {
