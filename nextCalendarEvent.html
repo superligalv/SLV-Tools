@@ -33,36 +33,70 @@
         flex-direction: row;
         gap: 15px;
         justify-content: flex-start;
-        overflow-x: auto; /* Por si en una semana hay demasiados partidos, añade scroll suave */
+        overflow-x: auto;
         padding-bottom: 5px;
     }
     .evento-item-horiz {
         background: #fdfdfd;
         border: 1px solid #eaeaea;
-        border-left: 4px solid #e63946; /* Detalle de color en el lateral */
         border-radius: 6px;
-        padding: 10px 15px;
+        padding: 10px 12px;
         flex: 1;
-        min-width: 200px; /* Evita que se aplasten en pantallas pequeñas */
+        min-width: 250px; /* Un poco más ancho para albergar el bloque de fecha */
         box-sizing: border-box;
-    }
-    .evento-header-horiz {
         display: flex;
+        align-items: center;
         justify-content: space-between;
+    }
+    /* Bloque Izquierdo: Textos */
+    .evento-info-izq {
+        display: flex;
+        flex-direction: column;
+        padding-right: 10px;
+    }
+    .evento-dia-semana {
         font-size: 11px;
-        color: #6c757d;
+        color: #888;
         font-weight: bold;
-        margin-bottom: 5px;
+        text-transform: uppercase;
     }
     .evento-nombre-horiz {
         font-size: 14px;
         font-weight: bold;
         color: #222222;
-        margin: 3px 0;
+        margin: 4px 0;
+        line-height: 1.2;
     }
     .evento-competicion-horiz {
-        font-size: 12px;
-        color: #666666;
+        font-size: 11px;
+        color: #e63946;
+        font-weight: bold;
+    }
+    /* Bloque Derecho: Fecha gigante */
+    .evento-fecha-der {
+        background: #f7f7f7;
+        border-radius: 6px;
+        min-width: 60px;
+        padding: 6px 4px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border: 1px solid #eee;
+    }
+    .fecha-gran-num {
+        font-size: 24px;
+        font-weight: 900;
+        color: #333;
+        line-height: 1;
+    }
+    .fecha-gran-mes {
+        font-size: 10px;
+        font-weight: bold;
+        color: #666;
+        text-transform: uppercase;
+        margin-top: 2px;
+        letter-spacing: 0.5px;
     }
     .no-eventos-horiz {
         width: 100%;
@@ -79,7 +113,7 @@
 
 <script>
     (function() {
-        const CSV_URL = 'https://superligalv.github.io/SLV-Tools/calendar.csv';
+        const CSV_URL = 'https://superligalv.github.io/SVL-Tools/calendar.csv';
 
         function parsearCSV(texto) {
             const lineas = texto.split('\n');
@@ -138,17 +172,25 @@
                     let htmlContenido = '';
                     
                     eventosSemana.forEach(evento => {
-                        const opciones = { month: 'short', day: 'numeric' };
-                        const fechaFormateada = new Date(evento.fechaStr).toLocaleDateString('es-ES', opciones);
+                        const fechaObj = new Date(evento.fechaStr);
+                        
+                        // Extraemos el número del día (ej: 26)
+                        const numeroDia = fechaObj.getDate();
+                        
+                        // Extraemos el nombre del mes corto (ej: JUNIO)
+                        const nombreMes = fechaObj.toLocaleDateString('es-ES', { month: 'short' }).replace('.', '');
                         
                         htmlContenido += `
                             <div class="evento-item-horiz">
-                                <div class="evento-header-horiz">
-                                    <span>${evento.dia}</span>
-                                    <span>${fechaFormateada}</span>
+                                <div class="evento-info-izq">
+                                    <span class="evento-dia-semana">${evento.dia}</span>
+                                    <div class="evento-nombre-horiz">${evento.evento}</div>
+                                    <div class="evento-competicion-horiz">${evento.competicion}</div>
                                 </div>
-                                <div class="evento-nombre-horiz">${evento.evento}</div>
-                                <div class="evento-competicion-horiz">${evento.competicion}</div>
+                                <div class="evento-fecha-der">
+                                    <span class="fecha-gran-num">${numeroDia}</span>
+                                    <span class="fecha-gran-mes">${nombreMes}</span>
+                                </div>
                             </div>
                         `;
                     });
