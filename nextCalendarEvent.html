@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Próximo Evento</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 { color: #333; font-size: 24px; margin-bottom: 20px; }
+        .evento { font-size: 20px; font-weight: bold; color: #007bff; margin: 10px 0; }
+        .detalle { color: #666; margin: 5px 0; }
+        .fecha { font-style: italic; color: #888; }
+        .loading { color: #999; }
+    </style>
+</head>
+<body>
+
+    <div class="card" id="contenedor">
+        <p class="loading">Cargando próximo evento...</p>
+    </div>
+
+    <script>
+        // ⚠️ REEMPLAZA ESTA URL POR TU URL RAW DE GITHUB
+        const CSV_URL = 'https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/refs/heads/main/tu_archivo.csv';
+
+        // Función para parsear de forma simple el CSV
+        function parsearCSV(texto) {
+            const lineas = texto.split('\n');
+            const resultado = [];
+            
+            // Empezamos en 1 para saltarnos la cabecera (Fecha, Día, Evento...)
+            for (let i = 1; i < lineas.length; i++) {
+                const linea = lineas[i].trim();
+                if (!linea) continue; // Saltarse líneas vacías
+                
+                const columnas = linea.split(',');
+                if (columnas.length >= 4) {
+                    resultado.push({
+                        fechaStr: columnas[0].trim(),
+                        dia: columnas[1].trim(),
+                        evento: columnas[2].trim(),
+                        competicion: columnas[3].trim()
+                    });
+                }
+            }
+            return resultado;
+        }
+
+        async function obtenerProximoEvento() {
+            const contenedor = document.getElementById('contenedor');
+            try {
+                const respuesta = await fetch(CSV_URL);
+                if (!respuesta.ok) throw new Error('No se pudo cargar el archivo CSV');
+                
+                const textoCSV = await respuesta.text();
+                const eventos = parsearCSV(textoCSV);
+                
+                // Obtenemos la fecha actual a medianoche (para incluir los partidos de hoy)
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+
+                // Buscamos el primer evento cuya fecha sea igual o posterior a hoy
+                let proximo = null;
+                for (let evento of eventos) {
+                    const fechaEvento = new Date(evento.fechaStr);
+                    
+                    if (fechaEvento >= hoy) {
+                        proximo = evento;
+                        break; // Como el CSV ya está ordenado, el primero que cumpla es el más cercano
+                    }
+                }
+
+                // Renderizar en la pantalla
+                if (proximo) {
+                    // Formatear la fecha para que se vea más amigable (ej: 26 de junio de 2026)
+                    const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+                    const fechaFormateada = new Date(proximo.fechaStr).toLocaleDateString('es-ES', opciones);
+
+                    contenedor.innerHTML = `
+                        <h1>Próximo Evento</h1>
+                        <div class="evento">${proximo.evento}</div>
+                        <div class="detalle"><strong>Competición:</strong> ${proximo.competicion}</div>
+                        <div class="fecha">${proximo.dia}, ${fechaFormateada}</div>
+                    `;
+                } else {
+                    contenedor.innerHTML = `<h1>¡Fin de la temporada!</h1><p>No hay más eventos programados.</p>`;
+                }
+
+            } catch (error) {
+                console.error(error);
+                contenedor.innerHTML = `<h1>Error</h1><p>No se pudieron cargar los datos.</p>`;
+            }
+        }
+
+        // Ejecutar al cargar la página
+        obtenerProximoEvento();
+    </script>
+</body>
+</html>
