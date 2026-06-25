@@ -1,55 +1,61 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Próximo Evento</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
-        h1 { color: #333; font-size: 24px; margin-bottom: 20px; }
-        .evento { font-size: 20px; font-weight: bold; color: #007bff; margin: 10px 0; }
-        .detalle { color: #666; margin: 5px 0; }
-        .fecha { font-style: italic; color: #888; }
-        .loading { color: #999; }
-    </style>
-</head>
-<body>
-
-    <div class="card" id="contenedor">
-        <p class="loading">Cargando próximo evento...</p>
+<div class="widget-svl">
+    <div id="contenedor-svl">
+        <p class="loading-svl">Buscando el próximo evento...</p>
     </div>
+</div>
 
-    <script>
-        // ⚠️ REEMPLAZA ESTA URL POR TU URL RAW DE GITHUB
+<style>
+    .widget-svl {
+        background: #ffffff;
+        border: 1px solid #e3e3e3;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        max-width: 350px;
+        margin: 10px auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        font-family: Arial, sans-serif;
+    }
+    .widget-svl h1 { 
+        color: #333333; 
+        font-size: 18px; 
+        margin: 0 0 15px 0; 
+        text-transform: uppercase; 
+        letter-spacing: 1px;
+    }
+    .widget-svl .evento { 
+        font-size: 18px; 
+        font-weight: bold; 
+        color: #e63946; 
+        margin: 10px 0; 
+    }
+    .widget-svl .detalle { 
+        color: #4a4a4a; 
+        margin: 5px 0; 
+        font-size: 14px; 
+    }
+    .widget-svl .fecha { 
+        font-style: italic; 
+        color: #6c757d; 
+        margin-top: 12px; 
+        font-size: 13px; 
+    }
+    .widget-svl .loading-svl { 
+        color: #999; 
+        font-size: 14px;
+    }
+</style>
+
+<script>
+    (function() {
         const CSV_URL = 'https://superligalv.github.io/SLV-Tools/calendar.csv';
 
-        // Función para parsear de forma simple el CSV
         function parsearCSV(texto) {
             const lineas = texto.split('\n');
             const resultado = [];
-            
-            // Empezamos en 1 para saltarnos la cabecera (Fecha, Día, Evento...)
             for (let i = 1; i < lineas.length; i++) {
                 const linea = lineas[i].trim();
-                if (!linea) continue; // Saltarse líneas vacías
-                
+                if (!linea) continue; 
                 const columnas = linea.split(',');
                 if (columnas.length >= 4) {
                     resultado.push({
@@ -64,53 +70,47 @@
         }
 
         async function obtenerProximoEvento() {
-            const contenedor = document.getElementById('contenedor');
+            const contenedor = document.getElementById('contenedor-svl');
+            if (!contenedor) return;
+            
             try {
                 const respuesta = await fetch(CSV_URL);
-                if (!respuesta.ok) throw new Error('No se pudo cargar el archivo CSV');
+                if (!respuesta.ok) throw new Error();
                 
                 const textoCSV = await respuesta.text();
                 const eventos = parsearCSV(textoCSV);
                 
-                // Obtenemos la fecha actual a medianoche (para incluir los partidos de hoy)
                 const hoy = new Date();
                 hoy.setHours(0, 0, 0, 0);
 
-                // Buscamos el primer evento cuya fecha sea igual o posterior a hoy
                 let proximo = null;
                 for (let evento of eventos) {
                     const fechaEvento = new Date(evento.fechaStr);
-                    
                     if (fechaEvento >= hoy) {
                         proximo = evento;
-                        break; // Como el CSV ya está ordenado, el primero que cumpla es el más cercano
+                        break; 
                     }
                 }
 
-                // Renderizar en la pantalla
                 if (proximo) {
-                    // Formatear la fecha para que se vea más amigable (ej: 26 de junio de 2026)
                     const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
                     const fechaFormateada = new Date(proximo.fechaStr).toLocaleDateString('es-ES', opciones);
 
                     contenedor.innerHTML = `
-                        <h1>Próximo Evento</h1>
+                        <h1>Próximo Partido</h1>
                         <div class="evento">${proximo.evento}</div>
                         <div class="detalle"><strong>Competición:</strong> ${proximo.competicion}</div>
                         <div class="fecha">${proximo.dia}, ${fechaFormateada}</div>
                     `;
                 } else {
-                    contenedor.innerHTML = `<h1>¡Fin de la temporada!</h1><p>No hay más eventos programados.</p>`;
+                    contenedor.innerHTML = `<h1>Fin del Calendario</h1><p style="color:#666;font-size:14px;">No hay más eventos programados.</p>`;
                 }
-
             } catch (error) {
-                console.error(error);
-                contenedor.innerHTML = `<h1>Error</h1><p>No se pudieron cargar los datos.</p>`;
+                contenedor.innerHTML = `<h1>Error</h1><p style="color:#666;font-size:14px;">No se pudo cargar el calendario.</p>`;
             }
         }
 
-        // Ejecutar al cargar la página
-        obtenerProximoEvento();
-    </script>
-</body>
-</html>
+        // Ejecutar con un pequeño delay para asegurar que el foro cargó el DOM
+        setTimeout(obtenerProximoEvento, 200);
+    })();
+</script>
