@@ -1,65 +1,77 @@
-<div class="widget-svl">
-    <h2 class="titulo-widget">Partidos de la Semana</h2>
-    <div id="contenedor-svl">
+<div class="widget-svl-horizontal">
+    <div class="titulo-widget-horiz">Partidos de la Semana</div>
+    <div id="contenedor-svl-horiz" class="grid-eventos">
         <p class="loading-svl">Cargando calendario de la semana...</p>
     </div>
 </div>
 
 <style>
-    .widget-svl {
+    .widget-svl-horizontal {
         background: #ffffff;
         border: 1px solid #e3e3e3;
         border-radius: 8px;
         padding: 15px;
-        max-width: 400px;
         margin: 10px auto;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         font-family: Arial, sans-serif;
+        box-sizing: border-box;
+        width: 100%;
     }
-    .widget-svl .titulo-widget { 
+    .titulo-widget-horiz { 
         color: #333333; 
-        font-size: 16px; 
-        margin: 0 0 15px 0; 
+        font-size: 14px; 
+        margin: 0 0 12px 0; 
         text-transform: uppercase; 
         letter-spacing: 1px;
-        text-align: center;
+        font-weight: bold;
         border-bottom: 2px solid #e63946;
+        padding-bottom: 4px;
+        display: inline-block;
+    }
+    .grid-eventos {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        justify-content: flex-start;
+        overflow-x: auto; /* Por si en una semana hay demasiados partidos, añade scroll suave */
         padding-bottom: 5px;
     }
-    .evento-item {
-        padding: 10px 5px;
-        border-bottom: 1px dashed #eee;
-        display: flex;
-        flex-direction: column;
+    .evento-item-horiz {
+        background: #fdfdfd;
+        border: 1px solid #eaeaea;
+        border-left: 4px solid #e63946; /* Detalle de color en el lateral */
+        border-radius: 6px;
+        padding: 10px 15px;
+        flex: 1;
+        min-width: 200px; /* Evita que se aplasten en pantallas pequeñas */
+        box-sizing: border-box;
     }
-    .evento-item:last-child {
-        border-bottom: none;
-    }
-    .evento-header {
+    .evento-header-horiz {
         display: flex;
         justify-content: space-between;
-        font-size: 12px;
+        font-size: 11px;
         color: #6c757d;
         font-weight: bold;
+        margin-bottom: 5px;
     }
-    .evento-nombre {
-        font-size: 15px;
+    .evento-nombre-horiz {
+        font-size: 14px;
         font-weight: bold;
-        color: #e63946;
-        margin: 4px 0;
+        color: #222222;
+        margin: 3px 0;
     }
-    .evento-competicion {
-        font-size: 13px;
-        color: #4a4a4a;
+    .evento-competicion-horiz {
+        font-size: 12px;
+        color: #666666;
     }
-    .no-eventos {
+    .no-eventos-horiz {
+        width: 100%;
         text-align: center;
         color: #666;
         font-size: 14px;
-        padding: 15px 0;
+        padding: 10px 0;
     }
     .loading-svl { 
-        text-align: center;
         color: #999; 
         font-size: 14px;
     }
@@ -88,11 +100,8 @@
             return resultado;
         }
 
-        // Función para obtener el rango de la semana actual (Lunes a Domingo)
         function obtenerRangoSemana() {
             const hoy = new Date();
-            
-            // Ajustar el día de la semana (en JS, Domingo es 0, Lunes es 1...)
             const diaSemana = hoy.getDay();
             const diferenciaLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
             
@@ -108,7 +117,7 @@
         }
 
         async function obtenerEventosSemana() {
-            const contenedor = document.getElementById('contenedor-svl');
+            const contenedor = document.getElementById('contenedor-svl-horiz');
             if (!contenedor) return;
             
             try {
@@ -120,7 +129,6 @@
                 
                 const { lunes, domingo } = obtenerRangoSemana();
                 
-                // Filtrar los eventos que caen en esta semana
                 const eventosSemana = eventos.filter(evento => {
                     const fechaEvento = new Date(evento.fechaStr);
                     return fechaEvento >= lunes && fechaEvento <= domingo;
@@ -134,23 +142,23 @@
                         const fechaFormateada = new Date(evento.fechaStr).toLocaleDateString('es-ES', opciones);
                         
                         htmlContenido += `
-                            <div class="evento-item">
-                                <div class="evento-header">
+                            <div class="evento-item-horiz">
+                                <div class="evento-header-horiz">
                                     <span>${evento.dia}</span>
                                     <span>${fechaFormateada}</span>
                                 </div>
-                                <div class="evento-nombre">${evento.evento}</div>
-                                <div class="evento-competicion">${evento.competicion}</div>
+                                <div class="evento-nombre-horiz">${evento.evento}</div>
+                                <div class="evento-competicion-horiz">${evento.competicion}</div>
                             </div>
                         `;
                     });
                     
                     contenedor.innerHTML = htmlContenido;
                 } else {
-                    contenedor.innerHTML = `<div class="no-eventos">No hay partidos programados para esta semana.</div>`;
+                    contenedor.innerHTML = `<div class="no-eventos-horiz">No hay partidos programados para esta semana.</div>`;
                 }
             } catch (error) {
-                contenedor.innerHTML = `<div class="no-eventos" style="color:red;">Error al cargar el calendario de la semana.</div>`;
+                contenedor.innerHTML = `<div class="no-eventos-horiz" style="color:red;">Error al cargar el calendario.</div>`;
             }
         }
 
