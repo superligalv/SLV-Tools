@@ -1,6 +1,7 @@
 <div class="widget-svl">
+    <h2 class="titulo-widget">Partidos de la Semana</h2>
     <div id="contenedor-svl">
-        <p class="loading-svl">Buscando el próximo evento...</p>
+        <p class="loading-svl">Cargando calendario de la semana...</p>
     </div>
 </div>
 
@@ -9,38 +10,56 @@
         background: #ffffff;
         border: 1px solid #e3e3e3;
         border-radius: 8px;
-        padding: 20px;
-        text-align: center;
-        max-width: 350px;
+        padding: 15px;
+        max-width: 400px;
         margin: 10px auto;
         box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         font-family: Arial, sans-serif;
     }
-    .widget-svl h1 { 
+    .widget-svl .titulo-widget { 
         color: #333333; 
-        font-size: 18px; 
+        font-size: 16px; 
         margin: 0 0 15px 0; 
         text-transform: uppercase; 
         letter-spacing: 1px;
+        text-align: center;
+        border-bottom: 2px solid #e63946;
+        padding-bottom: 5px;
     }
-    .widget-svl .evento { 
-        font-size: 18px; 
-        font-weight: bold; 
-        color: #e63946; 
-        margin: 10px 0; 
+    .evento-item {
+        padding: 10px 5px;
+        border-bottom: 1px dashed #eee;
+        display: flex;
+        flex-direction: column;
     }
-    .widget-svl .detalle { 
-        color: #4a4a4a; 
-        margin: 5px 0; 
-        font-size: 14px; 
+    .evento-item:last-child {
+        border-bottom: none;
     }
-    .widget-svl .fecha { 
-        font-style: italic; 
-        color: #6c757d; 
-        margin-top: 12px; 
-        font-size: 13px; 
+    .evento-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #6c757d;
+        font-weight: bold;
     }
-    .widget-svl .loading-svl { 
+    .evento-nombre {
+        font-size: 15px;
+        font-weight: bold;
+        color: #e63946;
+        margin: 4px 0;
+    }
+    .evento-competicion {
+        font-size: 13px;
+        color: #4a4a4a;
+    }
+    .no-eventos {
+        text-align: center;
+        color: #666;
+        font-size: 14px;
+        padding: 15px 0;
+    }
+    .loading-svl { 
+        text-align: center;
         color: #999; 
         font-size: 14px;
     }
@@ -69,7 +88,26 @@
             return resultado;
         }
 
-        async function obtenerProximoEvento() {
+        // Función para obtener el rango de la semana actual (Lunes a Domingo)
+        function obtenerRangoSemana() {
+            const hoy = new Date();
+            
+            // Ajustar el día de la semana (en JS, Domingo es 0, Lunes es 1...)
+            const diaSemana = hoy.getDay();
+            const diferenciaLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
+            
+            const lunes = new Date(hoy);
+            lunes.setDate(hoy.getDate() + diferenciaLunes);
+            lunes.setHours(0, 0, 0, 0);
+
+            const domingo = new Date(lunes);
+            domingo.setDate(lunes.getDate() + 6);
+            domingo.setHours(23, 59, 59, 999);
+
+            return { lunes, domingo };
+        }
+
+        async function obtenerEventosSemana() {
             const contenedor = document.getElementById('contenedor-svl');
             if (!contenedor) return;
             
@@ -80,37 +118,42 @@
                 const textoCSV = await respuesta.text();
                 const eventos = parsearCSV(textoCSV);
                 
-                const hoy = new Date();
-                hoy.setHours(0, 0, 0, 0);
-
-                let proximo = null;
-                for (let evento of eventos) {
+                const { lunes, domingo } = obtenerRangoSemana();
+                
+                // Filtrar los eventos que caen en esta semana
+                const eventosSemana = eventos.filter(evento => {
                     const fechaEvento = new Date(evento.fechaStr);
-                    if (fechaEvento >= hoy) {
-                        proximo = evento;
-                        break; 
-                    }
-                }
+                    return fechaEvento >= lunes && fechaEvento <= domingo;
+                });
 
-                if (proximo) {
-                    const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
-                    const fechaFormateada = new Date(proximo.fechaStr).toLocaleDateString('es-ES', opciones);
-
-                    contenedor.innerHTML = `
-                        <h1>Próximo Partido</h1>
-                        <div class="evento">${proximo.evento}</div>
-                        <div class="detalle"><strong>Competición:</strong> ${proximo.competicion}</div>
-                        <div class="fecha">${proximo.dia}, ${fechaFormateada}</div>
-                    `;
+                if (eventosSemana.length > 0) {
+                    let htmlContenido = '';
+                    
+                    eventosSemana.forEach(evento => {
+                        const opciones = { month: 'short', day: 'numeric' };
+                        const fechaFormateada = new Date(evento.fechaStr).toLocaleDateString('es-ES', opciones);
+                        
+                        htmlContenido += `
+                            <div class="evento-item">
+                                <div class="evento-header">
+                                    <span>${evento.dia}</span>
+                                    <span>${fechaFormateada}</span>
+                                </div>
+                                <div class="evento-nombre">${evento.evento}</div>
+                                <div class="evento-competicion">${evento.competicion}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    contenedor.innerHTML = htmlContenido;
                 } else {
-                    contenedor.innerHTML = `<h1>Fin del Calendario</h1><p style="color:#666;font-size:14px;">No hay más eventos programados.</p>`;
+                    contenedor.innerHTML = `<div class="no-eventos">No hay partidos programados para esta semana.</div>`;
                 }
             } catch (error) {
-                contenedor.innerHTML = `<h1>Error</h1><p style="color:#666;font-size:14px;">No se pudo cargar el calendario.</p>`;
+                contenedor.innerHTML = `<div class="no-eventos" style="color:red;">Error al cargar el calendario de la semana.</div>`;
             }
         }
 
-        // Ejecutar con un pequeño delay para asegurar que el foro cargó el DOM
-        setTimeout(obtenerProximoEvento, 200);
+        setTimeout(obtenerEventosSemana, 200);
     })();
 </script>
