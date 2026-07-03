@@ -110,6 +110,7 @@
         font-size: 14px;
     }
 </style>
+
 <script>
     (function() {
         const CSV_URL = 'https://superligalv.github.io/SLV-Tools/calendar.csv';
@@ -119,7 +120,7 @@
             const resultado = [];
             for (let i = 1; i < lineas.length; i++) {
                 const linea = lineas[i].trim();
-                if (!linea) continue;
+                if (!linea) continue; 
                 const columnas = linea.split(',');
                 if (columnas.length >= 4) {
                     resultado.push({
@@ -133,59 +134,52 @@
             return resultado;
         }
 
-        // NUEVA LÓGICA: Calcula desde hoy hasta dentro de 7 días
-        function obtenerRangoProximosDias() {
+        function obtenerRangoSemana() {
             const hoy = new Date();
+            const diaSemana = hoy.getDay();
+            const diferenciaLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
             
-            // Inicio: Hoy a las 00:00:00 para incluir los partidos de hoy
-            const inicio = new Date(hoy);
-            inicio.setHours(0, 0, 0, 0);
+            const lunes = new Date(hoy);
+            lunes.setDate(hoy.getDate() + diferenciaLunes);
+            lunes.setHours(0, 0, 0, 0);
 
-            // Fin: Dentro de 7 días a las 23:59:59
-            const fin = new Date(hoy);
-            fin.setDate(hoy.getDate() + 7); 
-            fin.setHours(23, 59, 59, 999);
+            const domingo = new Date(lunes);
+            domingo.setDate(lunes.getDate() + 6);
+            domingo.setHours(23, 59, 59, 999);
 
-            return { inicio, fin };
+            return { lunes, domingo };
         }
 
         async function obtenerEventosSemana() {
             const contenedor = document.getElementById('contenedor-svl-horiz');
             if (!contenedor) return;
-
+            
             try {
                 const respuesta = await fetch(CSV_URL);
                 if (!respuesta.ok) throw new Error();
-
+                
                 const textoCSV = await respuesta.text();
                 const eventos = parsearCSV(textoCSV);
-
-                // Usamos el nuevo rango de 7 días
-                const { inicio, fin } = obtenerRangoProximosDias();
-
+                
+                const { lunes, domingo } = obtenerRangoSemana();
+                
                 const eventosSemana = eventos.filter(evento => {
-                    // Nota: Si tus fechas en el CSV tienen formato "YYYY-MM-DD", 
-                    // a veces JS las interpreta en UTC. Reemplazar '-' por '/' evita desfases horarios.
-                    const fechaLimpia = evento.fechaStr.replace(/-/g, '/');
-                    const fechaEvento = new Date(fechaLimpia);
-                    
-                    // Comparamos si está dentro del rango de los próximos 7 días
-                    return fechaEvento >= inicio && fechaEvento <= fin;
+                    const fechaEvento = new Date(evento.fechaStr);
+                    return fechaEvento >= lunes && fechaEvento <= domingo;
                 });
-
-                // Ordenamos los eventos cronológicamente para que salgan en orden
-                eventosSemana.sort((a, b) => new Date(a.fechaStr.replace(/-/g, '/')) - new Date(b.fechaStr.replace(/-/g, '/')));
 
                 if (eventosSemana.length > 0) {
                     let htmlContenido = '';
-
+                    
                     eventosSemana.forEach(evento => {
-                        const fechaLimpia = evento.fechaStr.replace(/-/g, '/');
-                        const fechaObj = new Date(fechaLimpia);
-
+                        const fechaObj = new Date(evento.fechaStr);
+                        
+                        // Extraemos el número del día (ej: 26)
                         const numeroDia = fechaObj.getDate();
+                        
+                        // Extraemos el nombre del mes corto (ej: JUNIO)
                         const nombreMes = fechaObj.toLocaleDateString('es-ES', { month: 'short' }).replace('.', '');
-
+                        
                         htmlContenido += `
                             <div class="evento-item-horiz">
                                 <div class="evento-info-izq">
@@ -200,10 +194,10 @@
                             </div>
                         `;
                     });
-
+                    
                     contenedor.innerHTML = htmlContenido;
                 } else {
-                    contenedor.innerHTML = `<div class="no-eventos-horiz">No hay partidos programados para los próximos 7 días.</div>`;
+                    contenedor.innerHTML = `<div class="no-eventos-horiz">No hay partidos programados para esta semana.</div>`;
                 }
             } catch (error) {
                 contenedor.innerHTML = `<div class="no-eventos-horiz" style="color:red;">Error al cargar el calendario.</div>`;
