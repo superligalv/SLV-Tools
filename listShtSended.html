@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Alineaciones recibidas</title>
+
+<style>
+body{
+    margin:0;
+    padding:5px;
+    background:transparent;
+    overflow:hidden;
+}
+
+#equipos{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    flex-wrap:nowrap;
+}
+
+#equipos img{
+    width:40px;
+    height:40px;
+    object-fit:contain;
+}
+</style>
+</head>
+
+<body>
+
+<div id="equipos"></div>
+
+<script>
+
+fetch("https://superligalv.duckdns.org/api/listShtSended")
+.then(response => response.json())
+.then(equipos => {
+
+    const contenedor = document.getElementById("equipos");
+
+    equipos.forEach(equipo => {
+
+        const img = document.createElement("img");
+
+        img.src = "https://superligalv.github.io/SLV-Tools/images/flags/headerRund/" + equipo + ".png";
+	img.width = 30;
+	img.height = 30;
+        img.alt = equipo;
+        img.title = equipo;
+
+        contenedor.appendChild(img);
+
+    });
+
+})
+.catch(error => console.error(error));
+
+</script>
+
+</body>
+</html>
