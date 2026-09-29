@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Economy · Superliga</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="economy.css">
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div>
+            <div class="eyebrow">SUPERLIGA · ECONOMY</div>
+
+            <h1 id="teamName">
+                Cargando...
+            </h1>
+
+            <div class="team-meta">
+                <span id="teamAbrev">---</span>
+                <span>·</span>
+                <span id="teamDivision">---</span>
+                <span>·</span>
+                <span id="season">Temporada --</span>
+            </div>
+        </div>
+
+        <div id="status" class="status">
+            Conectando...
+        </div>
+
+    </header>
+
+
+    <!-- KPI -->
+
+    <section class="kpis">
+
+        <div class="card kpi">
+            <div class="kpi-label">
+                CAPITAL ACTUAL
+            </div>
+
+            <div id="capitalActual" class="kpi-value">
+                --
+            </div>
+
+            <div class="kpi-sub">
+                Capital disponible
+            </div>
+        </div>
+
+
+        <div class="card kpi">
+            <div class="kpi-label">
+                PREVISIÓN FINAL
+            </div>
+
+            <div id="forecast" class="kpi-value">
+                --
+            </div>
+
+            <div class="kpi-sub">
+                Previsión de temporada
+            </div>
+        </div>
+
+
+        <div class="card kpi">
+            <div class="kpi-label">
+                POTENCIAL
+            </div>
+
+            <div id="potential" class="kpi-value">
+                --
+            </div>
+
+            <div id="potentialMeta" class="kpi-sub">
+                --
+            </div>
+        </div>
+
+
+        <div class="card kpi">
+            <div class="kpi-label">
+                MOVIMIENTOS
+            </div>
+
+            <div id="movementCount" class="kpi-value">
+                --
+            </div>
+
+            <div class="kpi-sub">
+                Historial registrado
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- PREVISIÓN -->
+
+    <section class="section">
+
+        <div class="section-header">
+            <div>
+                <div class="eyebrow">PLANIFICACIÓN</div>
+                <h2>Previsión económica</h2>
+            </div>
+        </div>
+
+        <div class="forecast-grid">
+
+            <div class="card forecast-card">
+                <span>Liga</span>
+                <strong id="forecastLiga">--</strong>
+            </div>
+
+            <div class="card forecast-card">
+                <span>Copa KO</span>
+                <strong id="forecastCopa">--</strong>
+            </div>
+
+            <div class="card forecast-card">
+                <span>Competición europea</span>
+                <strong id="forecastEurope">--</strong>
+            </div>
+
+            <div class="card forecast-card">
+                <span>Tiempo Superliga</span>
+                <strong id="forecastTiempo">--</strong>
+            </div>
+
+            <div class="card forecast-card">
+                <span>OC obligatorias</span>
+                <strong id="forecastOC">--</strong>
+            </div>
+
+            <div class="card forecast-card expense">
+                <span>Salarios</span>
+                <strong id="forecastSalary">--</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- GRÁFICOS -->
+
+    <section class="charts">
+
+        <div class="card chart-card">
+
+            <div class="chart-header">
+                <div>
+                    <div class="eyebrow">EVOLUCIÓN</div>
+                    <h2>Capital</h2>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="capitalChart"></canvas>
+            </div>
+
+        </div>
+
+
+        <div class="card chart-card">
+
+            <div class="chart-header">
+                <div>
+                    <div class="eyebrow">TEMPORADA</div>
+                    <h2>Previsión</h2>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="forecastChart"></canvas>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- MOVIMIENTOS -->
+
+    <section class="section">
+
+        <div class="section-header">
+
+            <div>
+                <div class="eyebrow">HISTORIAL</div>
+                <h2>Movimientos</h2>
+            </div>
+
+            <div class="movement-summary">
+
+                <span>
+                    Ingresos
+                    <strong id="totalIncome">0,00 M</strong>
+                </span>
+
+                <span>
+                    Gastos
+                    <strong id="totalExpenses">0,00 M</strong>
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card table-card">
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Concepto</th>
+                            <th>Referencia</th>
+                            <th>Temporada</th>
+                            <th class="amount">Cantidad</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="transactions">
+                        <tr>
+                            <td colspan="6" class="loading">
+                                Cargando movimientos...
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <footer>
+        Superliga · Economy Dashboard
+    </footer>
+
+</div>
+
+
+<div id="error" class="error hidden"></div>
+
+
+<script src="JS/economy.js"></script>
+
+</body>
+</html>
+
