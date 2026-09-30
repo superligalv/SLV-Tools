@@ -1,0 +1,85 @@
+/* =========================================
+   MOVIMIENTO ECONÓMICO
+   ========================================= */
+
+.economia-form {
+    max-width: 600px;
+}
+
+/* Etiquetas */
+
+.economia-form label {
+    display: block;
+    margin-top: 9px;
+    margin-bottom: 3px;
+    font-weight: bold;
+}
+
+/* Campos */
+
+.economia-form input,
+.economia-form select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px 9px;
+    font-size: 15px;
+}
+
+/* Fila de campos */
+
+.economia-row {
+    display: flex;
+    gap: 12px;
+}
+
+.economia-field {
+    flex: 1;
+}
+
+/* Botón */
+
+.economia-form button {
+    margin-top: 14px;
+}
+
+/* Resultado */
+
+#resultado {
+    margin-top: 15px;
+}
+
+/* Mensajes */
+
+.exito {
+    color: green;
+    font-weight: bold;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+.info {
+    color: #555;
+}
+
+/* Spinner */
+
+#spinner {
+    margin-top: 10px;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 600px) {
+
+    .economia-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+}
+
