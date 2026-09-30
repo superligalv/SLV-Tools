@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Movimiento económico</title>
+
+<link
+    rel="stylesheet"
+    href="./css/main.css"
+>
+
+<link
+    rel="stylesheet"
+    href="./css/sendSht.css"
+>
+
+
+<style>
+
+.economia-form {
+    max-width: 600px;
+}
+
+.economia-form label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.economia-form input,
+.economia-form select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.economia-form button {
+    margin-top: 20px;
+}
+
+#resultado {
+    margin-top: 20px;
+}
+
+.exito {
+    color: green;
+    font-weight: bold;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+}
+
+.info {
+    color: #555;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<h1 id="teamName">
+
+    <img
+        id="teamLogo"
+        src=""
+        alt=""
+        style="
+            height:40px;
+            vertical-align:middle;
+            margin-right:10px;
+        "
+    >
+
+    <span id="teamNameText">
+        Movimiento económico
+    </span>
+
+</h1>
+
+
+<details open>
+
+<summary>
+    Registrar movimiento
+</summary>
+
+
+<section
+    class="economia-form"
+    style="margin-top:15px;"
+>
+
+
+<!-- =========================
+     EQUIPO
+========================= -->
+
+<label for="teamsDropdown">
+    Equipo
+</label>
+
+<select id="teamsDropdown">
+
+    <option value="">
+        -- Selecciona un equipo --
+    </option>
+
+</select>
+
+
+<!-- =========================
+     TIPO
+========================= -->
+
+<label for="tipoMovimiento">
+    Tipo de movimiento
+</label>
+
+<select id="tipoMovimiento">
+
+    <option value="">
+        -- Selecciona tipo --
+    </option>
+
+    <option value="INGRESO">
+        INGRESO
+    </option>
+
+    <option value="GASTO">
+        GASTO
+    </option>
+
+</select>
+
+
+<!-- =========================
+     CONCEPTO
+========================= -->
+
+<label for="concepto">
+    Concepto
+</label>
+
+<input
+    type="text"
+    id="concepto"
+    placeholder="Ej. PRENSA"
+>
+
+
+<!-- =========================
+     CANTIDAD
+========================= -->
+
+<label for="cantidad">
+    Cantidad
+</label>
+
+<input
+    type="number"
+    id="cantidad"
+    min="0.01"
+    step="0.01"
+    placeholder="Ej. 5"
+>
+
+
+<!-- =========================
+     REFERENCIA
+========================= -->
+
+<label for="referencia">
+    Referencia
+</label>
+
+<input
+    type="text"
+    id="referencia"
+    placeholder="Ej. PRENSA"
+>
+
+
+<!-- =========================
+     TEMPORADA
+========================= -->
+
+<label for="temporada">
+    Temporada
+</label>
+
+<input
+    type="text"
+    id="temporada"
+    placeholder="Ej. 7"
+>
+
+
+<!-- =========================
+     BOTÓN
+========================= -->
+
+<div style="margin-top:15px;">
+
+    <button id="btnEnviar">
+        REGISTRAR MOVIMIENTO
+    </button>
+
+</div>
+
+
+<!-- =========================
+     SPINNER
+========================= -->
+
+<div
+    id="spinner"
+    style="
+        display:none;
+        margin-top:10px;
+    "
+>
+
+    🔄 Registrando movimiento...
+
+</div>
+
+
+<!-- =========================
+     RESULTADO
+========================= -->
+
+<section id="resultado"></section>
+
+
+</section>
+
+</details>
+
+
+
+<!-- =========================
+     MODAL PIN
+========================= -->
+
+<div
+    id="pinModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+        <h3>
+            🔐 Introduce el PIN
+        </h3>
+
+
+        <input
+            type="password"
+            id="teamPin"
+            placeholder="PIN del equipo"
+        >
+
+
+        <div class="modal-buttons">
+
+            <button id="confirmPin">
+                Confirmar
+            </button>
+
+            <button id="cancelPin">
+                Cancelar
+            </button>
+
+        </div>
+
+
+        <div id="pinError"></div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<script
+    type="module"
+    src="./JS/movEconomico.js"
+></script>
+
+
+</body>
+
+</html>
