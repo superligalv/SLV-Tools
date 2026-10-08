@@ -1,73 +1,125 @@
 /* =========================================
-   MOVIMIENTO ECONÓMICO
+   MOVIMIENTO ECONÓMICO (SLV-Tools)
    ========================================= */
 
-.economia-form {
-    max-width: 600px;
+/* 1. Contenedor principal y anulación de main.css */
+details {
+    max-width: 580px !important;
+    width: 92% !important;
+    margin: 2rem auto !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
 }
 
-/* Etiquetas */
+details summary {
+    padding: 1.1rem 1.25rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    background-color: #2c3e50;
+    color: #ffffff;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
 
-.economia-form label {
+/* Anula la propiedad pre-wrap global de main.css que genera el espacio gigantesco */
+details section {
+    white-space: normal !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 1.75rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+    background: transparent !important;
+}
+
+/* 2. Estilos para etiquetas, desplegables y campos de texto */
+details section label {
     display: block;
-    margin-top: 9px;
-    margin-bottom: 3px;
-    font-weight: bold;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #34495e;
 }
 
-/* Campos */
+details section select,
+details section input[type="text"],
+details section input[type="number"],
+details section input[type="password"] {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0.75rem 0.9rem !important;
+    font-size: 0.95rem !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+    outline: none;
+    transition: all 0.2s ease;
+}
 
-.economia-form input,
-.economia-form select {
+details section select:focus,
+details section input:focus {
+    background-color: #ffffff !important;
+    border-color: #3498db !important;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15) !important;
+}
+
+/* 3. Estilos para los botones dentro de esta vista */
+details section button {
     width: 100%;
-    box-sizing: border-box;
-    padding: 7px 9px;
-    font-size: 15px;
+    padding: 0.85rem 1.25rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    background-color: #27ae60 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease, transform 0.1s ease !important;
+    margin-top: 0.5rem;
 }
 
-/* Fila de campos */
-
-.economia-row {
-    display: flex;
-    gap: 12px;
+details section button:hover {
+    background-color: #219150 !important;
+    transform: translateY(-1px);
 }
 
-.economia-field {
-    flex: 1;
+details section button:active {
+    transform: translateY(0);
 }
 
-/* Botón */
-
-.economia-form button {
-    margin-top: 14px;
+/* 4. Mensajes, Estado y Modal de PIN */
+#resultado, .exito, .error, .info {
+    font-size: 0.95rem;
+    text-align: center;
+    margin-top: 0.5rem;
 }
 
-/* Resultado */
-
-#resultado {
-    margin-top: 15px;
-}
-
-/* Mensajes */
-
-.exito {
-    color: green;
-    font-weight: bold;
-}
-
-.error {
-    color: red;
-    font-weight: bold;
-}
-
-.info {
-    color: #555;
-}
-
-/* Spinner */
+.exito { color: #27ae60; font-weight: bold; }
+.error { color: #e74c3c; font-weight: bold; }
+.info  { color: #7f8c8d; }
 
 #spinner {
-    margin-top: 10px;
+    text-align: center;
+    font-weight: 500;
+    color: #34495e;
+    margin-top: 0.5rem;
+}
+
+/* Ajustes para la ventana emergente / modal del PIN */
+.modal-content {
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
+    padding: 1.75rem !important;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    color: #2c3e50;
 }
 
 /* =========================================
@@ -75,11 +127,13 @@
    ========================================= */
 
 @media (max-width: 600px) {
-
-    .economia-row {
-        flex-direction: column;
-        gap: 0;
+    details {
+        width: 95% !important;
+        margin: 1rem auto !important;
     }
 
+    details section {
+        padding: 1.25rem !important;
+        gap: 1rem !important;
+    }
 }
-
