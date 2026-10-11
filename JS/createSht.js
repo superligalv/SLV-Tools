@@ -55,6 +55,13 @@
     rosterRaw = "";
   }
 
+  // ---------- Colores de posición (clases de positions.css) ----------
+  var POS_CLASSES = ["gk", "df", "dm", "mf", "am", "fw"];
+  function paintSelect(sel){
+    POS_CLASSES.forEach(function(c){ sel.classList.remove(c); });
+    if (sel.value) sel.classList.add(sel.value.toLowerCase());
+  }
+
   // ---------- Filas de jugadores ----------
   function buildRow(rowIndex){
     var wrap = document.createElement("div");
@@ -156,6 +163,7 @@
         sel.appendChild(o);
       });
       sel.value = players[idx].name || "";
+      paintSelect(row._pos);
     });
 
     fillSelect($("pkSelect"), range(1, 16), true);
@@ -253,7 +261,10 @@
   });
   $("sub-off").addEventListener("change", function(){
     var off = $("sub-off").value;
-    if (off && players[off - 1].pos) $("sub-pos").value = players[off - 1].pos;
+    if (off && players[off - 1].pos){
+      $("sub-pos").value = players[off - 1].pos;
+      paintSelect($("sub-pos"));
+    }
   });
 
   $("rp-add").addEventListener("click", function(){
@@ -341,9 +352,9 @@
 
   // ---------- Confirmación con PIN ----------
   function pinMsg(text, kind){
-    var m = $("pinMsg");
+    var m = $("pinError");
     m.textContent = text || "";
-    m.className = "pin-msg" + (kind ? " " + kind : "");
+    m.className = kind || "";
   }
   function openPin(){
     if (output.value !== validatedText){ setPrimaryMode("validar"); return; }
@@ -351,11 +362,11 @@
     $("pinInput").value = "";
     pinMsg("");
     $("pinOk").disabled = false;
-    $("pinOverlay").classList.add("show");
+    $("pinModal").classList.add("show");
     $("pinInput").focus();
   }
   function closePin(){
-    $("pinOverlay").classList.remove("show");
+    $("pinModal").classList.remove("show");
     $("pinInput").value = "";
   }
 
@@ -369,7 +380,7 @@
     }
     var team = $("abbrInput").value;
     $("pinOk").disabled = true;
-    pinMsg("Enviando...");
+    pinMsg("Enviando...", "info");
     fetch(CONFIG.sendUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -390,7 +401,6 @@
 
   $("pinOk").addEventListener("click", confirmSend);
   $("pinCancel").addEventListener("click", closePin);
-  $("pinCloseX").addEventListener("click", closePin);
   $("pinInput").addEventListener("keydown", function(e){
     if (e.key === "Enter") confirmSend();
     if (e.key === "Escape") closePin();
@@ -490,7 +500,6 @@
   $("btnLoadRoster").addEventListener("click", function(){ openModal("roster"); });
   $("btnLoadTeamsheet").addEventListener("click", function(){ openModal("teamsheet"); });
   $("modalCancel").addEventListener("click", closeModal);
-  $("modalCloseX").addEventListener("click", closeModal);
 
   function looksLikeRoster(text){
     return /^\s*Name\s+Age\s+Nat/im.test(text) || /^-{10,}\s*$/m.test(text);
@@ -681,5 +690,11 @@
   fillNumbers($("ca-agg"), 1, 20);
   fillPosSelect($("sub-pos"));
   fillPosSelect($("rp-pos"));
+  ["sub-pos", "rp-pos"].forEach(function(id){
+    var sel = $(id);
+    paintSelect(sel);
+    sel.addEventListener("change", function(){ paintSelect(sel); });
+  });
   refreshDynamic();
 })();
+
