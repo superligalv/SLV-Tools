@@ -1,24 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TSM Plus v3</title>
-<link rel="stylesheet" href="./css/createSht.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TSM Plus v3</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/positions.css">
+  <link rel="stylesheet" href="./css/createSht.css?v=9">
 </head>
 <body>
 
-<div class="page" id="mainWindow">
-  <header class="topbar">
-    <div>
-      <p class="eyebrow">Superliga · TSM</p>
-      <h1 id="titleText">TSM Plus v3</h1>
-    </div>
-    <button class="btn" id="btnExport">Guardar .txt</button>
-  </header>
+  <h1 id="titleText">TSM Plus v3</h1>
 
-  <div class="app-body">
-    <div class="left-col">
+  <div class="tsm-layout">
+    <details open class="panel-main">
+      <summary>Alineacion</summary>
+      <div class="tsm-body">
+
       <div class="tabs">
         <div class="tab active" data-tab="players">Players/Team Info</div>
         <div class="tab" data-tab="conditions">Conditions</div>
@@ -172,59 +170,51 @@
 
         </div>
       </div>
-    </div>
-
-    <div class="right-col">
-      <div class="panel-title">The Teamsheet</div>
-      <textarea id="teamsheetOutput" readonly spellcheck="false"></textarea>
-      <div class="right-buttons">
-        <button class="btn" id="btnDeleteConditional">Delete conditional</button>
-        <button class="btn" id="btnClearAll">Clear All Fields</button>
       </div>
-    </div>
+    </details>
+
+    <details open class="panel-sheet">
+      <summary>Teamsheet</summary>
+      <div class="tsm-body">
+        <textarea id="teamsheetOutput" readonly spellcheck="false"></textarea>
+        <div class="right-buttons">
+          <button class="btn" id="btnExport">Guardar .txt</button>
+          <button class="btn" id="btnDeleteConditional">Delete conditional</button>
+          <button class="btn" id="btnClearAll">Clear All Fields</button>
+        </div>
+      </div>
+    </details>
   </div>
-</div>
 
-
-
-<!-- Modal reutilizado para Load Roster / Load Teamsheet -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2 id="modalTitle">Modal</h2>
-      <button class="icon-btn" id="modalCloseX" aria-label="Cerrar">×</button>
-    </div>
-    <div class="modal-body">
+  <!-- Cargar plantilla / teamsheet (pegar texto o abrir archivo) -->
+  <div class="modal" id="modalOverlay">
+    <div class="modal-content wide">
+      <h3 id="modalTitle">Modal</h3>
       <p id="modalHint"></p>
       <textarea id="modalTextarea"></textarea>
       <div class="modal-footer">
         <label class="btn file-btn">Abrir archivo...<input type="file" id="modalFile" accept=".txt,.csv,text/plain" hidden></label>
         <button class="btn" id="modalCancel">Cancelar</button>
-        <button class="btn" id="modalOk">Aceptar</button>
+        <button class="btn primary" id="modalOk">Aceptar</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Confirmación de envío con PIN -->
-<div class="modal-overlay" id="pinOverlay">
-  <div class="modal-box pin-box">
-    <div class="modal-head">
-      <h2>Confirmar envío</h2>
-      <button class="icon-btn" id="pinCloseX" aria-label="Cerrar">×</button>
-    </div>
-    <div class="modal-body">
+  <!-- Confirmación de envío con PIN -->
+  <div class="modal" id="pinModal">
+    <div class="modal-content">
+      <h3>Introduce tu PIN</h3>
       <p id="pinHint"></p>
       <input type="password" id="pinInput" inputmode="numeric" autocomplete="one-time-code" placeholder="PIN">
-      <p class="pin-msg" id="pinMsg"></p>
+      <p id="pinError"></p>
       <div class="modal-footer">
         <button class="btn" id="pinCancel">Cancelar</button>
-        <button class="btn primary" id="pinOk">Confirmar envío</button>
+        <button class="btn primary" id="pinOk">Confirmar envio</button>
       </div>
     </div>
   </div>
-</div>
 
-<script src="./JS/createSht.js?v=8"></script>
+  <script src="./JS/createSht.js?v=9"></script>
 </body>
 </html>
+
