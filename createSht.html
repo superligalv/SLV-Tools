@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TSM Plus v3</title>
+<link rel="stylesheet" href="./css/style.css?v=7">
+</head>
+<body>
+
+<div class="page" id="mainWindow">
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Superliga · TSM</p>
+      <h1 id="titleText">TSM Plus v3</h1>
+    </div>
+    <button class="btn" id="btnExport">Guardar .txt</button>
+  </header>
+
+  <div class="app-body">
+    <div class="left-col">
+      <div class="tabs">
+        <div class="tab active" data-tab="players">Players/Team Info</div>
+        <div class="tab" data-tab="conditions">Conditions</div>
+      </div>
+
+      <div class="tab-panel">
+
+        <!-- PLAYERS / TEAM INFO -->
+        <div class="tab-content active" id="tab-players">
+          <div class="top-grid">
+            <fieldset class="starting-eleven-box">
+              <legend>Starting Eleven</legend>
+              <div id="startingEleven"></div>
+            </fieldset>
+
+            <div class="right-stack">
+              <fieldset>
+                <legend>Team Info</legend>
+                <div class="ti-row abbr">
+                  <label>Abbreviation</label>
+                  <select id="abbrInput"><option value=""></option></select>
+                </div>
+                <div class="ti-row">
+                  <label>Starting Tactic</label>
+                  <select id="tacticInput"><option></option><option>P</option><option>A</option><option>C</option><option>N</option><option>L</option><option>E</option><option>D</option></select>
+                </div>
+                <div class="ti-row">
+                  <label>Penalty Taker</label>
+                  <select id="pkSelect"><option value=""></option></select>
+                </div>
+                <div class="ti-row agg">
+                  <label>Aggression</label>
+                  <select id="aggSelect"><option value=""></option></select>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Substitutes</legend>
+                <div id="substitutes"></div>
+              </fieldset>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn primary wide" id="btnAction">Validar</button>
+            <button class="btn wide" id="btnLoadRoster">Load Roster</button>
+            <button class="btn wide" id="btnLoadTeamsheet">Load Teamsheet</button>
+          </div>
+          <div class="validation" id="validation" aria-live="polite"></div>
+        </div>
+
+        <!-- CONDITIONS -->
+        <div class="tab-content" id="tab-conditions">
+
+          <fieldset class="cond-fieldset">
+            <legend>Tactic Change</legend>
+            <div class="cond-row">
+              <div class="cond-field">
+                <label>New Tactic</label>
+                <select class="wide-cond" id="tc-tactic"><option></option><option>P</option><option>A</option><option>C</option><option>N</option><option>L</option><option>E</option><option>D</option></select>
+              </div>
+              <div class="cond-field"><label>If Min</label>
+                <div class="pair"><select id="tc-min-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="tc-min-val"></div></div>
+              <div class="cond-field"><label>If Score</label>
+                <div class="pair"><select id="tc-score-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="tc-score-val"></div></div>
+              <div class="cond-field"><label>If Shots</label>
+                <div class="pair"><select id="tc-shots-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="tc-shots-val"></div></div>
+            </div>
+            <div class="cond-row">
+              <div class="cond-field"><label>If Yellow</label><select id="tc-yellow"><option></option><option>Yes</option></select></div>
+              <div class="cond-field"><label>If Red</label><select id="tc-red"><option></option><option>Yes</option></select></div>
+              <div class="cond-field"><label>If Injured</label><select id="tc-injured"><option></option><option>Yes</option></select></div>
+              <div class="cond-add-row" style="flex:1"><button class="btn small" id="tc-add">Add</button></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="cond-fieldset">
+            <legend>Substitution</legend>
+            <div class="cond-row">
+              <div class="cond-field"><label>Off</label><select class="wide-cond" id="sub-off"></select></div>
+              <div class="cond-field"><label>On</label><select class="wide-cond" id="sub-on"></select></div>
+              <div class="cond-field"><label>Position</label><select id="sub-pos"></select></div>
+              <div class="cond-field"><label>If Min</label>
+                <div class="pair"><select id="sub-min-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="sub-min-val"></div></div>
+              <div class="cond-field"><label>If Score</label>
+                <div class="pair"><select id="sub-score-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="sub-score-val"></div></div>
+              <div class="cond-field"><label>If Shots</label>
+                <div class="pair"><select id="sub-shots-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="sub-shots-val"></div></div>
+            </div>
+            <div class="cond-row">
+              <div class="cond-field"><label>If Yellow</label><select id="sub-yellow"><option></option><option>Yes</option></select></div>
+              <div class="cond-field"><label>If Red</label><select id="sub-red"><option></option><option>Yes</option></select></div>
+              <div class="cond-field"><label>If Injured</label><select id="sub-injured"><option></option><option>Yes</option></select></div>
+              <div class="cond-add-row" style="flex:1"><button class="btn small" id="sub-add">Add</button></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="cond-fieldset">
+            <legend>Reposition Player</legend>
+            <div class="cond-row">
+              <div class="cond-field"><label>Player</label><select class="wide-cond" id="rp-player"></select></div>
+              <div class="cond-field"><label>Position</label><select id="rp-pos"></select></div>
+              <div class="cond-field"><label>If Min</label>
+                <div class="pair"><select id="rp-min-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="rp-min-val"></div></div>
+              <div class="cond-field"><label>If Score</label>
+                <div class="pair"><select id="rp-score-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="rp-score-val"></div></div>
+              <div class="cond-field"><label>If Shots</label>
+                <div class="pair"><select id="rp-shots-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="rp-shots-val"></div></div>
+            </div>
+            <div class="cond-row">
+              <div class="cond-field"><label>If Yellow</label><select id="rp-yellow"><option></option><option>Yes</option></select></div>
+              <div class="cond-field"><label>If Red</label><select id="rp-red"><option></option><option>Yes</option></select></div>
+              <div class="cond-field"><label>If Injured</label><select id="rp-injured"><option></option><option>Yes</option></select></div>
+              <div class="cond-add-row" style="flex:1"><button class="btn small" id="rp-add">Add</button></div>
+            </div>
+          </fieldset>
+
+          <fieldset class="cond-fieldset">
+            <legend>Change Aggression</legend>
+            <div class="cond-row">
+              <div class="cond-field"><label>New Aggression</label>
+                <select id="ca-agg"><option></option></select>
+              </div>
+              <div class="cond-field"><label>If Min</label>
+                <div class="pair"><select id="ca-min-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="ca-min-val"></div></div>
+              <div class="cond-field"><label>If Score</label>
+                <div class="pair"><select id="ca-score-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="ca-score-val"></div></div>
+              <div class="cond-field"><label>If Shots</label>
+                <div class="pair"><select id="ca-shots-op"><option></option><option>=</option><option>&gt;=</option><option>&lt;=</option><option>&gt;</option><option>&lt;</option></select>
+                <input type="number" id="ca-shots-val"></div></div>
+            </div>
+            <div class="cond-row">
+              <div class="cond-field"><label>If Yellow</label><select id="ca-yellow"><option></option><option>Yes</option></select></div>
+              <div class="cond-field"><label>If Red</label><select id="ca-red"><option></option><option>Yes</option></select></div>
+              <div class="cond-field"><label>If Injured</label><select id="ca-injured"><option></option><option>Yes</option></select></div>
+              <div class="cond-add-row" style="flex:1"><button class="btn small" id="ca-add">Add</button></div>
+            </div>
+          </fieldset>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="panel-title">The Teamsheet</div>
+      <textarea id="teamsheetOutput" readonly spellcheck="false"></textarea>
+      <div class="right-buttons">
+        <button class="btn" id="btnDeleteConditional">Delete conditional</button>
+        <button class="btn" id="btnClearAll">Clear All Fields</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Modal reutilizado para Load Roster / Load Teamsheet -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="modalTitle">Modal</h2>
+      <button class="icon-btn" id="modalCloseX" aria-label="Cerrar">×</button>
+    </div>
+    <div class="modal-body">
+      <p id="modalHint"></p>
+      <textarea id="modalTextarea"></textarea>
+      <div class="modal-footer">
+        <label class="btn file-btn">Abrir archivo...<input type="file" id="modalFile" accept=".txt,.csv,text/plain" hidden></label>
+        <button class="btn" id="modalCancel">Cancelar</button>
+        <button class="btn" id="modalOk">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmación de envío con PIN -->
+<div class="modal-overlay" id="pinOverlay">
+  <div class="modal-box pin-box">
+    <div class="modal-head">
+      <h2>Confirmar envío</h2>
+      <button class="icon-btn" id="pinCloseX" aria-label="Cerrar">×</button>
+    </div>
+    <div class="modal-body">
+      <p id="pinHint"></p>
+      <input type="password" id="pinInput" inputmode="numeric" autocomplete="one-time-code" placeholder="PIN">
+      <p class="pin-msg" id="pinMsg"></p>
+      <div class="modal-footer">
+        <button class="btn" id="pinCancel">Cancelar</button>
+        <button class="btn primary" id="pinOk">Confirmar envío</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./JS/script.js?v=7"></script>
+</body>
+</html>
