@@ -196,3 +196,9 @@ select:focus, input:focus, textarea:focus, .btn:focus-visible, .tab:focus-visibl
 .modal-body .pin-msg{ min-height:18px; margin:10px 0 0; font-size:13px; color:var(--muted); }
 .modal-body .pin-msg.bad{ color:var(--bad); }
 .modal-body .pin-msg.ok{ color:var(--ok); }
+
+/* Estado de carga de la plantilla */
+.roster-status{ margin:0 0 6px; font-size:12px; color:var(--muted); }
+.roster-status:empty{ display:none; }
+.roster-status.ok{ color:var(--ok); }
+.roster-status.bad{ color:var(--bad); }

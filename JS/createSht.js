@@ -32,6 +32,8 @@
   var rowRefs = [];
   var primaryMode = "validar";   // "validar" | "enviar"
   var validatedText = null;      // teamsheet que pasó la validación
+  var teamsData = {};            // id (minúsculas) -> {team, dropbox_dir}
+  var rosterReq = 0;             // evita que una carga lenta pise a otra más reciente
   var pendingAbbr = "";          // abreviatura cargada antes de que lleguen los equipos
 
   function $(id){ return document.getElementById(id); }
@@ -422,7 +424,10 @@
     if (confirm("¿Vaciar todos los campos?")) doClearAll();
   });
 
-  $("abbrInput").addEventListener("change", renderTeamsheet);
+  $("abbrInput").addEventListener("change", function(){
+    renderTeamsheet();
+    loadRosterFor($("abbrInput").value);
+  });
   ["tacticInput", "pkSelect", "aggSelect"].forEach(function(id){
     $(id).addEventListener("change", renderTeamsheet);
   });
@@ -615,6 +620,35 @@
     });
     sel.value = found;
     pendingAbbr = found ? "" : v;
+    if (found) loadRosterFor(found);
+  }
+
+  // Carga la plantilla del equipo desde su fichero, igual que "Load Roster"
+  function loadRosterFor(id){
+    var st = $("rosterStatus");
+    var token = ++rosterReq;
+    function status(text, kind){ st.textContent = text; st.className = "roster-status" + (kind ? " " + kind : ""); }
+    if (!id){ status(""); return; }
+    var t = teamsData[id.toLowerCase()];
+    if (!t || !t.dropbox_dir){ status("No hay enlace de plantilla para " + id + ".", "bad"); return; }
+    status("Cargando plantilla...");
+    fetch(t.dropbox_dir).then(function(res){
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.text();
+    }).then(function(text){
+      if (token !== rosterReq) return;
+      var n = parseRoster(text);
+      if (!n){ status("El fichero de " + id + " no contiene jugadores.", "bad"); return; }
+      status("Plantilla de " + id + " cargada: " + n + " jugadores.", "ok");
+      if (primaryMode === "enviar"){
+        setPrimaryMode("validar");
+        $("validation").innerHTML = '<p class="msg warn">Ha cambiado la plantilla: vuelve a validar la alineación.</p>';
+      }
+    }).catch(function(err){
+      if (token !== rosterReq) return;
+      console.error("Error cargando plantilla:", err);
+      status("No se pudo cargar la plantilla de " + id + ".", "bad");
+    });
   }
 
   function loadTeams(){
@@ -629,6 +663,7 @@
         o.value = t.id;
         o.textContent = t.id;
         if (t.team) o.title = t.team;
+        teamsData[String(t.id).toLowerCase()] = t;
         sel.appendChild(o);
       });
       if (pendingAbbr){ setAbbr(pendingAbbr); renderTeamsheet(); }
