@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Negociación · Superliga</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/sendTransfer.css">
+</head>
+<body>
+
+<div class="page">
+    <header class="header">
+        <div>
+            <div class="eyebrow">SUPERLIGA · MERCADO</div>
+            <h1>Enviar Negociación (sendTransfer)</h1>
+            <div class="team-meta">
+                <span>Trueques y Compensación Económica</span>
+            </div>
+        </div>
+        <div id="status" class="status">Listo</div>
+    </header>
+
+    <section class="section">
+        <div class="card">
+            <h2>Detalles del Traspaso</h2>
+            
+            <!-- Club Oferente y Club Destino -->
+            <div class="form-group">
+                <label for="fromTeam">Mi Equipo (Origen):</label>
+                <select id="fromTeam" class="form-control">
+                    <option value="">-- Selecciona tu equipo --</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="toTeam">Equipo Receptor (Destino):</label>
+                <select id="toTeam" class="form-control">
+                    <option value="">-- Selecciona equipo destino --</option>
+                </select>
+            </div>
+
+            <!-- SECCIÓN JUGADORES -->
+            <div class="transfer-grid">
+                <div class="sub-card">
+                    <h3>Jugadores que Salen</h3>
+                    <div id="playersOutContainer">
+                        <input type="text" class="player-input form-control" placeholder="ID o Nombre del Jugador">
+                    </div>
+                </div>
+
+                <div class="sub-card">
+                    <h3>Jugadores que Entran</h3>
+                    <div id="playersInContainer">
+                        <input type="text" class="player-input form-control" placeholder="ID o Nombre del Jugador">
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPENSACIÓN ECONÓMICA -->
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="transferFee">Compensación Económica (M€):</label>
+                <input type="number" id="transferFee" class="form-control" step="0.01" value="0" placeholder="Ej. 10.5">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notas o Justificación:</label>
+                <textarea id="notes" class="form-control" rows="3" placeholder="Ej. Acuerdo por trueque + compensación"></textarea>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button id="btnEnviarNegociacion" class="btn-primary">ENVIAR NEGOCIACIÓN</button>
+            </div>
+
+            <div id="resultado" style="margin-top: 15px;"></div>
+        </div>
+    </section>
+</div>
+
+<script src="./JS/sendTransfer.js"></script>
+</body>
+</html>
