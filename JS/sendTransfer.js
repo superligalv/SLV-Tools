@@ -57,17 +57,26 @@ async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
     container.innerHTML = `<p class="placeholder-text">⏳ Cargando plantilla...</p>`;
 
     try {
-        // 1. Obtener el UUID del equipo en Supabase usando la abreviatura o ID
-        const { data: teamData } = await supabaseClient
-            .from("teams")
-            .select("id")
-            .or(`short_name.eq.${equipoIdentificador},id.eq.${equipoIdentificador}`)
-            .single();
+        let teamUuid = equipoIdentificador;
 
-        const teamUuid = teamData ? teamData.id : equipoIdentificador;
+        // Si el identificador no tiene formato UUID (es una abreviatura como 'psg'), lo buscamos en la tabla teams
+        if (!equipoIdentificador.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)) {
+            const { data: teamData, error: teamErr } = await supabaseClient
+                .from("teams")
+                .select("id")
+                .eq("short_name", equipoIdentificador)
+                .single();
 
-        // 2. Obtener los jugadores asociados al equipo en player_season_stats
-        const { data: statsData, error } = await supabaseClient
+            if (teamErr || !teamData) {
+                console.error("No se encontró el equipo por short_name:", teamErr);
+                container.innerHTML = `<p class="placeholder-text">❌ Error: No se reconoce el equipo.</p>`;
+                return;
+            }
+            teamUuid = teamData.id;
+        }
+
+        // 2. Consultar los jugadores usando el UUID real del equipo
+        const { data: statsData, error: statsErr } = await supabaseClient
             .from("player_season_stats")
             .select(`
                 player_id,
@@ -78,8 +87,14 @@ async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
             `)
             .eq("team_id", teamUuid);
 
-        if (error || !statsData || statsData.length === 0) {
-            container.innerHTML = `<p class="placeholder-text">No hay jugadores registrados en esta plantilla.</p>`;
+        if (statsErr) {
+            console.error("Error al consultar estadísticas:", statsErr);
+            container.innerHTML = `<p class="placeholder-text">❌ Error al consultar jugadores.</p>`;
+            return;
+        }
+
+        if (!statsData || statsData.length === 0) {
+            container.innerHTML = `<p class="placeholder-text">⚠️ No hay jugadores en esta plantilla.</p>`;
             return;
         }
 
@@ -95,8 +110,8 @@ async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
         }).join("");
 
     } catch (err) {
-        console.error("Error al cargar jugadores:", err);
-        container.innerHTML = `<p class="placeholder-text">Error al obtener la lista de jugadores.</p>`;
+        console.error("Excepción en cargarJugadoresPorEquipo:", err);
+        container.innerHTML = `<p class="placeholder-text">❌ Error inesperado al cargar.</p>`;
     }
 }
 
