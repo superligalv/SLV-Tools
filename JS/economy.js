@@ -110,7 +110,7 @@ async function loadDashboard() {
     try {
 
         const { data, error } = await supabaseClient
-            .from("economyDashboard")
+            .from("economydashboard")
             .select("*")
             .eq("abrev", abrev)
             .single();
@@ -236,7 +236,7 @@ async function loadHistory() {
 
     const { data, error } = await supabaseClient
 
-        .from("economyHistory")
+        .from("economyhistory")
 
         .select("*")
 
@@ -385,7 +385,7 @@ async function loadEvolution() {
 
     const { data, error } = await supabaseClient
 
-        .from("economyEvolution")
+        .from("economyevolution")
 
         .select("*")
 
