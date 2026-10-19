@@ -197,171 +197,96 @@ confirmPin.onclick = () => {
 
 };
 
-
 /* =========================
    ENVIAR MOVIMIENTO
 ========================= */
 
 async function enviarMovimiento() {
 
-    const equipo =
-        dropdown.value;
-
-    const tipo =
-        document.getElementById(
-            "tipoMovimiento"
-        ).value;
-
-    const concepto =
-        document.getElementById(
-            "concepto"
-        ).value.trim();
-
-    const cantidad =
-        Number(
-            document.getElementById(
-                "cantidad"
-            ).value
-        );
-
-    const referencia =
-        document.getElementById(
-            "referencia"
-        ).value.trim();
-
-    const temporada =
-        document.getElementById(
-            "temporada"
-        ).value.trim();
-
+    const abrevSeleccionada = dropdown.value; // Aquí llega la abreviatura antigua (ej: 'rma')
+    const tipo = document.getElementById("tipoMovimiento").value;
+    const concepto = document.getElementById("concepto").value.trim();
+    const cantidad = Number(document.getElementById("cantidad").value);
+    const referencia = document.getElementById("referencia").value.trim();
+    const temporada = document.getElementById("temporada").value.trim();
 
     spinner.style.display = "block";
     resultado.innerHTML = "";
 
-
     try {
+        // 1. Buscamos primero el UUID del equipo en Supabase usando la abreviatura (short_name)
+        const { data: teamData, error: teamError } = await supabaseClient
+            .from("teams")
+            .select("id, name")
+            .eq("short_name", abrevSeleccionada)
+            .single();
 
-        const response =
-            await fetch(
-                "https://superligalv.duckdns.org/api/economia/movimiento",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        equipo: equipo,
-                        pin: pinActual,
-                        tipo: tipo,
-                        concepto: concepto,
-                        cantidad: cantidad,
-                        referencia: referencia,
-                        temporada: temporada
-
-                    })
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if (response.ok) {
-
-            resultado.innerHTML = `
-
-                <div class="exito">
-
-                    ✔ Movimiento registrado correctamente
-
-                    <br><br>
-
-                    Equipo: ${equipo}
-
-                    <br>
-
-                    Tipo: ${tipo}
-
-                    <br>
-
-                    Concepto: ${concepto}
-
-                    <br>
-
-                    Cantidad: ${cantidad.toFixed(2)}
-
-                </div>
-
-            `;
-
-
-            document.getElementById(
-                "concepto"
-            ).value = "";
-
-            document.getElementById(
-                "cantidad"
-            ).value = "";
-
-            document.getElementById(
-                "referencia"
-            ).value = "";
-
-        }
-        else {
-
-            resultado.innerHTML = `
-
-                <div class="error">
-
-                    ❌ ${
-                        data.error ||
-                        "Error desconocido"
-                    }
-
-                </div>
-
-            `;
-
-            console.error(
-                "Error API:",
-                data
-            );
-
+        if (teamError || !teamData) {
+            throw new Error("No se ha encontrado el equipo en la base de datos.");
         }
 
-    }
-    catch (error) {
+        const teamUuid = teamData.id;
 
-        console.error(
-            "Error conexión:",
-            error
+        // 2. Enviamos la petición a tu API o directamente a Supabase
+        // (Si tu API backend esperaba la abreviatura, puedes mantener el fetch a tu API, 
+        // pero asegurándote de que tu API mapee el short_name al UUID).
+        
+        const response = await fetch(
+            "https://superligalv.duckdns.org/api/economia/movimiento",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    equipo: abrevSeleccionada, // O puedes mandar teamUuid si tu backend ya lo soporta
+                    pin: pinActual,
+                    tipo: tipo,
+                    concepto: concepto,
+                    cantidad: cantidad,
+                    referencia: referencia,
+                    temporada: temporada
+                })
+            }
         );
 
+        const data = await response.json();
+
+        if (response.ok) {
+            resultado.innerHTML = `
+                <div class="exito">
+                    ✔ Movimiento registrado correctamente
+                    <br><br>
+                    Equipo: ${teamData.name}
+                    <br>
+                    Tipo: ${tipo}
+                    <br>
+                    Concepto: ${concepto}
+                    <br>
+                    Cantidad: ${cantidad.toFixed(2)} M
+                </div>
+            `;
+
+            document.getElementById("concepto").value = "";
+            document.getElementById("cantidad").value = "";
+            document.getElementById("referencia").value = "";
+        } else {
+            resultado.innerHTML = `
+                <div class="error">
+                    ❌ ${data.error || "Error desconocido"}
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error("Error conexión:", error);
         resultado.innerHTML = `
-
             <div class="error">
-
-                ❌ Error de conexión con la API
-
+                ❌ Error al procesar el movimiento
                 <br>
-
                 ${error.message || ""}
-
             </div>
-
         `;
-
-    }
-    finally {
-
+    } finally {
         spinner.style.display = "none";
-
     }
-
 }
