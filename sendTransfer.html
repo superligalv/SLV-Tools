@@ -13,23 +13,19 @@
 </head>
 <body>
 
-<div class="page">
+<div class="page-container">
     <header class="header">
-        <div>
-            <div class="eyebrow">SUPERLIGA · MERCADO</div>
-            <h1>Enviar Negociación (sendTransfer)</h1>
-            <div class="team-meta">
-                <span>Trueques y Compensación Económica</span>
-            </div>
-        </div>
-        <div id="status" class="status">Listo</div>
+        <div class="eyebrow">SUPERLIGA · MERCADO</div>
+        <h1>Enviar Negociación (sendTransfer)</h1>
+        <div class="team-meta">Trueques y Compensación Económica</div>
+        <div id="status" class="status-badge">Listo</div>
     </header>
 
-    <section class="section">
-        <div class="card">
-            <h2>Detalles del Traspaso</h2>
-            
-            <!-- Club Oferente y Club Destino -->
+    <main class="main-card">
+        <h2>Detalles del Traspaso</h2>
+
+        <!-- SELECCIÓN DE EQUIPOS -->
+        <div class="teams-grid">
             <div class="form-group">
                 <label for="fromTeam">Mi Equipo (Origen):</label>
                 <select id="fromTeam" class="form-control">
@@ -43,42 +39,43 @@
                     <option value="">-- Selecciona equipo destino --</option>
                 </select>
             </div>
-
-            <!-- SECCIÓN JUGADORES -->
-            <div class="transfer-grid">
-                <div class="sub-card">
-                    <h3>Jugadores que Salen</h3>
-                    <div id="playersOutContainer">
-                        <input type="text" class="player-input form-control" placeholder="ID o Nombre del Jugador">
-                    </div>
-                </div>
-
-                <div class="sub-card">
-                    <h3>Jugadores que Entran</h3>
-                    <div id="playersInContainer">
-                        <input type="text" class="player-input form-control" placeholder="ID o Nombre del Jugador">
-                    </div>
-                </div>
-            </div>
-
-            <!-- COMPENSACIÓN ECONÓMICA -->
-            <div class="form-group" style="margin-top: 20px;">
-                <label for="transferFee">Compensación Económica (M€):</label>
-                <input type="number" id="transferFee" class="form-control" step="0.01" value="0" placeholder="Ej. 10.5">
-            </div>
-
-            <div class="form-group">
-                <label for="notes">Notas o Justificación:</label>
-                <textarea id="notes" class="form-control" rows="3" placeholder="Ej. Acuerdo por trueque + compensación"></textarea>
-            </div>
-
-            <div style="margin-top: 20px;">
-                <button id="btnEnviarNegociacion" class="btn-primary">ENVIAR NEGOCIACIÓN</button>
-            </div>
-
-            <div id="resultado" style="margin-top: 15px;"></div>
         </div>
-    </section>
+
+        <!-- SECCIÓN DINÁMICA DE JUGADORES -->
+        <div class="transfer-grid">
+            <div class="sub-card">
+                <h3>Jugadores que Salen (Mi Equipo)</h3>
+                <div id="playersOutContainer" class="players-list">
+                    <p class="placeholder-text">Selecciona 'Mi Equipo' para cargar sus jugadores...</p>
+                </div>
+            </div>
+
+            <div class="sub-card">
+                <h3>Jugadores que Entran (Equipo Destino)</h3>
+                <div id="playersInContainer" class="players-list">
+                    <p class="placeholder-text">Selecciona 'Equipo Destino' para cargar sus jugadores...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- COMPENSACIÓN ECONÓMICA -->
+        <div class="form-group" style="margin-top: 20px;">
+            <label for="transferFee">Compensación Económica (M€):</label>
+            <input type="number" id="transferFee" class="form-control" step="0.01" value="0" placeholder="Ej. 10.5">
+            <small class="help-text">Ingresa cantidad en millones. Si pagas tú, déjalo positivo. Si recibes dinero, indícalo en las notas.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Notas o Justificación de la Operación:</label>
+            <textarea id="notes" class="form-control" rows="3" placeholder="Ej. Trueque 2x1 con abono de 5M€"></textarea>
+        </div>
+
+        <div style="margin-top: 25px;">
+            <button id="btnEnviarNegociacion" class="btn-primary">ENVIAR NEGOCIACIÓN</button>
+        </div>
+
+        <div id="resultado" style="margin-top: 15px;"></div>
+    </main>
 </div>
 
 <script src="./JS/sendTransfer.js"></script>
