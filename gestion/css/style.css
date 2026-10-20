@@ -1,53 +1,127 @@
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: #f4f6f8;
-    color: #333;
+    color: #1e293b;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 20px;
 }
 
-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-header h1 {
-    color: #d32f2f;
-    margin-bottom: 5px;
-}
-
-.container {
-    max-width: 800px;
+.page-container {
+    max-width: 1200px;
     margin: 0 auto;
+}
+
+.simple-header {
     background: #ffffff;
-    padding: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.header-title-wrap h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.header-title-wrap p {
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.search-input {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-size: 0.9rem;
+    width: 240px;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
-h2 {
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-    color: #444;
+.search-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
+.teams-grid-detailed {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
 }
 
-th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+.team-card-detailed {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 18px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #1e293b;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-th {
-    background-color: #f8f9fa;
-    font-weight: bold;
+.team-card-detailed:hover {
+    transform: translateY(-2px);
+    border-color: #2563eb;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.08);
 }
 
-td.text-center, th.text-center {
-    text-align: center;
+.team-badge {
+    width: 48px;
+    height: 48px;
+    background: #2563eb;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.team-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+}
+
+.team-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-metrics {
+    display: flex;
+    gap: 12px;
+    font-size: 0.78rem;
+    color: #64748b;
+}
+
+.metric-item strong {
+    color: #334155;
+}
+
+.text-muted {
+    color: #64748b;
+    font-style: italic;
 }
