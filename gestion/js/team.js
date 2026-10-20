@@ -73,12 +73,18 @@ async function cargarListaEquiposDesdeSupabase() {
 
 async function cargarDatosEquipo(equipoIdentificador) {
     try {
-        // 1. Obtener los datos del equipo por short_name o ID
-        const { data: teamData, error: teamErr } = await supabaseClient
-            .from("teams")
-            .select("*")
-            .or(`short_name.eq.${equipoIdentificador},id.eq.${equipoIdentificador}`)
-            .single();
+        let query = supabaseClient.from("teams").select("*");
+
+        // Comprobamos si el identificador tiene formato UUID v4
+        const esUuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(equipoIdentificador);
+
+        if (esUuid) {
+            query = query.eq("id", equipoIdentificador);
+        } else {
+            query = query.eq("short_name", equipoIdentificador);
+        }
+
+        const { data: teamData, error: teamErr } = await query.single();
 
         if (teamErr || !teamData) {
             console.error("Equipo no encontrado en Supabase:", teamErr);
