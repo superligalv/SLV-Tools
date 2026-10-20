@@ -3,68 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Superliga Europea - Gestor Principal</title>
+    <title>Superliga Europea - Listado de Equipos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Estilos CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <!-- Navegación Principal -->
-    <header class="main-header">
-        <div class="header-content">
-            <h1>🏆 Superliga Europea 2026/27</h1>
-            <nav class="nav-links">
-                <a href="index.html" class="active">Inicio</a>
-                <a href="team.html">Equipos</a>
-		<!-- <a href="sendTransfer.html" class="btn-nav">Mercado / Fichajes</a> -->
-            </nav>
-        </div>
-    </header>
-
-    <main class="container">
-        
-        <!-- Panel de Acceso Rápido a Equipos -->
-        <section class="card-section">
-            <div class="section-header">
-                <h2>🛡️ Equipos de la Liga</h2>
+    <div class="page-container">
+        <!-- Cabecera Limpia con Buscador -->
+        <header class="simple-header">
+            <div class="header-title-wrap">
+                <h1>🛡️ Equipos de la Superliga</h1>
+                <p>Selecciona un club para ver su plantilla y estadísticas detalladas</p>
+            </div>
+            <div class="search-wrap">
                 <input type="text" id="searchTeamInput" placeholder="Buscar equipo..." class="search-input">
             </div>
-            <div id="teams-grid" class="teams-grid">
-                <p class="text-muted">⏳ Cargando equipos...</p>
+        </header>
+
+        <!-- Cuadrícula / Lista de Equipos -->
+        <main>
+            <div id="teams-grid" class="teams-grid-detailed">
+                <p class="text-muted">⏳ Cargando equipos y estadísticas...</p>
             </div>
-        </section>
+        </main>
+    </div>
 
-        <!-- Tabla de Máximos Goleadores -->
-        <section class="card-section">
-            <h2>⚽ Máximos Goleadores</h2>
-            <div class="table-responsive">
-                <table id="goleadores-table">
-                    <thead>
-                        <tr>
-                            <th>Jugador</th>
-                            <th>Equipo</th>
-                            <th>Nac.</th>
-                            <th>Goles</th>
-                            <th>Asistencias</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="5" class="text-muted text-center">⏳ Cargando goleadores...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Script de Lógica -->
     <script src="js/app.js"></script>
 </body>
 </html>
