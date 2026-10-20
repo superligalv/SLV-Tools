@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Equipo · Superliga</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/team.css">
+</head>
+<body>
+
+<div class="page-container">
+    <!-- Selector rápido de equipos superior -->
+    <header class="team-header-bar">
+        <div class="team-selector-wrap">
+            <label for="teamSelect">Cambiar de equipo:</label>
+            <select id="teamSelect" class="form-control-sm">
+                <option value="">-- Selecciona un equipo --</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Ficha de Encabezado estilo BeSoccer -->
+    <section class="team-hero-card" id="teamHero">
+        <div class="team-hero-info">
+            <div class="team-badge-placeholder" id="teamBadge">
+                <span id="badgeText">SLV</span>
+            </div>
+            <div class="team-details">
+                <div class="team-meta-tag" id="teamDivision">DIVISIÓN 1</div>
+                <h1 id="teamTitle">Cargando Equipo...</h1>
+                <p class="team-subtext" id="teamSubtext">Temporada 1 · Plantilla Oficial</p>
+            </div>
+        </div>
+
+        <div class="team-stats-summary">
+            <div class="stat-box">
+                <span class="stat-value" id="statPlayerCount">0</span>
+                <span class="stat-label">Jugadores</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="statAvgAge">0.0</span>
+                <span class="stat-label">Edad Media</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="statTotalGls">0</span>
+                <span class="stat-label">Goles Totales</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tabla / Plantilla estilo BeSoccer -->
+    <main class="main-card">
+        <div class="table-header-flex">
+            <h2>Plantilla Actual</h2>
+            <input type="text" id="searchPlayer" class="form-control-sm" placeholder="Buscar jugador por nombre...">
+        </div>
+
+        <div class="table-responsive">
+            <table class="besoccer-table">
+                <thead>
+                    <tr>
+                        <th>Jugador</th>
+                        <th>Edad</th>
+                        <th>Nac.</th>
+                        <th>ST</th>
+                        <th>TK</th>
+                        <th>PS</th>
+                        <th>SH</th>
+                        <th>AG</th>
+                        <th>PJ</th>
+                        <th>Goles</th>
+                        <th>Asist.</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="rosterTableBody">
+                    <tr>
+                        <td colspan="12" class="text-center">Selecciona un equipo para cargar la plantilla.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="./js/team.js"></script>
+</body>
+</html>
