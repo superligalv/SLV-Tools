@@ -7,7 +7,7 @@ body {
 }
 
 .page-container {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -16,7 +16,7 @@ body {
     border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 25px 30px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -53,72 +53,92 @@ body {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.teams-grid-detailed {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-}
-
-.team-card-detailed {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 18px;
+.table-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    text-decoration: none;
-    color: #1e293b;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
-.team-card-detailed:hover {
-    transform: translateY(-2px);
-    border-color: #2563eb;
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.08);
+.table-responsive {
+    overflow-x: auto;
 }
 
-.team-badge {
-    width: 48px;
-    height: 48px;
+.besoccer-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.besoccer-table th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    padding: 12px 15px;
+    border-bottom: 2px solid #e2e8f0;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.besoccer-table th.sortable {
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.besoccer-table th.sortable:hover {
+    background-color: #f1f5f9;
+    color: #2563eb;
+}
+
+.besoccer-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.clickable-row:hover {
+    background-color: #f8fafc;
+}
+
+.table-team-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.table-badge {
+    width: 32px;
+    height: 32px;
     background: #2563eb;
     color: #ffffff;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 800;
     flex-shrink: 0;
-    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
 }
 
-.team-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    overflow: hidden;
-}
-
-.team-name {
+.badge-count {
+    background: #dbeafe;
+    color: #1e40af;
     font-weight: 700;
-    font-size: 0.95rem;
-    color: #0f172a;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
 }
 
-.team-metrics {
-    display: flex;
-    gap: 12px;
-    font-size: 0.78rem;
-    color: #64748b;
-}
-
-.metric-item strong {
-    color: #334155;
+.text-center {
+    text-align: center;
 }
 
 .text-muted {

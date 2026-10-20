@@ -4,20 +4,37 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let allTeamsData = [];
+let currentSortColumn = 'name';
+let currentSortAsc = true;
 
 document.addEventListener("DOMContentLoaded", async () => {
     await cargarEquiposConEstadisticas();
 
+    // Buscador en tiempo real
     const searchInput = document.getElementById("searchTeamInput");
     if (searchInput) {
-        searchInput.addEventListener("input", (e) => filtrarEquipos(e.target.value));
+        searchInput.addEventListener("input", (e) => filtrarYRenderizar(e.target.value));
     }
+
+    // Eventos para ordenar al hacer clic en las cabeceras de la tabla
+    document.querySelectorAll("th.sortable").forEach(th => {
+        th.addEventListener("click", () => {
+            const column = th.getAttribute("data-sort");
+            if (currentSortColumn === column) {
+                currentSortAsc = !currentSortAsc;
+            } else {
+                currentSortColumn = column;
+                currentSortAsc = true;
+            }
+            filtrarYRenderizar(document.getElementById("searchTeamInput").value);
+        });
+    });
 });
 
 async function cargarEquiposConEstadisticas() {
-    const grid = document.getElementById("teams-grid");
+    const tbody = document.getElementById("teamsTableBody");
     try {
-        // 1. Obtener todos los equipos de la base de datos
+        // 1. Obtener todos los equipos de la BD
         const { data: teams, error: teamsError } = await supabaseClient
             .from("teams")
             .select("id, name, short_name, division")
@@ -25,20 +42,20 @@ async function cargarEquiposConEstadisticas() {
 
         if (teamsError || !teams) {
             console.error("Error al cargar equipos:", teamsError);
-            grid.innerHTML = `<p class="text-muted">❌ Error al cargar equipos.</p>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">❌ Error al cargar equipos.</td></tr>`;
             return;
         }
 
-        // 2. Obtener las estadísticas de la temporada para calcular número de jugadores y edad media
+        // 2. Obtener estadísticas de temporada para jugadores y edades
         const { data: stats, error: statsError } = await supabaseClient
             .from("player_season_stats")
             .select("team_id, age");
 
         if (statsError) {
-            console.error("Error al cargar estadísticas de jugadores:", statsError);
+            console.error("Error al cargar estadísticas:", statsError);
         }
 
-        // 3. Cruzar los datos para cada equipo
+        // 3. Procesar métricas por equipo
         allTeamsData = teams.map(team => {
             const playerStats = stats ? stats.filter(s => s.team_id === team.id) : [];
             const playerCount = playerStats.length;
@@ -46,7 +63,7 @@ async function cargarEquiposConEstadisticas() {
             let avgAge = 0;
             if (playerCount > 0) {
                 const totalAge = playerStats.reduce((acc, curr) => acc + (curr.age || 0), 0);
-                avgAge = (totalAge / playerCount).toFixed(1);
+                avgAge = parseFloat((totalAge / playerCount).toFixed(1));
             }
 
             return {
@@ -56,45 +73,59 @@ async function cargarEquiposConEstadisticas() {
             };
         });
 
-        renderizarGridEquipos(allTeamsData);
+        filtrarYRenderizar("");
 
     } catch (err) {
         console.error("Excepción en cargarEquiposConEstadisticas:", err);
-        grid.innerHTML = `<p class="text-muted">❌ Error inesperado al cargar los datos.</p>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">❌ Error inesperado.</td></tr>`;
     }
 }
 
-function renderizarGridEquipos(lista) {
-    const grid = document.getElementById("teams-grid");
-    if (!lista || lista.length === 0) {
-        grid.innerHTML = `<p class="text-muted">No se encontraron equipos.</p>`;
-        return;
-    }
-
-    grid.innerHTML = lista.map(team => `
-        <a href="team.html?team=${team.short_name}" class="team-card-detailed">
-            <div class="team-badge">${(team.short_name || 'SLV').toUpperCase()}</div>
-            <div class="team-info">
-                <span class="team-name">${team.name}</span>
-                <div class="team-metrics">
-                    <span class="metric-item">👥 <strong>${team.playerCount}</strong> jug.</span>
-                    <span class="metric-item">🎂 <strong>${team.avgAge}</strong> años</span>
-                </div>
-            </div>
-        </a>
-    `).join("");
-}
-
-function filtrarEquipos(query) {
+function filtrarYRenderizar(query) {
     const q = query.toLowerCase().trim();
-    if (!q) {
-        renderizarGridEquipos(allTeamsData);
-        return;
-    }
 
-    const filtrados = allTeamsData.filter(t => 
+    // 1. Filtrar
+    let listaFiltrada = allTeamsData.filter(t => 
         t.name.toLowerCase().includes(q) || 
         t.short_name.toLowerCase().includes(q)
     );
-    renderizarGridEquipos(filtrados);
+
+    // 2. Ordenar
+    listaFiltrada.sort((a, b) => {
+        let valA = a[currentSortColumn];
+        let valB = b[currentSortColumn];
+
+        if (typeof valA === 'string') {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+        }
+
+        if (valA < valB) return currentSortAsc ? -1 : 1;
+        if (valA > valB) return currentSortAsc ? 1 : -1;
+        return 0;
+    });
+
+    renderizarTabla(listaFiltrada);
+}
+
+function renderizarTabla(lista) {
+    const tbody = document.getElementById("teamsTableBody");
+    if (!lista || lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No se encontraron equipos.</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = lista.map(team => `
+        <tr onclick="window.location.href='team.html?team=${team.short_name}'" class="clickable-row">
+            <td>
+                <div class="table-team-cell">
+                    <span class="table-badge">${(team.short_name || 'SLV').toUpperCase()}</span>
+                    <strong>${team.name}</strong>
+                </div>
+            </td>
+            <td class="text-center">División ${team.division || 1}</td>
+            <td class="text-center"><span class="badge-count">${team.playerCount}</span></td>
+            <td class="text-center">${team.avgAge} años</td>
+        </tr>
+    `).join("");
 }

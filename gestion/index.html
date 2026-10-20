@@ -13,21 +13,35 @@
 <body>
 
     <div class="page-container">
-        <!-- Cabecera Limpia con Buscador -->
+        <!-- Cabecera limpia con Buscador -->
         <header class="simple-header">
             <div class="header-title-wrap">
                 <h1>🛡️ Equipos de la Superliga</h1>
-                <p>Selecciona un club para ver su plantilla y estadísticas detalladas</p>
+                <p>Haz clic en cualquier equipo para ver su plantilla o pulsa en las cabeceras para ordenar</p>
             </div>
             <div class="search-wrap">
                 <input type="text" id="searchTeamInput" placeholder="Buscar equipo..." class="search-input">
             </div>
         </header>
 
-        <!-- Cuadrícula / Lista de Equipos -->
-        <main>
-            <div id="teams-grid" class="teams-grid-detailed">
-                <p class="text-muted">⏳ Cargando equipos y estadísticas...</p>
+        <!-- Contenedor de la Tabla -->
+        <main class="table-card">
+            <div class="table-responsive">
+                <table class="besoccer-table" id="teamsTable">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="name">Equipo ↕</th>
+                            <th class="sortable text-center" data-sort="division">División ↕</th>
+                            <th class="sortable text-center" data-sort="playerCount">N.º Jugadores ↕</th>
+                            <th class="sortable text-center" data-sort="avgAge">Edad Media ↕</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teamsTableBody">
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">⏳ Cargando equipos...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
