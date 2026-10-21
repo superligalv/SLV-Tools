@@ -140,8 +140,11 @@ function renderizarTablaRoster(lista) {
 
         return `
             <tr>
-                <td class="player-name-cell">${p.name || 'Desconocido'}</td>
-                <td>${item.age || '-'}</td>
+                // En ./JS/team.js -> renderizarTablaRoster:
+		<td class="player-name-cell">
+		    <a href="player.html?id=${p.id}" class="player-link">${p.name || 'Desconocido'}</a>
+		</td>
+		<td>${item.age || '-'}</td>
                 <td>${p.nationality || '-'}</td>
                 <td><span class="badge-attr">${item.st}</span></td>
                 <td><span class="badge-attr">${item.tk}</span></td>
