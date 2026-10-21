@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// 1. Cargar la lista de equipos directamente desde Supabase en los desplegables
+
 async function cargarEquiposEnSelects() {
     try {
         const { data: teams, error } = await supabaseClient
@@ -37,19 +37,24 @@ async function cargarEquiposEnSelects() {
             return;
         }
 
-        // Selecciona todos los elementos <select> que se usen para elegir equipos en sendTransfer.html
-        // (Por ejemplo, puedes asignarles una clase común como class="team-select" o buscarlos por sus IDs)
-        const selects = document.querySelectorAll(".team-select, #equipoOrigen, #equipoDestino");
+        // Selecciona los desplegables de origen y destino
+        const selects = [document.getElementById("fromTeam"), document.getElementById("toTeam")];
 
         selects.forEach(select => {
-            // Guardar la opción por defecto si existe
-            const defaultOption = select.querySelector("option[value='']") ? select.querySelector("option[value='']').outerHTML : '<option value="">-- Selecciona un equipo --</option>';
-            
-            select.innerHTML = defaultOption;
+            if (!select) return;
 
+            // 1. Limpiar opciones anteriores
+            select.innerHTML = "";
+
+            // 2. Crear la opción por defecto de forma limpia
+            const defaultOpt = document.createElement("option");
+            defaultOpt.value = "";
+            defaultOpt.textContent = "-- Selecciona un equipo --";
+            select.appendChild(defaultOpt);
+
+            // 3. Añadir la lista de equipos cargada de Supabase
             teams.forEach(eq => {
                 const opt = document.createElement("option");
-                // Usamos el short_name (o eq.id si prefieres el UUID) como valor del option
                 opt.value = eq.short_name;
                 opt.textContent = eq.name;
                 select.appendChild(opt);
