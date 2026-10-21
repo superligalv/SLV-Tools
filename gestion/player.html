@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Jugador · Superliga</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="./css/player.css">
+</head>
+<body>
+
+<div class="page-container">
+    <!-- Navegación superior rápida -->
+    <header class="top-nav-bar">
+        <a href="index.html" class="btn-back">← Volver al Panel</a>
+        <div class="search-player-wrap">
+            <input type="text" id="playerSearchInput" placeholder="Buscar otro jugador..." class="form-control-sm">
+            <div id="searchResults" class="search-dropdown-results"></div>
+        </div>
+    </header>
+
+    <!-- Ficha Principal estilo BeSoccer -->
+    <section class="player-hero-card">
+        <div class="player-hero-info">
+            <div class="player-avatar-placeholder" id="playerAvatar">
+                <span id="avatarText">--</span>
+            </div>
+            <div class="player-details">
+                <div class="player-badges-row">
+                    <span class="badge-nationality" id="playerNat">--</span>
+                    <span class="badge-status fit-ok" id="playerStatus">Disponible</span>
+                </div>
+                <h1 id="playerName">Cargando Jugador...</h1>
+                <p class="player-subtext" id="playerTeamLink">
+                    Equipo: <a href="#" id="teamAnchor">--</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Atributos Principales -->
+        <div class="player-attributes-grid">
+            <div class="attr-box"><span class="attr-val" id="attrST">0</span><span class="attr-lbl">ST</span></div>
+            <div class="attr-box"><span class="attr-val" id="attrTK">0</span><span class="attr-lbl">TK</span></div>
+            <div class="attr-box"><span class="attr-val" id="attrPS">0</span><span class="attr-lbl">PS</span></div>
+            <div class="attr-box"><span class="attr-val" id="attrSH">0</span><span class="attr-lbl">SH</span></div>
+            <div class="attr-box"><span class="attr-val" id="attrAG">0</span><span class="attr-lbl">AG</span></div>
+        </div>
+    </section>
+
+    <!-- Rendimiento de la Temporada Actual -->
+    <section class="stats-grid-card">
+        <h2>📊 Rendimiento Temporada 1</h2>
+        <div class="stats-boxes-container">
+            <div class="stat-card-item">
+                <span class="stat-number" id="statGam">0</span>
+                <span class="stat-text">Partidos Jugados</span>
+            </div>
+            <div class="stat-card-item highlight-green">
+                <span class="stat-number" id="statGls">0</span>
+                <span class="stat-text">Goles Encajados / Marcados</span>
+            </div>
+            <div class="stat-card-item highlight-blue">
+                <span class="stat-number" id="statAss">0</span>
+                <span class="stat-text">Asistencias</span>
+            </div>
+            <div class="stat-card-item">
+                <span class="stat-number" id="statAge">0</span>
+                <span class="stat-text">Edad</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Historial de Traspasos -->
+    <section class="transfers-card">
+        <h2>🔄 Historial de Traspasos</h2>
+        <div class="table-responsive">
+            <table class="besoccer-table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Precio</th>
+                        <th>Operación</th>
+                    </tr>
+                </thead>
+                <tbody id="transfersTableBody">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">Cargando historial de fichajes...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script src="./js/player.js"></script>
+</body>
+</html>

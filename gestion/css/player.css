@@ -1,0 +1,262 @@
+/* =========================================================
+   PLAYER PROFILE STYLES (Estilo BeSoccer)
+   ========================================================= */
+
+body {
+    background-color: #f4f6f8;
+    color: #1e293b;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.page-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.top-nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.btn-back {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn-back:hover {
+    text-decoration: underline;
+}
+
+.search-player-wrap {
+    position: relative;
+}
+
+.form-control-sm {
+    padding: 8px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    width: 220px;
+    outline: none;
+}
+
+.form-control-sm:focus {
+    border-color: #2563eb;
+}
+
+.search-dropdown-results {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 260px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 50;
+    display: none;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.search-item {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    font-size: 0.88rem;
+}
+
+.search-item:hover {
+    background-color: #f8fafc;
+}
+
+/* Hero Section */
+.player-hero-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 25px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.player-hero-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.player-avatar-placeholder {
+    width: 72px;
+    height: 72px;
+    background: #2563eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+}
+
+.player-badges-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.badge-nationality {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-status {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.fit-ok { background: #16a34a; color: #ffffff; }
+.fit-injured { background: #dc2626; color: #ffffff; }
+
+.player-details h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.player-subtext {
+    margin: 4px 0 0 0;
+    font-size: 0.88rem;
+    color: #94a3b8;
+}
+
+.player-subtext a {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.player-subtext a:hover {
+    text-decoration: underline;
+}
+
+/* Atributos ST, TK, PS, SH, AG */
+.player-attributes-grid {
+    display: flex;
+    gap: 12px;
+}
+
+.attr-box {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    min-width: 48px;
+}
+
+.attr-val {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #38bdf8;
+}
+
+.attr-lbl {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 700;
+}
+
+/* Stats Cards Section */
+.stats-grid-card, .transfers-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.stats-grid-card h2, .transfers-card h2 {
+    margin: 0 0 18px 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.stats-boxes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.stat-card-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.stat-text {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.highlight-green .stat-number { color: #16a34a; }
+.highlight-blue .stat-number { color: #2563eb; }
+
+/* Tabla de Traspasos */
+.table-responsive { overflow-x: auto; }
+
+.besoccer-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    text-align: left;
+}
+
+.besoccer-table th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    padding: 10px 12px;
+    border-bottom: 2px solid #e2e8f0;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+}
+
+.besoccer-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+.text-center { text-align: center; }
+.text-muted { color: #94a3b8; font-style: italic; }
