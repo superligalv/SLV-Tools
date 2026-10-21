@@ -1,5 +1,5 @@
 const SUPABASE_URL = "https://bxgkacenzipwwbawftdl.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4Z2thY2Vuemlwd3diYXdmdGRsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDcxMTI0NCwiZXhwIjoyMTA2Mjg3MjQ0fQ.m_UNqt64oq4ffKcD8zuTi5uzyu0MdLXAAMTAQoo_Nsg"
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4Z2thY2Vuemlwd3diYXdmdGRsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDcxMTI0NCwiZXhwIjoyMTA2Mjg3MjQ0fQ.m_UNqt64oq4ffKcD8zuTi5uzyu0MdLXAAMTAQoo_Nsg";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -7,8 +7,8 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // Inicialización del DOM
 // =========================================================
 document.addEventListener("DOMContentLoaded", async () => {
-    // Reemplazamos la llamada al JSON por la consulta directa a Supabase
-    await cargarEquiposDesdeSupabase();
+    // Carga de equipos directamente desde Supabase
+    await cargarEquiposEnSelects();
 
     document.getElementById("fromTeam").addEventListener("change", (e) => {
         cargarJugadoresPorEquipo(e.target.value, "playersOutContainer");
@@ -24,7 +24,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-
+// =========================================================
+// Cargar Equipos desde Supabase
+// =========================================================
 async function cargarEquiposEnSelects() {
     try {
         const { data: teams, error } = await supabaseClient
@@ -37,7 +39,6 @@ async function cargarEquiposEnSelects() {
             return;
         }
 
-        // Selecciona los desplegables de origen y destino
         const selects = [document.getElementById("fromTeam"), document.getElementById("toTeam")];
 
         selects.forEach(select => {
@@ -46,13 +47,13 @@ async function cargarEquiposEnSelects() {
             // 1. Limpiar opciones anteriores
             select.innerHTML = "";
 
-            // 2. Crear la opción por defecto de forma limpia
+            // 2. Crear la opción por defecto
             const defaultOpt = document.createElement("option");
             defaultOpt.value = "";
             defaultOpt.textContent = "-- Selecciona un equipo --";
             select.appendChild(defaultOpt);
 
-            // 3. Añadir la lista de equipos cargada de Supabase
+            // 3. Añadir la lista de equipos cargados de la base de datos
             teams.forEach(eq => {
                 const opt = document.createElement("option");
                 opt.value = eq.short_name;
@@ -66,36 +67,9 @@ async function cargarEquiposEnSelects() {
     }
 }
 
-async function cargarEquiposDesdeJSON() {
-    try {
-        const response = await fetch('./JS/teams.json');
-        if (!response.ok) {
-            throw new Error("No se pudo cargar teams.json");
-        }
-        const equipos = await response.json();
-
-        const selectFrom = document.getElementById("fromTeam");
-        const selectTo = document.getElementById("toTeam");
-
-        equipos.forEach(e => {
-            const val = e.id || e.abrev || e.short_name;
-            const text = e.team || e.equipo || e.name;
-
-            const opt1 = document.createElement("option");
-            opt1.value = val;
-            opt1.textContent = text;
-            selectFrom.appendChild(opt1);
-
-            const opt2 = document.createElement("option");
-            opt2.value = val;
-            opt2.textContent = text;
-            selectTo.appendChild(opt2);
-        });
-    } catch (error) {
-        console.error("Error cargando teams.json:", error);
-    }
-}
-
+// =========================================================
+// Cargar Plantilla de Jugadores
+// =========================================================
 async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
     const container = document.getElementById(containerId);
     if (!equipoIdentificador) {
@@ -108,7 +82,7 @@ async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
     try {
         let teamUuid = equipoIdentificador;
 
-        // Si el identificador no tiene formato UUID (es una abreviatura como 'psg'), lo buscamos en la tabla teams
+        // Si el identificador no tiene formato UUID (es una abreviatura como 'rma'), lo buscamos en la tabla teams
         if (!equipoIdentificador.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)) {
             const { data: teamData, error: teamErr } = await supabaseClient
                 .from("teams")
@@ -124,7 +98,7 @@ async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
             teamUuid = teamData.id;
         }
 
-        // 2. Consultar los jugadores usando el UUID real del equipo
+        // Consultar los jugadores usando el UUID real del equipo
         const { data: statsData, error: statsErr } = await supabaseClient
             .from("player_season_stats")
             .select(`
@@ -164,6 +138,9 @@ async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
     }
 }
 
+// =========================================================
+// Enviar Negociación / Traspaso
+// =========================================================
 async function publicarNegociacion() {
     const fromTeamVal = document.getElementById("fromTeam").value;
     const toTeamVal = document.getElementById("toTeam").value;
