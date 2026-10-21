@@ -34,40 +34,42 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function cargarEquiposConEstadisticas() {
     const tbody = document.getElementById("teamsTableBody");
     try {
-        // 1. Obtener todos los equipos de la BD
+        // Consultamos los equipos trayendo sus estadísticas relacionales desde player_season_stats
         const { data: teams, error: teamsError } = await supabaseClient
             .from("teams")
-            .select("id, name, short_name, division")
+            .select(`
+                id,
+                name,
+                short_name,
+                division,
+                player_season_stats (
+                    age
+                )
+            `)
             .order("name", { ascending: true });
 
         if (teamsError || !teams) {
-            console.error("Error al cargar equipos:", teamsError);
-            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">❌ Error al cargar equipos.</td></tr>`;
+            console.error("Error al cargar equipos de Supabase:", teamsError);
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">❌ Error al cargar los equipos.</td></tr>`;
             return;
         }
 
-        // 2. Obtener estadísticas de temporada para jugadores y edades
-        const { data: stats, error: statsError } = await supabaseClient
-            .from("player_season_stats")
-            .select("team_id, age");
-
-        if (statsError) {
-            console.error("Error al cargar estadísticas:", statsError);
-        }
-
-        // 3. Procesar métricas por equipo
+        // Mapeamos los resultados calculando el total de jugadores y edad media exacta
         allTeamsData = teams.map(team => {
-            const playerStats = stats ? stats.filter(s => s.team_id === team.id) : [];
-            const playerCount = playerStats.length;
-            
+            const stats = team.player_season_stats || [];
+            const playerCount = stats.length;
+
             let avgAge = 0;
             if (playerCount > 0) {
-                const totalAge = playerStats.reduce((acc, curr) => acc + (curr.age || 0), 0);
+                const totalAge = stats.reduce((acc, curr) => acc + (curr.age || 0), 0);
                 avgAge = parseFloat((totalAge / playerCount).toFixed(1));
             }
 
             return {
-                ...team,
+                id: team.id,
+                name: team.name,
+                short_name: team.short_name,
+                division: team.division || 1,
                 playerCount,
                 avgAge
             };
@@ -77,7 +79,7 @@ async function cargarEquiposConEstadisticas() {
 
     } catch (err) {
         console.error("Excepción en cargarEquiposConEstadisticas:", err);
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">❌ Error inesperado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">❌ Error inesperado al procesar los datos.</td></tr>`;
     }
 }
 
