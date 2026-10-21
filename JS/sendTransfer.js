@@ -232,15 +232,17 @@ async function publicarNegociacion() {
             const contenidoPost = bloquesContenido.join('\n\n');
 
             // 4. Enviar a la API de Flask
-            await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    section_id: 1,
-                    title: tituloPost,
-                    content: contenidoPost
-                })
-            });
+	    await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                from_team_id: fromUuid,
+                to_team_id: toUuid,
+                players_out: selectedOut,
+                players_in: selectedIn,
+                fee: fee
+            	})
+	    });
             console.log("✅ Aviso de post enviado a la API de Flask.");
         } catch (forumErr) {
             console.error("⚠️ La oferta se guardó pero falló la notificación al foro:", forumErr);
