@@ -142,18 +142,18 @@ async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
 // Enviar Negociación / Traspaso
 // =========================================================
 async function publicarNegociacion() {
-    const fromTeamVal = document.getElementById("fromTeam").value;
-    const toTeamVal = document.getElementById("toTeam").value;
+    const fromUuid = document.getElementById("fromTeam").value;
+    const toUuid = document.getElementById("toTeam").value;
     const fee = Number(document.getElementById("transferFee").value || 0);
     const notes = document.getElementById("notes").value.trim();
     const resultadoDiv = document.getElementById("resultado");
 
-    if (!fromTeamVal || !toTeamVal) {
+    if (!fromUuid || !toUuid) {
         alert("Debes seleccionar ambos equipos.");
         return;
     }
 
-    if (fromTeamVal === toTeamVal) {
+    if (fromUuid === toUuid) {
         alert("El equipo de origen y destino no pueden ser el mismo.");
         return;
     }
@@ -170,22 +170,6 @@ async function publicarNegociacion() {
     resultadoDiv.innerHTML = "⏳ Registrando oferta de traspaso...";
 
     try {
-        // Resolver UUIDs de los dos equipos
-        const { data: fromTeamData } = await supabaseClient
-            .from("teams")
-            .select("id")
-            .or(`short_name.eq.${fromTeamVal},id.eq.${fromTeamVal}`)
-            .single();
-
-        const { data: toTeamData } = await supabaseClient
-            .from("teams")
-            .select("id")
-            .or(`short_name.eq.${toTeamVal},id.eq.${toTeamVal}`)
-            .single();
-
-        const fromUuid = fromTeamData.id;
-        const toUuid = toTeamData.id;
-
         const negotiationGroupId = crypto.randomUUID();
         const payload = [];
 
