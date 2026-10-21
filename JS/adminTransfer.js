@@ -121,27 +121,61 @@ async function procesarNegociacion(groupId, nuevoEstado) {
     }
 
     try {
+        // 1. Obtener los ítems pertenecientes a este grupo de negociación
         const { data: transfers, error: fetchErr } = await supabaseClient
             .from("player_career_transfers")
-            .select("id, player_id, to_team_id")
+            .select(`
+                id,
+                player_id,
+                to_team_id,
+                players (name),
+                from_team:teams!from_team_id (short_name),
+                to_team:teams!to_team_id (short_name)
+            `)
             .eq("negotiation_group_id", groupId);
 
         if (fetchErr || !transfers) throw new Error("No se pudieron recuperar los datos de la operación.");
 
         if (nuevoEstado === 'approved') {
+            // 2. Actualizar las plantillas de todos los jugadores en Supabase
             for (const tr of transfers) {
                 const { error: updateError } = await supabaseClient
                     .from("player_season_stats")
                     .update({ team_id: tr.to_team_id })
                     .eq("player_id", tr.player_id);
 
-                if (updateError) {
-                    console.error(`Error al actualizar la plantilla del jugador ${tr.player_id}:`, updateError);
-                    throw updateError;
+                if (updateError) throw updateError;
+            }
+
+            // 3. Preparar la lista completa de movimientos para la API
+            const listaMovimientos = transfers.map(tr => ({
+                playerName: tr.players?.name,
+                fromTeam: tr.from_team?.short_name, // ej: "mil"
+                toTeam: tr.to_team?.short_name     // ej: "rbl"
+            }));
+
+            // 4. Enviar un único paquete con todos los jugadores a mover
+            try {
+                const apiResponse = await fetch("https://tu-api.com/api/mover-jugadores-lote", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        groupId: groupId,
+                        transfers: listaMovimientos
+                    })
+                });
+
+                if (!apiResponse.ok) {
+                    console.warn("Aviso: La API backend devolvió un estado de advertencia.");
                 }
+            } catch (apiErr) {
+                console.error("Error al comunicarse con la API de ficheros:", apiErr);
             }
         }
 
+        // 5. Actualizar el estado del traspaso en Supabase
         const { error: statusErr } = await supabaseClient
             .from("player_career_transfers")
             .update({ status: nuevoEstado })
@@ -149,6 +183,7 @@ async function procesarNegociacion(groupId, nuevoEstado) {
 
         if (statusErr) throw statusErr;
 
+        // Quitar la tarjeta visualmente
         card.style.transition = "opacity 0.3s ease";
         card.style.opacity = "0";
         setTimeout(() => card.remove(), 300);
