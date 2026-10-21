@@ -140,6 +140,7 @@ async function publicarNegociacion() {
         return;
     }
 
+    // Recoger los checkboxes marcados
     const selectedOut = Array.from(document.querySelectorAll('input[name="playersOutContainer_players"]:checked')).map(cb => cb.value);
     const selectedIn = Array.from(document.querySelectorAll('input[name="playersInContainer_players"]:checked')).map(cb => cb.value);
 
@@ -154,6 +155,7 @@ async function publicarNegociacion() {
         const negotiationGroupId = crypto.randomUUID();
         const payload = [];
 
+        // Jugadores que salen (Origen -> Destino)
         selectedOut.forEach(playerId => {
             payload.push({
                 player_id: playerId,
@@ -166,6 +168,7 @@ async function publicarNegociacion() {
             });
         });
 
+        // Jugadores que entran (Destino -> Origen)
         selectedIn.forEach(playerId => {
             payload.push({
                 player_id: playerId,
@@ -183,70 +186,52 @@ async function publicarNegociacion() {
             .insert(payload);
 
         if (error) throw error;
-	// =========================================================
+
+        // =========================================================
         // NOTIFICACIÓN AUTOMÁTICA AL FORO VÍA API DE FLASK
         // =========================================================
         try {
-            // 1. Consultar equipos y jugadores completos (con stats/posiciones si existen)
+            // 1. Consultar equipos y jugadores de forma segura con la estructura real de la tabla players
             const [teamFromRes, teamToRes, playersOutRes, playersInRes] = await Promise.all([
                 supabaseClient.from("teams").select("name, short_name").eq("id", fromUuid).single(),
                 supabaseClient.from("teams").select("name, short_name").eq("id", toUuid).single(),
-                selectedOut.length > 0 
-                    ? supabaseClient.from("player_season_stats").select("player_id, players(name, position, overall)").in("player_id", selectedOut) 
-                    : { data: [] },
-                selectedIn.length > 0 
-                    ? supabaseClient.from("player_season_stats").select("player_id, players(name, position, overall)").in("player_id", selectedIn) 
-                    : { data: [] }
+                selectedOut.length > 0 ? supabaseClient.from("players").select("id, name").in("id", selectedOut) : { data: [] },
+                selectedIn.length > 0 ? supabaseClient.from("players").select("id, name").in("id", selectedIn) : { data: [] }
             ]);
 
             const teamFrom = teamFromRes.data;
             const teamTo = teamToRes.data;
+            const namesOut = (playersOutRes.data || []).map(p => p.name);
+            const namesIn = (playersInRes.data || []).map(p => p.name);
 
-            // Formatear la información del jugador
-            // Muestra: "NombreJugador (Posicion, OVR)" si existen esos campos, o simplemente "NombreJugador"
-            const formatPlayerDetail = (item) => {
-                const p = item.players || item;
-                if (!p) return "";
-                if (p.position && p.overall) {
-                    return `${p.name} (${p.position} - ${p.overall})`;
-                }
-                return p.name;
-            };
-
-            const namesOutSimple = (playersOutRes.data || []).map(p => p.players ? p.players.name : p.name);
-            const namesInSimple = (playersInRes.data || []).map(p => p.players ? p.players.name : p.name);
-
-            const detailsOut = (playersOutRes.data || []).map(formatPlayerDetail);
-            const detailsIn = (playersInRes.data || []).map(formatPlayerDetail);
-
-            // 2. CONSTRUIR TÍTULO (Sin "Ninguno")
+            // 2. CONSTRUIR TÍTULO (Omitiendo vacíos dinámicamente, sin "Ninguno")
             let strJugadoresTitulo = "";
-            if (namesOutSimple.length > 0 && namesInSimple.length > 0) {
-                strJugadoresTitulo = ` (${namesOutSimple.join(', ')} / ${namesInSimple.join(', ')})`;
-            } else if (namesOutSimple.length > 0) {
-                strJugadoresTitulo = ` (${namesOutSimple.join(', ')})`;
-            } else if (namesInSimple.length > 0) {
-                strJugadoresTitulo = ` (${namesInSimple.join(', ')})`;
+            if (namesOut.length > 0 && namesIn.length > 0) {
+                strJugadoresTitulo = ` (${namesOut.join(', ')} / ${namesIn.join(', ')})`;
+            } else if (namesOut.length > 0) {
+                strJugadoresTitulo = ` (${namesOut.join(', ')})`;
+            } else if (namesIn.length > 0) {
+                strJugadoresTitulo = ` (${namesIn.join(', ')})`;
             }
 
             const tituloPost = `${teamFrom.name} - ${teamTo.name}${strJugadoresTitulo}`;
 
-            // 3. CONSTRUIR CONTENIDO (Sin secciones "Ninguno")
+            // 3. CONSTRUIR CONTENIDO (Sin secciones vacías de "Ninguno")
             let bloquesContenido = [];
 
-            if (detailsIn.length > 0) {
-                bloquesContenido.push(`Se van a ${teamFrom.name} (${teamFrom.short_name}):\n\n${detailsIn.join('\n')}`);
+            if (namesIn.length > 0) {
+                bloquesContenido.push(`Se van a ${teamFrom.name} (${teamFrom.short_name}):\n\n${namesIn.join('\n')}`);
             }
 
-            if (detailsOut.length > 0) {
-                bloquesContenido.push(`Se van a ${teamTo.name} (${teamTo.short_name}):\n\n${detailsOut.join('\n')}`);
+            if (namesOut.length > 0) {
+                bloquesContenido.push(`Se van a ${teamTo.name} (${teamTo.short_name}):\n\n${namesOut.join('\n')}`);
             }
 
             bloquesContenido.push(`${teamFrom.name} PAGA: ${fee}M.`);
 
             const contenidoPost = bloquesContenido.join('\n\n');
 
-            // 4. Enviar a la API
+            // 4. Enviar a la API de Flask
             await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
