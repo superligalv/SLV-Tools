@@ -121,7 +121,7 @@ async function cargarJugadoresPorEquipo(teamUuid, containerId) {
 }
 
 // =========================================================
-// Enviar Negociacion / Traspaso
+// Enviar Negociacion / Traspaso y Publicar en el Foro
 // =========================================================
 async function publicarNegociacion() {
     const fromUuid = document.getElementById("fromTeam").value;
@@ -140,7 +140,6 @@ async function publicarNegociacion() {
         return;
     }
 
-    // Recoger los checkboxes marcados
     const selectedOut = Array.from(document.querySelectorAll('input[name="playersOutContainer_players"]:checked')).map(cb => cb.value);
     const selectedIn = Array.from(document.querySelectorAll('input[name="playersInContainer_players"]:checked')).map(cb => cb.value);
 
@@ -155,7 +154,6 @@ async function publicarNegociacion() {
         const negotiationGroupId = crypto.randomUUID();
         const payload = [];
 
-        // Jugadores que salen (Origen -> Destino)
         selectedOut.forEach(playerId => {
             payload.push({
                 player_id: playerId,
@@ -168,7 +166,6 @@ async function publicarNegociacion() {
             });
         });
 
-        // Jugadores que entran (Destino -> Origen)
         selectedIn.forEach(playerId => {
             payload.push({
                 player_id: playerId,
@@ -187,9 +184,53 @@ async function publicarNegociacion() {
 
         if (error) throw error;
 
+        // =========================================================
+        // NOTIFICACIÓN AUTOMÁTICA AL FORO VÍA API DE FLASK
+        // =========================================================
+        try {
+            const [teamFromRes, teamToRes, playersOutRes, playersInRes] = await Promise.all([
+                supabaseClient.from("teams").select("name, short_name").eq("id", fromUuid).single(),
+                supabaseClient.from("teams").select("name, short_name").eq("id", toUuid).single(),
+                selectedOut.length > 0 ? supabaseClient.from("players").select("id, name").in("id", selectedOut) : { data: [] },
+                selectedIn.length > 0 ? supabaseClient.from("players").select("id, name").in("id", selectedIn) : { data: [] }
+            ]);
+
+            const teamFrom = teamFromRes.data;
+            const teamTo = teamToRes.data;
+            const namesOut = (playersOutRes.data || []).map(p => p.name);
+            const namesIn = (playersInRes.data || []).map(p => p.name);
+
+            const strOut = namesOut.length > 0 ? namesOut.join(', ') : 'Ninguno';
+            const strIn = namesIn.length > 0 ? namesIn.join(', ') : 'Ninguno';
+
+            // Título: Nombre Equipo Origen - Nombre Equipo Destino (Jugadores Origen / Jugadores destino)
+            const tituloPost = `${teamFrom.name} - ${teamTo.name} (${strOut} / ${strIn})`;
+
+            // Contenido exacto solicitado
+            const contenidoPost = `Se van a ${teamFrom.name} (${teamFrom.short_name}):\n\n` +
+                (namesIn.length > 0 ? namesIn.join('\n') : 'Ninguno') + `\n\n` +
+                `Se van a ${teamTo.name} (${teamTo.short_name}):\n\n` +
+                (namesOut.length > 0 ? namesOut.join('\n') : 'Ninguno') + `\n\n` +
+                `${teamFrom.name} PAGA: ${fee}M.`;
+
+            await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    section_id: 1,
+                    title: tituloPost,
+                    content: contenidoPost
+                })
+            });
+            console.log("✅ Aviso de post enviado a la API de Flask.");
+        } catch (forumErr) {
+            console.error("⚠️ La oferta se guardó pero falló la notificación al foro:", forumErr);
+        }
+        // =========================================================
+
         resultadoDiv.innerHTML = `
             <div class="exito">
-                ✔ ¡Negociación enviada correctamente!<br>
+                ✔ ¡Negociación enviada y publicada en el foro correctamente!<br>
                 <small>Grupo ID: ${negotiationGroupId}</small><br>
                 Pendiente de validación por la administración.
             </div>
