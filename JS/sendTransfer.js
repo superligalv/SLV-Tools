@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // =========================================================
-// Cargar Equipos desde Supabase
+// Cargar Equipos desde Supabase (Guardando UUID en el value)
 // =========================================================
 async function cargarEquiposEnSelects() {
     try {
@@ -53,10 +53,10 @@ async function cargarEquiposEnSelects() {
             defaultOpt.textContent = "-- Selecciona un equipo --";
             select.appendChild(defaultOpt);
 
-            // 3. Añadir la lista de equipos cargados de la base de datos
+            // 3. Añadir la lista usando el UUID (eq.id) como value
             teams.forEach(eq => {
                 const opt = document.createElement("option");
-                opt.value = eq.short_name;
+                opt.value = eq.id; // <-- Guardamos el UUID directamente
                 opt.textContent = eq.name;
                 select.appendChild(opt);
             });
@@ -68,11 +68,11 @@ async function cargarEquiposEnSelects() {
 }
 
 // =========================================================
-// Cargar Plantilla de Jugadores
+// Cargar Plantilla de Jugadores (Recibe directamente el UUID)
 // =========================================================
-async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
+async function cargarJugadoresPorEquipo(teamUuid, containerId) {
     const container = document.getElementById(containerId);
-    if (!equipoIdentificador) {
+    if (!teamUuid) {
         container.innerHTML = `<p class="placeholder-text">Selecciona un equipo primero...</p>`;
         return;
     }
@@ -80,25 +80,7 @@ async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
     container.innerHTML = `<p class="placeholder-text">⏳ Cargando plantilla...</p>`;
 
     try {
-        let teamUuid = equipoIdentificador;
-
-        // Si el identificador no tiene formato UUID (es una abreviatura como 'rma'), lo buscamos en la tabla teams
-        if (!equipoIdentificador.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)) {
-            const { data: teamData, error: teamErr } = await supabaseClient
-                .from("teams")
-                .select("id")
-                .eq("short_name", equipoIdentificador)
-                .single();
-
-            if (teamErr || !teamData) {
-                console.error("No se encontró el equipo por short_name:", teamErr);
-                container.innerHTML = `<p class="placeholder-text">❌ Error: No se reconoce el equipo.</p>`;
-                return;
-            }
-            teamUuid = teamData.id;
-        }
-
-        // Consultar los jugadores usando el UUID real del equipo
+        // Consultar los jugadores usando el UUID del equipo directamente
         const { data: statsData, error: statsErr } = await supabaseClient
             .from("player_season_stats")
             .select(`
@@ -139,7 +121,7 @@ async function cargarJugadoresPorEquipo(equipoIdentificador, containerId) {
 }
 
 // =========================================================
-// Enviar Negociación / Traspaso
+// Enviar Negociacion / Traspaso
 // =========================================================
 async function publicarNegociacion() {
     const fromUuid = document.getElementById("fromTeam").value;
