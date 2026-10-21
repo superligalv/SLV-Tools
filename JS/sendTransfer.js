@@ -183,36 +183,70 @@ async function publicarNegociacion() {
             .insert(payload);
 
         if (error) throw error;
-
-        // =========================================================
+	// =========================================================
         // NOTIFICACIÓN AUTOMÁTICA AL FORO VÍA API DE FLASK
         // =========================================================
         try {
+            // 1. Consultar equipos y jugadores completos (con stats/posiciones si existen)
             const [teamFromRes, teamToRes, playersOutRes, playersInRes] = await Promise.all([
                 supabaseClient.from("teams").select("name, short_name").eq("id", fromUuid).single(),
                 supabaseClient.from("teams").select("name, short_name").eq("id", toUuid).single(),
-                selectedOut.length > 0 ? supabaseClient.from("players").select("id, name").in("id", selectedOut) : { data: [] },
-                selectedIn.length > 0 ? supabaseClient.from("players").select("id, name").in("id", selectedIn) : { data: [] }
+                selectedOut.length > 0 
+                    ? supabaseClient.from("player_season_stats").select("player_id, players(name, position, overall)").in("player_id", selectedOut) 
+                    : { data: [] },
+                selectedIn.length > 0 
+                    ? supabaseClient.from("player_season_stats").select("player_id, players(name, position, overall)").in("player_id", selectedIn) 
+                    : { data: [] }
             ]);
 
             const teamFrom = teamFromRes.data;
             const teamTo = teamToRes.data;
-            const namesOut = (playersOutRes.data || []).map(p => p.name);
-            const namesIn = (playersInRes.data || []).map(p => p.name);
 
-            const strOut = namesOut.length > 0 ? namesOut.join(', ') : 'Ninguno';
-            const strIn = namesIn.length > 0 ? namesIn.join(', ') : 'Ninguno';
+            // Formatear la información del jugador
+            // Muestra: "NombreJugador (Posicion, OVR)" si existen esos campos, o simplemente "NombreJugador"
+            const formatPlayerDetail = (item) => {
+                const p = item.players || item;
+                if (!p) return "";
+                if (p.position && p.overall) {
+                    return `${p.name} (${p.position} - ${p.overall})`;
+                }
+                return p.name;
+            };
 
-            // Título: Nombre Equipo Origen - Nombre Equipo Destino (Jugadores Origen / Jugadores destino)
-            const tituloPost = `${teamFrom.name} - ${teamTo.name} (${strOut} / ${strIn})`;
+            const namesOutSimple = (playersOutRes.data || []).map(p => p.players ? p.players.name : p.name);
+            const namesInSimple = (playersInRes.data || []).map(p => p.players ? p.players.name : p.name);
 
-            // Contenido exacto solicitado
-            const contenidoPost = `Se van a ${teamFrom.name} (${teamFrom.short_name}):\n\n` +
-                (namesIn.length > 0 ? namesIn.join('\n') : 'Ninguno') + `\n\n` +
-                `Se van a ${teamTo.name} (${teamTo.short_name}):\n\n` +
-                (namesOut.length > 0 ? namesOut.join('\n') : 'Ninguno') + `\n\n` +
-                `${teamFrom.name} PAGA: ${fee}M.`;
+            const detailsOut = (playersOutRes.data || []).map(formatPlayerDetail);
+            const detailsIn = (playersInRes.data || []).map(formatPlayerDetail);
 
+            // 2. CONSTRUIR TÍTULO (Sin "Ninguno")
+            let strJugadoresTitulo = "";
+            if (namesOutSimple.length > 0 && namesInSimple.length > 0) {
+                strJugadoresTitulo = ` (${namesOutSimple.join(', ')} / ${namesInSimple.join(', ')})`;
+            } else if (namesOutSimple.length > 0) {
+                strJugadoresTitulo = ` (${namesOutSimple.join(', ')})`;
+            } else if (namesInSimple.length > 0) {
+                strJugadoresTitulo = ` (${namesInSimple.join(', ')})`;
+            }
+
+            const tituloPost = `${teamFrom.name} - ${teamTo.name}${strJugadoresTitulo}`;
+
+            // 3. CONSTRUIR CONTENIDO (Sin secciones "Ninguno")
+            let bloquesContenido = [];
+
+            if (detailsIn.length > 0) {
+                bloquesContenido.push(`Se van a ${teamFrom.name} (${teamFrom.short_name}):\n\n${detailsIn.join('\n')}`);
+            }
+
+            if (detailsOut.length > 0) {
+                bloquesContenido.push(`Se van a ${teamTo.name} (${teamTo.short_name}):\n\n${detailsOut.join('\n')}`);
+            }
+
+            bloquesContenido.push(`${teamFrom.name} PAGA: ${fee}M.`);
+
+            const contenidoPost = bloquesContenido.join('\n\n');
+
+            // 4. Enviar a la API
             await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
