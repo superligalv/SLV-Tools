@@ -3,8 +3,12 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// =========================================================
+// Inicialización del DOM
+// =========================================================
 document.addEventListener("DOMContentLoaded", async () => {
-    await cargarEquiposDesdeJSON();
+    // Reemplazamos la llamada al JSON por la consulta directa a Supabase
+    await cargarEquiposDesdeSupabase();
 
     document.getElementById("fromTeam").addEventListener("change", (e) => {
         cargarJugadoresPorEquipo(e.target.value, "playersOutContainer");
@@ -14,8 +18,48 @@ document.addEventListener("DOMContentLoaded", async () => {
         cargarJugadoresPorEquipo(e.target.value, "playersInContainer");
     });
 
-    document.getElementById("btnEnviarNegociacion").addEventListener("click", publicarNegociacion);
+    const btnEnviar = document.getElementById("btnEnviarNegociacion");
+    if (btnEnviar) {
+        btnEnviar.addEventListener("click", publicarNegociacion);
+    }
 });
+
+// 1. Cargar la lista de equipos directamente desde Supabase en los desplegables
+async function cargarEquiposEnSelects() {
+    try {
+        const { data: teams, error } = await supabaseClient
+            .from("teams")
+            .select("id, name, short_name")
+            .order("name", { ascending: true });
+
+        if (error) {
+            console.error("Error al cargar equipos de Supabase:", error);
+            return;
+        }
+
+        // Selecciona todos los elementos <select> que se usen para elegir equipos en sendTransfer.html
+        // (Por ejemplo, puedes asignarles una clase común como class="team-select" o buscarlos por sus IDs)
+        const selects = document.querySelectorAll(".team-select, #equipoOrigen, #equipoDestino");
+
+        selects.forEach(select => {
+            // Guardar la opción por defecto si existe
+            const defaultOption = select.querySelector("option[value='']") ? select.querySelector("option[value='']').outerHTML : '<option value="">-- Selecciona un equipo --</option>';
+            
+            select.innerHTML = defaultOption;
+
+            teams.forEach(eq => {
+                const opt = document.createElement("option");
+                // Usamos el short_name (o eq.id si prefieres el UUID) como valor del option
+                opt.value = eq.short_name;
+                opt.textContent = eq.name;
+                select.appendChild(opt);
+            });
+        });
+
+    } catch (err) {
+        console.error("Excepción al cargar equipos en selectores:", err);
+    }
+}
 
 async function cargarEquiposDesdeJSON() {
     try {
