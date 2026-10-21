@@ -7,7 +7,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Define aquí tu supercontraseña de administrador
+// Define aquí tu supercontraseña de administración
 const SUPER_PASSWORD = "SUPER_PASSWORD_2026"; 
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -125,8 +125,8 @@ async function procesarNegociacion(groupId, nuevoEstado) {
         const { data: transfers, error: fetchErr } = await supabaseClient
             .from("player_career_transfers")
             .select(`
-                id,
-                player_id,
+                id, 
+                player_id, 
                 to_team_id,
                 players (name),
                 from_team:teams!from_team_id (short_name),
@@ -154,6 +154,14 @@ async function procesarNegociacion(groupId, nuevoEstado) {
                 toTeam: tr.to_team?.short_name     // ej: "rbl"
             }));
 
+            const payloadData = {
+                groupId: groupId,
+                transfers: listaMovimientos
+            };
+
+            // 🔍 AQUÍ VES EL JSON EXACTO EN LA CONSOLA DEL NAVEGADOR (F12)
+            console.log("JSON enviado a la API:", JSON.stringify(payloadData, null, 2));
+
             // 4. Enviar un único paquete con todos los jugadores a mover
             try {
                 const apiResponse = await fetch("https://tu-api.com/api/mover-jugadores-lote", {
@@ -161,10 +169,7 @@ async function procesarNegociacion(groupId, nuevoEstado) {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({
-                        groupId: groupId,
-                        transfers: listaMovimientos
-                    })
+                    body: JSON.stringify(payloadData)
                 });
 
                 if (!apiResponse.ok) {
