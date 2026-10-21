@@ -116,30 +116,22 @@ async function procesarNegociacion(groupId, nuevoEstado) {
     const card = document.getElementById(`group-${groupId}`);
     if (!card) return;
 
-    // Si nuevoEstado viene como 'approved', lo mapeamos al valor permitido 'validated'
-    const estadoABuscar = (nuevoEstado === 'approved') ? 'validated' : 'cancelled';
-
-    const textoAccion = (estadoABuscar === 'validated') ? 'VALIDAR (Aprobar)' : 'RECHAZAR';
-
-    if (!confirm(`¿Estás seguro de que deseas ${textoAccion} esta operación?`)) {
-        return;
-    }
-
     try {
-        // Actualizamos el estado del traspaso en Supabase al estado correspondiente permitidos por el Check Constraint ('validated' o 'cancelled')
+        // Actualizamos el estado del traspaso en Supabase directamente
+        // 'validated' para aprobar, 'cancelled' para rechazar
         const { error: statusErr } = await supabaseClient
             .from("player_career_transfers")
-            .update({ status: estadoABuscar })
+            .update({ status: nuevoEstado })
             .eq("negotiation_group_id", groupId);
 
         if (statusErr) throw statusErr;
 
-        // Quitar la tarjeta visualmente de la lista de pendientes
+        // Quitar la tarjeta visualmente de la lista de pendientes al instante
         card.style.transition = "opacity 0.3s ease";
         card.style.opacity = "0";
         setTimeout(() => card.remove(), 300);
 
-        // Si ya no quedan tarjetas, recargar el contenedor
+        // Si ya no quedan tarjetas, recargar el contenedor para mostrar el mensaje de "vacío"
         if (document.querySelectorAll(".negotiation-card").length <= 1) {
             setTimeout(cargarOperacionesPendientes, 400);
         }
