@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversor de Sofifa a Plantilla ESMS</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #007bff; font-size: 24px; margin-bottom: 10px; }
+        p.subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        label { font-weight: bold; font-size: 13px; margin-bottom: 5px; }
+        input, select { padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #28a745; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; }
+        button:hover { background-color: #218838; }
+        .output-section { margin-top: 25px; }
+        textarea { width: 100%; height: 250px; font-family: monospace; font-size: 13px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; background: #fafafa; white-space: pre; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Conversor Individual Sofifa a Plantilla ESMS</h1>
+    <p class="subtitle">Introduce los datos del jugador extraídos de Sofifa para obtener su formato táctico listo para la simulación.</p>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="commonName">Nombre Común (Common Name):</label>
+            <input type="text" id="commonName" placeholder="Ej: Jude Bellingham">
+        </div>
+        <div class="form-group">
+            <label for="firstName">Nombre (First Name):</label>
+            <input type="text" id="firstName" placeholder="Ej: Jude">
+        </div>
+        <div class="form-group">
+            <label for="lastName">Apellidos (Last Name):</label>
+            <input type="text" id="lastName" placeholder="Ej: Bellingham">
+        </div>
+        <div class="form-group">
+            <label for="position">Posición (EA FC / Sofifa):</label>
+            <select id="position">
+                <option value="GK">GK (Portero)</option>
+                <option value="CB">CB (Central)</option>
+                <option value="LB">LB (Lateral Izquierdo)</option>
+                <option value="RB">RB (Lateral Derecho)</option>
+                <option value="LWB">LWB</option>
+                <option value="RWB">RWB</option>
+                <option value="CDM">CDM (Pivote)</option>
+                <option value="CM" selected>CM (Mediocentro)</option>
+                <option value="CAM">CAM (Mediapunta)</option>
+                <option value="LM">LM</option>
+                <option value="RM">RM</option>
+                <option value="LW">LW (Extremo)</option>
+                <option value="RW">RW (Extremo)</option>
+                <option value="ST">ST (Delantero)</option>
+                <option value="CF">CF</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="overall">Media General (Overall Rating):</label>
+            <input type="number" id="overall" value="80" min="40" max="99">
+        </div>
+        <div class="form-group">
+            <label for="birthDate">Fecha de Nacimiento:</label>
+            <input type="date" id="birthDate" value="2003-06-29">
+        </div>
+        <div class="form-group">
+            <label for="nationality">Nacionalidad (Ej: England -> eng):</label>
+            <input type="text" id="nationality" value="eng" maxlength="3">
+        </div>
+        <div class="form-group">
+            <label for="passing">Passing (Pases):</label>
+            <input type="number" id="passing" value="75" min="1" max="99">
+        </div>
+        <div class="form-group">
+            <label for="shooting">Shooting (Disparo):</label>
+            <input type="number" id="shooting" value="70" min="1" max="99">
+        </div>
+        <div class="form-group">
+            <label for="defending">Defending (Defensa):</label>
+            <input type="number" id="defending" value="65" min="1" max="99">
+        </div>
+    </div>
+
+    <button onclick="convertirJugador()">Convertir a Formato ESMS</button>
+
+    <div class="output-section">
+        <label for="resultado">Resultado generado:</label>
+        <textarea id="resultado" readonly></textarea>
+    </div>
+</div>
+
+<script>
+// Equivalencias de posiciones idénticas a tu script de Python
+const POSICIONES = {
+    'PORTEROS': ['GK'],
+    'CB': ['CB'],
+    'LATERALES': ['LB', 'RB', 'LWB', 'RWB'],
+    'PIVOTES': ['CDM'],
+    'MEDIOCENTROS': ['CM'],
+    'MEDIOCENTROS_OFENSIVOS': ['CAM', 'RM', 'LM'],
+    'EXTREMOS': ['RW', 'LW'],
+    'DELANTEROS': ['ST', 'CF']
+};
+
+const ORDEN_POSICIONES = [
+    'PORTEROS', 'LATERALES', 'CB', 'PIVOTES', 'MEDIOCENTROS', 'MEDIOCENTROS_OFENSIVOS', 'EXTREMOS', 'DELANTEROS'
+];
+
+function limpiarTexto(texto) {
+    if (!texto) return "";
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9 _]/g, "").trim();
+}
+
+function calcularEdad(birthDateStr) {
+    try {
+        const birthDate = new Date(birthDateStr);
+        const cutoffDate = new Date(2026, 8, 1); // 1 de septiembre de 2026 (mes 8 en JS es septiembre)
+        let age = cutoffDate.getFullYear() - birthDate.getFullYear();
+        const m = cutoffDate.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && cutoffDate.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return Math.max(age, 15);
+    } catch (e) {
+        return 20;
+    }
+}
+
+function obtenerNombreEsms(commonName, firstName, lastName) {
+    const cName = limpiarTexto(commonName);
+    const fName = limpiarTexto(firstName);
+    const lName = limpiarTexto(lastName);
+
+    if (cName && cName.replace(/ /g, "_").length <= 12) {
+        return cName.replace(/ /g, "_");
+    }
+
+    const fullCombined = (fName && lName) ? `${fName}_${lName}` : (fName || lName);
+    if (fullCombined.length <= 12 && fullCombined) {
+        return fullCombined.replace(/ /g, "_");
+    }
+
+    if (fName && lName) {
+        const initCombined = `${fName[0]}_${lName}`;
+        if (initCombined.length <= 12) {
+            return initCombined.replace(/ /g, "_");
+        }
+    }
+
+    const finalName = lName || cName || "Player";
+    return finalName.replace(/ /g, "_").substring(0, 12);
+}
+
+function getDecenas(val) {
+    const num = parseInt(val);
+    return isNaN(num) ? 0 : Math.floor(num / 10);
+}
+
+function getUnidades(val) {
+    const num = parseInt(val);
+    return isNaN(num) ? 0 : num % 10;
+}
+
+function convertirJugador() {
+    const commonName = document.getElementById("commonName").value;
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const position = document.getElementById("position").value.toUpperCase().trim();
+    const overall = parseInt(document.getElementById("overall").value) || 50;
+    const birthDate = document.getElementById("birthDate").value;
+    const nationality = limpiarTexto(document.getElementById("nationality").value).substring(0, 3).toLowerCase() || "unk";
+    
+    const passing = document.getElementById("passing").value;
+    const shooting = document.getElementById("shooting").value;
+    const defending = document.getElementById("defending").value;
+
+    const ovrDecenas = Math.floor(overall / 10);
+    const ovrUnidades = overall % 10;
+    const statBase = ovrDecenas + 5;
+
+    let expPrincipal = ovrUnidades * 100;
+    if (expPrincipal === 0) expPrincipal = 50;
+
+    const passDec = getDecenas(passing);
+    const passUnidades = getUnidades(passing);
+    const shootDec = getDecenas(shooting);
+    const shootUnidades = getUnidades(shooting);
+    const defDec = getDecenas(defending);
+    const defUnidades = getUnidades(defending);
+
+    let st = 1, tk = 1, ps = 1, sh = 1;
+    let kab = 100, tab = 100, pab = 100, sab = 100;
+
+    // Asignación de reglas idénticas al script Python
+    if (POSICIONES['PORTEROS'].includes(position)) {
+        st = statBase; tk = 1; ps = 1; sh = 1;
+        kab = expPrincipal;
+    } else if (POSICIONES['CB'].includes(position)) {
+        tk = statBase; tab = expPrincipal;
+        ps = Math.max(passDec - 1, 1);
+        sh = Math.max(shootDec - 3, 1);
+        pab = Math.max(passUnidades * 100, 50);
+        sab = Math.max(shootUnidades * 100, 50);
+    } else if (POSICIONES['LATERALES'].includes(position)) {
+        tk = statBase; tab = expPrincipal;
+        ps = Math.max(passDec + 3, 6);
+        sh = Math.max(shootDec - 1, 1);
+        pab = Math.max(passUnidades * 100, 50);
+        sab = Math.max(shootUnidades * 100, 50);
+    } else if (POSICIONES['PIVOTES'].includes(position)) {
+        ps = statBase; pab = expPrincipal;
+        sh = Math.max(shootDec, 1);
+        tk = Math.max(defDec + 3, 6);
+        tab = Math.max(defUnidades * 100, 50);
+        sab = Math.max(shootUnidades * 100, 50);
+    } else if (POSICIONES['MEDIOCENTROS'].includes(position)) {
+        ps = statBase; pab = expPrincipal;
+        sh = Math.max(shootDec + 2, 4);
+        tk = Math.max(defDec + 2, 4);
+        tab = Math.max(defUnidades * 100, 50);
+        sab = Math.max(shootUnidades * 100, 50);
+    } else if (POSICIONES['MEDIOCENTROS_OFENSIVOS'].includes(position)) {
+        ps = statBase; pab = expPrincipal;
+        sh = Math.max(shootDec + 3, 6);
+        tk = Math.max(defDec, 1);
+        tab = Math.max(defUnidades * 100, 50);
+        sab = Math.max(shootUnidades * 100, 50);
+    } else if (POSICIONES['EXTREMOS'].includes(position)) {
+        sh = statBase; sab = expPrincipal;
+        ps = Math.max(passDec + 3, 6);
+        tk = Math.max(defDec, 1);
+        tab = Math.max(defUnidades * 100, 50);
+        pab = Math.max(passUnidades * 100, 50);
+    } else if (POSICIONES['DELANTEROS'].includes(position)) {
+        sh = statBase; sab = expPrincipal;
+        ps = Math.max(passDec + 1, 1);
+        tk = Math.max(defDec - 1, 1);
+        tab = Math.max(defUnidades * 100, 50);
+        pab = Math.max(passUnidades * 100, 50);
+    } else {
+        ps = statBase; pab = expPrincipal;
+    }
+
+    const nameFinal = obtenerNombreEsms(commonName, firstName, lastName);
+    const age = calcularEdad(birthDate);
+    const ag = 20;
+    const gam = 0, sub = 0, min_m = 0, mom = 0, sav = 0, con = 0, ktk = 0, kps = 0, sht = 0, gls = 0, ass = 0, dp = 0, inj = 0, sus = 0;
+    const fit = 100;
+
+    // Formateo idéntico con separadores de espacio fijo
+    const header = "Name         Age Nat St Tk Ps Sh Ag KAb TAb PAb SAb Gam Sub  Min Mom Sav Con Ktk Kps Sht Gls Ass  DP Inj Sus Fit";
+    const separator = "----------------------------------------------------------------------------------------------------------------";
+    
+    const linea = 
+        nameFinal.padEnd(12, ' ') + " " +
+        String(age).padStart(3, ' ') + " " +
+        nationality.padEnd(3, ' ') + " " +
+        String(st).padStart(2, ' ') + " " +
+        String(tk).padStart(2, ' ') + " " +
+        String(ps).padStart(2, ' ') + " " +
+        String(sh).padStart(2, ' ') + " " +
+        String(ag).padStart(2, ' ') + " " +
+        String(kab).padStart(3, ' ') + " " +
+        String(tab).padStart(3, ' ') + " " +
+        String(pab).padStart(3, ' ') + " " +
+        String(sab).padStart(3, ' ') + " " +
+        String(gam).padStart(3, ' ') + " " +
+        String(sub).padStart(3, ' ') + " " +
+        String(min_m).padStart(4, ' ') + " " +
+        String(mom).padStart(3, ' ') + " " +
+        String(sav).padStart(3, ' ') + " " +
+        String(con).padStart(3, ' ') + " " +
+        String(ktk).padStart(3, ' ') + " " +
+        String(kps).padStart(3, ' ') + " " +
+        String(sht).padStart(3, ' ') + " " +
+        String(gls).padStart(3, ' ') + " " +
+        String(ass).padStart(3, ' ') + " " +
+        String(dp).padStart(3, ' ') + " " +
+        String(inj).padStart(3, ' ') + " " +
+        String(sus).padStart(3, ' ') + " " +
+        String(fit).padStart(3, ' ');
+
+    document.getElementById("resultado").value = `${header}\n${separator}\n${linea}`;
+}
+</script>
+
+</body>
+</html>
