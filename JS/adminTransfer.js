@@ -99,8 +99,8 @@ async function cargarOperacionesPendientes() {
                         ${jugadoresHtml}
                     </div>
                     <div class="negotiation-actions">
-                        <button class="btn-approve" onclick="procesarNegociacion('${groupId}', 'approved')">✔ Aprobar</button>
-                        <button class="btn-reject" onclick="procesarNegociacion('${groupId}', 'rejected')">❌ Rechazar</button>
+                        <button class="btn-approve" onclick="procesarNegociacion('${groupId}', 'validated')">✔ Aprobar</button>
+                        <button class="btn-reject" onclick="procesarNegociacion('${groupId}', 'cancelled')">❌ Rechazar</button>
                     </div>
                 </div>
             `;
@@ -116,83 +116,30 @@ async function procesarNegociacion(groupId, nuevoEstado) {
     const card = document.getElementById(`group-${groupId}`);
     if (!card) return;
 
-    if (!confirm(`¿Estás seguro de que deseas marcar esta operación como ${nuevoEstado === 'approved' ? 'APROBADA' : 'RECHAZADA'}?`)) {
+    // Si nuevoEstado viene como 'approved', lo mapeamos al valor permitido 'validated'
+    const estadoABuscar = (nuevoEstado === 'approved') ? 'validated' : 'cancelled';
+
+    const textoAccion = (estadoABuscar === 'validated') ? 'VALIDAR (Aprobar)' : 'RECHAZAR';
+
+    if (!confirm(`¿Estás seguro de que deseas ${textoAccion} esta operación?`)) {
         return;
     }
 
     try {
-        // 1. Obtener los ítems pertenecientes a este grupo de negociación
-        const { data: transfers, error: fetchErr } = await supabaseClient
-            .from("player_career_transfers")
-            .select(`
-                id, 
-                player_id, 
-                to_team_id,
-                players (name),
-                from_team:teams!from_team_id (short_name),
-                to_team:teams!to_team_id (short_name)
-            `)
-            .eq("negotiation_group_id", groupId);
-
-        if (fetchErr || !transfers) throw new Error("No se pudieron recuperar los datos de la operación.");
-
-        if (nuevoEstado === 'approved') {
-            // 2. Actualizar las plantillas de todos los jugadores en Supabase
-            for (const tr of transfers) {
-                const { error: updateError } = await supabaseClient
-                    .from("player_season_stats")
-                    .update({ team_id: tr.to_team_id })
-                    .eq("player_id", tr.player_id);
-
-                if (updateError) throw updateError;
-            }
-
-            // 3. Preparar la lista completa de movimientos para la API
-            const listaMovimientos = transfers.map(tr => ({
-                playerName: tr.players?.name,
-                fromTeam: tr.from_team?.short_name, // ej: "mil"
-                toTeam: tr.to_team?.short_name     // ej: "rbl"
-            }));
-
-            const payloadData = {
-                groupId: groupId,
-                transfers: listaMovimientos
-            };
-
-            // 🔍 AQUÍ VES EL JSON EXACTO EN LA CONSOLA DEL NAVEGADOR (F12)
-            console.log("JSON enviado a la API:", JSON.stringify(payloadData, null, 2));
-
-            // 4. Enviar un único paquete con todos los jugadores a mover
-            try {
-                const apiResponse = await fetch("https://tu-api.com/api/mover-jugadores-lote", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payloadData)
-                });
-
-                if (!apiResponse.ok) {
-                    console.warn("Aviso: La API backend devolvió un estado de advertencia.");
-                }
-            } catch (apiErr) {
-                console.error("Error al comunicarse con la API de ficheros:", apiErr);
-            }
-        }
-
-        // 5. Actualizar el estado del traspaso en Supabase
+        // Actualizamos el estado del traspaso en Supabase al estado correspondiente permitidos por el Check Constraint ('validated' o 'cancelled')
         const { error: statusErr } = await supabaseClient
             .from("player_career_transfers")
-            .update({ status: nuevoEstado })
+            .update({ status: estadoABuscar })
             .eq("negotiation_group_id", groupId);
 
         if (statusErr) throw statusErr;
 
-        // Quitar la tarjeta visualmente
+        // Quitar la tarjeta visualmente de la lista de pendientes
         card.style.transition = "opacity 0.3s ease";
         card.style.opacity = "0";
         setTimeout(() => card.remove(), 300);
 
+        // Si ya no quedan tarjetas, recargar el contenedor
         if (document.querySelectorAll(".negotiation-card").length <= 1) {
             setTimeout(cargarOperacionesPendientes, 400);
         }
