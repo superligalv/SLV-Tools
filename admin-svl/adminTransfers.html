@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración · Superliga</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="../css/adminTransfer.css">
+</head>
+<body>
+
+<div class="page-container" id="adminContainer" style="display: none;">
+    <header class="top-nav-bar">
+        <h1>⚙️ Panel de Administración - Validación de Fichajes</h1>
+        <nav>
+            <a href="index.html" class="btn-back">← Volver al Panel</a>
+            <a href="sendTransfer.html" class="btn-link">Ir a Fichajes</a>
+        </nav>
+    </header>
+
+    <!-- Contenedor de Negociaciones Pendientes -->
+    <section class="admin-section">
+        <h2>📋 Operaciones Pendientes de Validación</h2>
+        <div id="pendingTransfersContainer">
+            <p class="text-muted">⏳ Cargando operaciones pendientes...</p>
+        </div>
+    </section>
+</div>
+
+<script src="../JS/adminTransfer.js"></script>
+</body>
+</html>
