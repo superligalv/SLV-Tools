@@ -99,7 +99,7 @@ async function loadTeamObjectives(teamId) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td class="p-3 font-bold bg-gray-50 border-r border-gray-300 uppercase text-xs">${row.type}</td>
-                <td class="p-3 border-r border-gray-300">${row.text || 'Sin definir'}</td>
+		<td class="p-3 border-r border-gray-300 whitespace-pre-line">${row.text || 'Sin definir'}</td>
                 <td class="p-3 text-center font-bold text-xs ${statusBg}">${row.status || 'PENDIENTE'}</td>
             `;
             tbody.appendChild(tr);
