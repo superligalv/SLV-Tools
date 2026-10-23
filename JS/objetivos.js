@@ -1,6 +1,6 @@
 // --- CONFIGURACIÓN DE SUPABASE ---
 // Reemplaza con tus credenciales reales de Supabase
-const SUPABASE_URL = 'TU_SUPABASE_URL';
+const SUPABASE_URL = 'https://bxgkacenzipwwbawftdl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4Z2thY2Vuemlwd3diYXdmdGRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MTEyNDQsImV4cCI6MjEwNjI4NzI0NH0.V4jfI7wDvKN-yePelVeAeA-3pEByfwS99o3s7k-vSWs';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);

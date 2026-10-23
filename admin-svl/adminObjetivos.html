@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Objetivos</title>
+    <!-- Tailwind CSS para el diseño -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Cliente de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900 pb-12">
+
+    <div class="max-w-4xl mx-auto p-6 my-8 bg-white shadow-md rounded-lg">
+        
+        <!-- Cabecera -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-200">
+            <div>
+                <h1 class="text-2xl font-black uppercase tracking-wide">Panel de Administración</h1>
+                <p class="text-xs text-gray-500 mt-1">Modifica los objetivos y estados de los equipos</p>
+            </div>
+            
+            <div class="mt-4 md:mt-0">
+                <label for="team-select" class="block text-xs font-bold text-gray-600 uppercase mb-1">Seleccionar Equipo a Editar:</label>
+                <select id="team-select" class="border border-gray-300 rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black">
+                    <option value="">Selecciona un equipo...</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Formulario de Edición -->
+        <form id="objective-form" class="space-y-6 hidden">
+            
+            <!-- Clase / Tier -->
+            <div class="bg-gray-50 p-4 rounded border border-gray-200 flex items-center space-x-4">
+                <label class="font-bold text-xs uppercase tracking-wider">Clase del Equipo:</label>
+                <input type="text" id="class-tier" class="border border-gray-300 rounded px-3 py-1 text-sm w-24 bg-white" placeholder="Ej. A o B">
+            </div>
+
+            <!-- Contenedor de Objetivos -->
+            <div id="objectives-container" class="space-y-4">
+                <!-- Se inyectarán dinámicamente los campos de mercado, liga, europa y stats -->
+            </div>
+
+            <!-- Botón Guardar -->
+            <div class="flex justify-end pt-4 border-t border-gray-200">
+                <button type="submit" id="save-btn" class="bg-black text-white px-6 py-2 rounded text-sm font-bold uppercase tracking-wider hover:bg-gray-800 transition">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+
+        <!-- Mensaje inicial o de carga -->
+        <div id="no-team-selected" class="p-12 text-center text-gray-400 font-medium">
+            Selecciona un equipo en el desplegable superior para cargar y editar sus objetivos.
+        </div>
+    </div>
+
+    <!-- Script de lógica -->
+    <script src="../JS/adminObj.js"></script>
+</body>
+</html>
