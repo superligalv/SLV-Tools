@@ -1,7 +1,8 @@
 const SUPABASE_URL = 'https://bxgkacenzipwwbawftdl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4Z2thY2Vuemlwd3diYXdmdGRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MTEyNDQsImV4cCI6MjEwNjI4NzI0NH0.V4jfI7wDvKN-yePelVeAeA-3pEByfwS99o3s7k-vSWs';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// CORREGIDO: Usamos 'db' para evitar el conflicto con el objeto global de Supabase
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
     init();
@@ -14,7 +15,8 @@ async function init() {
 // 1. Cargar la lista de equipos en el desplegable
 async function loadTeamsDropdown() {
     try {
-        const { data: teams, error } = await supabase
+        // CORREGIDO: Usamos 'db' en vez de 'supabase'
+        const { data: teams, error } = await db
             .from('teams')
             .select('id, name')
             .order('name', { ascending: true });
@@ -26,7 +28,7 @@ async function loadTeamsDropdown() {
         }
 
         const select = document.getElementById('team-select');
-        
+
         if (!teams || teams.length === 0) {
             console.warn('La tabla teams está vacía o no devolvió registros.');
             return;
@@ -56,7 +58,8 @@ async function loadTeamObjectives(teamId) {
     tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-gray-500">Cargando objetivos...</td></tr>`;
 
     try {
-        const { data, error } = await supabase
+        // CORREGIDO: Usamos 'db' en vez de 'supabase'
+        const { data, error } = await db
             .from('team_objectives')
             .select(`
                 *,
