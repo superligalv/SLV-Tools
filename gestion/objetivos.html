@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objetivos del Equipo</title>
+    <!-- Tailwind CSS para el diseño -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Cliente de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900">
+
+    <div class="max-w-4xl mx-auto p-6 my-8 bg-white shadow-md rounded-lg">
+        
+        <!-- Cabecera de Selección -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-gray-200">
+            <h1 id="team-title" class="text-2xl font-black uppercase tracking-wide">Cargando equipo...</h1>
+            
+            <div class="mt-4 md:mt-0">
+                <label for="team-select" class="block text-xs font-bold text-gray-600 uppercase mb-1">Seleccionar Equipo:</label>
+                <select id="team-select" class="border border-gray-300 rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black">
+                    <option value="">Selecciona un equipo...</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Tabla de Objetivos (Inspirada en tu diseño) -->
+        <div class="overflow-x-auto border border-black">
+            <table class="w-full border-collapse text-left">
+                <thead>
+                    <tr class="bg-black text-white text-xs uppercase tracking-wider">
+                        <th class="p-3 border-r border-gray-700 w-1/4">Tipo</th>
+                        <th class="p-3 border-r border-gray-700 w-2/3">Objetivo</th>
+                        <th class="p-3 text-center w-32">Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="objectives-body" class="divide-y divide-gray-300 text-sm">
+                    <!-- Los objetivos se cargaran dinámicamente aquí -->
+                    <tr>
+                        <td colspan="3" class="p-6 text-center text-gray-500">Selecciona un equipo para ver sus objetivos.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Configura tus credenciales de Supabase aquí
+        const SUPABASE_URL = 'TU_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'TU_SUPABASE_ANON_KEY';
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function init() {
+            await loadTeamsDropdown();
+        }
+
+        // 1. Cargar la lista de equipos en el desplegable
+        async function loadTeamsDropdown() {
+            const { data: teams, error } = await supabase
+                .from('teams')
+                .select('id, name')
+                .order('name', { ascending: true });
+
+            if (error) {
+                console.error('Error cargando equipos:', error);
+                return;
+            }
+
+            const select = document.getElementById('team-select');
+            teams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team.id;
+                option.textContent = team.name;
+                select.appendChild(option);
+            });
+
+            select.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    loadTeamObjectives(e.target.value);
+                }
+            });
+        }
+
+        // 2. Cargar los objetivos del equipo seleccionado haciendo JOIN con teams
+        async function loadTeamObjectives(teamId) {
+            const tbody = document.getElementById('objectives-body');
+            tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-gray-500">Cargando objetivos...</td></tr>`;
+
+            const { data, error } = await supabase
+                .from('team_objectives')
+                .select(`
+                    *,
+                    teams (name, division)
+                `)
+                .eq('team_id', teamId)
+                .single();
+
+            if (error || !data) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-red-500">No se encontraron objetivos para este equipo.</td></tr>`;
+                document.getElementById('team-title').textContent = "Equipo sin objetivos";
+                return;
+            }
+
+            // Actualizar título con la clase y el nombre
+            document.getElementById('team-title').textContent = `Objetivos GENERALES : ${data.teams.name} (Clase ${data.class_tier || 'A'})`;
+
+            // Mapear los 6 objetivos fijos a las filas de la tabla
+            const rows = [
+                { type: 'MERCADO', text: data.market_objective_one, status: data.market_objective_one_status },
+                { type: 'MERCADO', text: data.market_objective_two, status: data.market_objective_two_status },
+                { type: 'MERCADO', text: data.market_objective_three, status: data.market_objective_three_status },
+                { type: 'LIGA/COPA', text: data.league_objective_one, status: data.league_objective_one_status },
+                { type: 'EUROPA', text: data.europe_objective_one, status: data.europe_objective_one_status },
+                { type: 'ESTADÍSTICAS', text: data.stats_objective_one, status: data.stats_objective_one_status }
+            ];
+
+            tbody.innerHTML = '';
+
+            rows.forEach((row, index) => {
+                // Definir color según el estado
+                let statusBg = 'bg-yellow-400 text-black'; // PENDIENTE por defecto
+                if (row.status === 'CONSEGUIDO') statusBg = 'bg-green-500 text-white';
+                if (row.status === 'FALLADO') statusBg = 'bg-red-500 text-white';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 font-bold bg-gray-50 border-r border-gray-300 uppercase text-xs">${row.type}</td>
+                    <td class="p-3 border-r border-gray-300">${row.text}</td>
+                    <td class="p-3 text-center font-bold text-xs ${statusBg}">${row.status}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>
+
