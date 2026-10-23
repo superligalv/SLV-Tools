@@ -6,7 +6,7 @@
     <title>Perfil de Equipo · Superliga</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/team.css">
@@ -53,14 +53,28 @@
         </div>
     </section>
 
-    <!-- Tabla / Plantilla estilo BeSoccer -->
+    <!-- Tabla / Plantilla -->
     <main class="main-card">
-        <div class="table-header-flex">
-            <h2>Plantilla Actual</h2>
-            <input type="text" id="searchPlayer" class="form-control-sm" placeholder="Buscar jugador por nombre...">
+        <div class="table-header-flex" style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <h2 style="margin: 0;">Plantilla Actual</h2>
+                <div class="view-toggle-buttons" style="display: flex; gap: 5px; background: #e2e8f0; padding: 4px; border-radius: 6px;">
+                    <button id="btnViewTable" class="btn-toggle active" onclick="cambiarVista('table')" style="padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; background: #ffffff; color: #0f172a;">Vista Normal</button>
+                    <button id="btnViewPlain" class="btn-toggle" onclick="cambiarVista('plain')" style="padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; background: transparent; color: #64748b;">Texto Plano ESMS</button>
+                </div>
+            </div>
+            
+            <div id="searchWrap">
+                <input type="text" id="searchPlayer" class="form-control-sm" placeholder="Buscar jugador por nombre...">
+            </div>
+            
+            <div id="copyWrap" style="display: none;">
+                <button onclick="copiarTextoPlano()" style="padding: 6px 14px; background: #10b981; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Copiar Texto</button>
+            </div>
         </div>
 
-        <div class="table-responsive">
+        <!-- Vista 1: Tabla BeSoccer -->
+        <div id="viewTableContainer" class="table-responsive">
             <table class="besoccer-table">
                 <thead>
                     <tr>
@@ -84,6 +98,11 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- Vista 2: Texto Plano Formateado ESMS -->
+        <div id="viewPlainContainer" style="display: none; background: #0f172a; color: #f8fafc; padding: 15px; border-radius: 8px; overflow-x: auto;">
+            <pre id="plainTextOutput" style="font-family: 'Fira Code', 'Courier New', Courier, monospace; font-size: 13px; line-height: 1.4; margin: 0; white-space: pre;"></pre>
         </div>
     </main>
 </div>
