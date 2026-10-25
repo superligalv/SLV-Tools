@@ -3,19 +3,28 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+let currentOperationMode = 'transferencia'; // Agdaldaliasat ti mode: 'transferencia' wenno 'cesion'
+
 // =========================================================
 // Inicialización del DOM
 // =========================================================
 document.addEventListener("DOMContentLoaded", async () => {
-    // Carga de equipos directamente desde Supabase
     await cargarEquiposEnSelects();
 
+    // Evento para equipo de origen (para transferencia ken para cesion)
     document.getElementById("fromTeam").addEventListener("change", (e) => {
-        cargarJugadoresPorEquipo(e.target.value, "playersOutContainer");
+        const teamId = e.target.value;
+        if (currentOperationMode === 'transferencia') {
+            cargarJugadoresPorEquipo(teamId, "playersOutContainer");
+        } else {
+            cargarJugadoresParaCesion(teamId);
+        }
     });
 
     document.getElementById("toTeam").addEventListener("change", (e) => {
-        cargarJugadoresPorEquipo(e.target.value, "playersInContainer");
+        if (currentOperationMode === 'transferencia') {
+            cargarJugadoresPorEquipo(e.target.value, "playersInContainer");
+        }
     });
 
     const btnEnviar = document.getElementById("btnEnviarNegociacion");
@@ -25,7 +34,51 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // =========================================================
-// Cargar Equipos desde Supabase (Guardando UUID en el value)
+// Pestañas / Selector de Modo (Transferencia vs Cesión)
+// =========================================================
+function switchOperationType(type) {
+    currentOperationMode = type;
+    const sectionTransfer = document.getElementById('sectionTransfer');
+    const sectionLoan = document.getElementById('sectionLoan');
+    const btnTransfer = document.getElementById('btnTabTransfer');
+    const btnLoan = document.getElementById('btnTabLoan');
+    const resultadoDiv = document.getElementById("resultado");
+
+    if (resultadoDiv) resultadoDiv.innerHTML = "";
+
+    if (type === 'transferencia') {
+        if (sectionTransfer) sectionTransfer.style.display = 'block';
+        if (sectionLoan) sectionLoan.style.display = 'none';
+        if (btnTransfer) {
+            btnTransfer.style.background = 'black';
+            btnTransfer.style.color = 'white';
+        }
+        if (btnLoan) {
+            btnLoan.style.background = '#e5e7eb';
+            btnLoan.style.color = 'black';
+        }
+    } else {
+        if (sectionTransfer) sectionTransfer.style.display = 'none';
+        if (sectionLoan) sectionLoan.style.display = 'block';
+        if (btnLoan) {
+            btnLoan.style.background = 'black';
+            btnLoan.style.color = 'white';
+        }
+        if (btnTransfer) {
+            btnTransfer.style.background = '#e5e7eb';
+            btnTransfer.style.color = 'black';
+        }
+
+        // No nagbaliw a tayak, no addan a nairugi ti fromTeam, ikarga dagiti jugadores a maibunong
+        const fromUuid = document.getElementById("fromTeam").value;
+        if (fromUuid) {
+            cargarJugadoresParaCesion(fromUuid);
+        }
+    }
+}
+
+// =========================================================
+// Cargar Equipos desde Supabase
 // =========================================================
 async function cargarEquiposEnSelects() {
     try {
@@ -43,20 +96,16 @@ async function cargarEquiposEnSelects() {
 
         selects.forEach(select => {
             if (!select) return;
-
-            // 1. Limpiar opciones anteriores
             select.innerHTML = "";
 
-            // 2. Crear la opción por defecto
             const defaultOpt = document.createElement("option");
             defaultOpt.value = "";
             defaultOpt.textContent = "-- Selecciona un equipo --";
             select.appendChild(defaultOpt);
 
-            // 3. Añadir la lista usando el UUID (eq.id) como value
             teams.forEach(eq => {
                 const opt = document.createElement("option");
-                opt.value = eq.id; // <-- Guardamos el UUID directamente
+                opt.value = eq.id;
                 opt.textContent = eq.name;
                 select.appendChild(opt);
             });
@@ -68,10 +117,12 @@ async function cargarEquiposEnSelects() {
 }
 
 // =========================================================
-// Cargar Plantilla de Jugadores (Recibe directamente el UUID)
+// Cargar Jugadores para Transferencia
 // =========================================================
 async function cargarJugadoresPorEquipo(teamUuid, containerId) {
     const container = document.getElementById(containerId);
+    if (!container) return;
+
     if (!teamUuid) {
         container.innerHTML = `<p class="placeholder-text">Selecciona un equipo primero...</p>`;
         return;
@@ -80,7 +131,6 @@ async function cargarJugadoresPorEquipo(teamUuid, containerId) {
     container.innerHTML = `<p class="placeholder-text">⏳ Cargando plantilla...</p>`;
 
     try {
-        // Consultar los jugadores usando el UUID del equipo directamente
         const { data: statsData, error: statsErr } = await supabaseClient
             .from("player_season_stats")
             .select(`
@@ -121,12 +171,52 @@ async function cargarJugadoresPorEquipo(teamUuid, containerId) {
 }
 
 // =========================================================
-// Enviar Negociacion / Traspaso y Publicar en el Foro
+// Cargar Jugadores para Cesión (Dropdown)
+// =========================================================
+async function cargarJugadoresParaCesion(teamUuid) {
+    const loanPlayerSelect = document.getElementById("loanPlayer");
+    if (!loanPlayerSelect) return;
+
+    loanPlayerSelect.innerHTML = '<option value="">-- Selecciona el jugador --</option>';
+
+    if (!teamUuid) return;
+
+    try {
+        const { data: statsData, error } = await supabaseClient
+            .from("player_season_stats")
+            .select(`
+                player_id,
+                players (
+                    id,
+                    name
+                )
+            `)
+            .eq("team_id", teamUuid);
+
+        if (error) throw error;
+
+        if (statsData) {
+            statsData.forEach(item => {
+                const player = item.players;
+                if (player) {
+                    const opt = document.createElement("option");
+                    opt.value = player.id;
+                    opt.textContent = player.name;
+                    loanPlayerSelect.appendChild(opt);
+                }
+            });
+        }
+    } catch (err) {
+        console.error("Error al cargar jugadores para cesión:", err.message);
+    }
+}
+
+// =========================================================
+// Enviar Negociacion (Transferencia vs Cesión)
 // =========================================================
 async function publicarNegociacion() {
     const fromUuid = document.getElementById("fromTeam").value;
     const toUuid = document.getElementById("toTeam").value;
-    const fee = Number(document.getElementById("transferFee").value || 0);
     const notes = document.getElementById("notes").value.trim();
     const resultadoDiv = document.getElementById("resultado");
 
@@ -140,124 +230,100 @@ async function publicarNegociacion() {
         return;
     }
 
-    // Recoger los checkboxes marcados
-    const selectedOut = Array.from(document.querySelectorAll('input[name="playersOutContainer_players"]:checked')).map(cb => cb.value);
-    const selectedIn = Array.from(document.querySelectorAll('input[name="playersInContainer_players"]:checked')).map(cb => cb.value);
-
-    if (selectedOut.length === 0 && selectedIn.length === 0) {
-        alert("Debes seleccionar al menos un jugador que salga o entre.");
-        return;
-    }
-
-    resultadoDiv.innerHTML = "⏳ Registrando oferta de traspaso...";
+    resultadoDiv.innerHTML = "⏳ Registrando negociación...";
 
     try {
-        const negotiationGroupId = crypto.randomUUID();
-        const payload = [];
+        if (currentOperationMode === 'transferencia') {
+            // --- LÓGICA DE TRANSFERENCIAS ---
+            const fee = Number(document.getElementById("transferFee").value || 0);
+            const selectedOut = Array.from(document.querySelectorAll('input[name="playersOutContainer_players"]:checked')).map(cb => cb.value);
+            const selectedIn = Array.from(document.querySelectorAll('input[name="playersInContainer_players"]:checked')).map(cb => cb.value);
 
-        // Jugadores que salen (Origen -> Destino)
-        selectedOut.forEach(playerId => {
-            payload.push({
-                player_id: playerId,
-                from_team_id: fromUuid,
-                to_team_id: toUuid,
-                transfer_fee: fee,
-                notes: notes,
-                status: 'pending',
-                negotiation_group_id: negotiationGroupId
+            if (selectedOut.length === 0 && selectedIn.length === 0) {
+                alert("Debes seleccionar al menos un jugador que salga o entre.");
+                resultadoDiv.innerHTML = "";
+                return;
+            }
+
+            const negotiationGroupId = crypto.randomUUID();
+            const payload = [];
+
+            selectedOut.forEach(playerId => {
+                payload.push({
+                    player_id: playerId,
+                    from_team_id: fromUuid,
+                    to_team_id: toUuid,
+                    transfer_fee: fee,
+                    notes: notes,
+                    status: 'pending',
+                    negotiation_group_id: negotiationGroupId
+                });
             });
-        });
 
-        // Jugadores que entran (Destino -> Origen)
-        selectedIn.forEach(playerId => {
-            payload.push({
-                player_id: playerId,
-                from_team_id: toUuid,
-                to_team_id: fromUuid,
-                transfer_fee: 0,
-                notes: notes,
-                status: 'pending',
-                negotiation_group_id: negotiationGroupId
+            selectedIn.forEach(playerId => {
+                payload.push({
+                    player_id: playerId,
+                    from_team_id: toUuid,
+                    to_team_id: fromUuid,
+                    transfer_fee: 0,
+                    notes: notes,
+                    status: 'pending',
+                    negotiation_group_id: negotiationGroupId
+                });
             });
-        });
 
-        const { error } = await supabaseClient
-            .from("player_career_transfers")
-            .insert(payload);
+            const { error } = await supabaseClient
+                .from("player_career_transfers")
+                .insert(payload);
 
-        if (error) throw error;
+            if (error) throw error;
 
-        // =========================================================
-        // NOTIFICACIÓN AUTOMÁTICA AL FORO VÍA API DE FLASK
-        // =========================================================
-        try {
-            // 1. Consultar equipos y jugadores de forma segura con la estructura real de la tabla players
-            const [teamFromRes, teamToRes, playersOutRes, playersInRes] = await Promise.all([
-                supabaseClient.from("teams").select("name, short_name").eq("id", fromUuid).single(),
-                supabaseClient.from("teams").select("name, short_name").eq("id", toUuid).single(),
-                selectedOut.length > 0 ? supabaseClient.from("players").select("id, name").in("id", selectedOut) : { data: [] },
-                selectedIn.length > 0 ? supabaseClient.from("players").select("id, name").in("id", selectedIn) : { data: [] }
-            ]);
+            resultadoDiv.innerHTML = `
+                <div class="exito" style="color: green; font-weight: bold;">
+                    ✔ ¡Traspaso enviado correctamente!<br>
+                    <small>Grupo ID: ${negotiationGroupId}</small>
+                </div>
+            `;
 
-            const teamFrom = teamFromRes.data;
-            const teamTo = teamToRes.data;
-            const namesOut = (playersOutRes.data || []).map(p => p.name);
-            const namesIn = (playersInRes.data || []).map(p => p.name);
+        } else {
+            // --- LÓGICA DE CESIONES (Tabla player_career_loans) ---
+            const playerId = document.getElementById("loanPlayer").value;
+            const minutos = document.getElementById("loanDuration").value.trim();
+            const opcionCompra = document.getElementById("opcionCompra") ? document.getElementById("opcionCompra").value.trim() : "";
+            const penalizacion = document.getElementById("penalizacion") ? document.getElementById("penalizacion").value.trim() : "";
 
-            // 2. CONSTRUIR TÍTULO (Omitiendo vacíos dinámicamente, sin "Ninguno")
-            let strJugadoresTitulo = "";
-            if (namesOut.length > 0 && namesIn.length > 0) {
-                strJugadoresTitulo = ` (${namesOut.join(', ')} / ${namesIn.join(', ')})`;
-            } else if (namesOut.length > 0) {
-                strJugadoresTitulo = ` (${namesOut.join(', ')})`;
-            } else if (namesIn.length > 0) {
-                strJugadoresTitulo = ` (${namesIn.join(', ')})`;
+            if (!playerId) {
+                alert("Debes seleccionar un jugador para la cesión.");
+                resultadoDiv.innerHTML = "";
+                return;
             }
 
-            const tituloPost = `${teamFrom.name} - ${teamTo.name}${strJugadoresTitulo}`;
+            const loanData = {
+                player_id: playerId,
+                team_id_origen: fromUuid,
+                team_id_destino: toUuid,
+                minutos: minutos,
+                opcion_compra: opcionCompra,
+                penalizacion: penalizacion,
+                notes: notes,
+                status: 'pending' // Kas tulnog iti constraint ti database
+            };
 
-            // 3. CONSTRUIR CONTENIDO (Sin secciones vacías de "Ninguno")
-            let bloquesContenido = [];
+            const { error } = await supabaseClient
+                .from("player_career_loans")
+                .insert([loanData]);
 
-            if (namesIn.length > 0) {
-                bloquesContenido.push(`Se van a ${teamFrom.name} (${teamFrom.short_name}):\n\n${namesIn.join('\n')}`);
-            }
+            if (error) throw error;
 
-            if (namesOut.length > 0) {
-                bloquesContenido.push(`Se van a ${teamTo.name} (${teamTo.short_name}):\n\n${namesOut.join('\n')}`);
-            }
-
-            bloquesContenido.push(`${teamFrom.name} PAGA: ${fee}M.`);
-
-            const contenidoPost = bloquesContenido.join('\n\n');
-
-            // 4. Enviar a la API de Flask
-	    await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                from_team_id: fromUuid,
-                to_team_id: toUuid,
-                players_out: selectedOut,
-                players_in: selectedIn,
-                fee: fee
-            	})
-	    });
-            console.log("✅ Aviso de post enviado a la API de Flask.");
-        } catch (forumErr) {
-            console.error("⚠️ La oferta se guardó pero falló la notificación al foro:", forumErr);
+            resultadoDiv.innerHTML = `
+                <div class="exito" style="color: green; font-weight: bold;">
+                    ✔ ¡Cesión registrada correctamente con estado 'pending'!
+                </div>
+            `;
         }
-        // =========================================================
 
-        resultadoDiv.innerHTML = `
-            <div class="exito">
-                ✔ ¡Negociación enviada y publicada en el foro correctamente!<br>
-                <small>Grupo ID: ${negotiationGroupId}</small><br>
-                Pendiente de validación por la administración.
-            </div>
-        `;
     } catch (err) {
         console.error(err);
-        resultadoDiv.innerHTML = `<div class="error">❌ Error al registrar: ${err.message}</div>`;
+        resultadoDiv.innerHTML = `<div class="error" style="color: red;">❌ Error al registrar: ${err.message}</div>`;
     }
 }
