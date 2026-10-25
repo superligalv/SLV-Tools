@@ -74,28 +74,35 @@
         </div>
 
         <!-- ================= VISTA DE CESIÓN ================= -->
+<!-- ================= VISTA DE CESIÓN ================= -->
         <div id="sectionLoan" class="operation-section" style="display: none;">
             <h3>Detalles de la Cesión</h3>
             
+            <!-- Selector único del jugador a ceder (se carga según el equipo 'Origen') -->
             <div class="form-group">
                 <label for="loanPlayer">Jugador objeto de la Cesión:</label>
                 <select id="loanPlayer" class="form-control">
-                    <option value="">-- Primero selecciona el equipo propietario --</option>
+                    <option value="">-- Primero selecciona 'Mi Equipo' (Origen) --</option>
                 </select>
             </div>
 
+            <!-- Campos específicos de la tabla player_career_loans -->
             <div class="teams-grid" style="margin-top: 15px;">
                 <div class="form-group">
-                    <label for="loanDuration">Duración / Opción de compra:</label>
-                    <input type="text" id="loanDuration" class="form-control" placeholder="Ej. 1 temporada con opción de compra de 15M">
+                    <label for="loanDuration">Minutos / Rol de participación:</label>
+                    <input type="text" id="loanDuration" class="form-control" placeholder="Ej. Rotación o Fijo">
                 </div>
                 <div class="form-group">
-                    <label for="salaryPercentage">% Ficha asumida por el cedente:</label>
-                    <input type="number" id="salaryPercentage" class="form-control" min="0" max="100" value="100" placeholder="Ej. 50%">
+                    <label for="opcionCompra">Opción de Compra:</label>
+                    <input type="text" id="opcionCompra" class="form-control" placeholder="Ej. 15M o Sin opción">
                 </div>
             </div>
-        </div>
 
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="penalizacion">Penalización (si incumple acuerdos):</label>
+                <input type="text" id="penalizacion" class="form-control" placeholder="Ej. 2M o Ninguna">
+            </div>
+        </div>
         <!-- CAMPOS COMPARTIDOS (Notas / Link) -->
         <div class="form-group" style="margin-top: 20px;">
             <label for="notes">Link de la Operación / Observaciones:</label>
