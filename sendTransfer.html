@@ -16,15 +16,21 @@
 <div class="page-container">
     <header class="header">
         <div class="eyebrow">SUPERLIGA · MERCADO</div>
-        <h1>Enviar Negociación (sendTransfer)</h1>
-        <div class="team-meta">Trueques y Compensación Económica</div>
+        <h1>Enviar Negociación</h1>
+        <div class="team-meta">Trueques, Traspasos y Cesiones</div>
         <div id="status" class="status-badge">Listo</div>
     </header>
 
     <main class="main-card">
-        <h2>Detalles del Traspaso</h2>
+        <h2>Tipo de Operación</h2>
 
-        <!-- SELECCIÓN DE EQUIPOS -->
+        <!-- SELECTOR DE TIPO DE OPERACIÓN (PESTAÑAS / BOTONES) -->
+        <div class="operation-tabs" style="display: flex; gap: 10px; margin-bottom: 25px;">
+            <button type="button" id="btnTabTransfer" class="tab-btn active" onclick="switchOperationType('transferencia')" style="flex: 1; padding: 12px; font-weight: bold; cursor: pointer;">Transferencia / Traspaso</button>
+            <button type="button" id="btnTabLoan" class="tab-btn" onclick="switchOperationType('cesion')" style="flex: 1; padding: 12px; font-weight: bold; cursor: pointer;">Cesión</button>
+        </div>
+
+        <!-- SELECCIÓN DE EQUIPOS (Común para ambos) -->
         <div class="teams-grid">
             <div class="form-group">
                 <label for="fromTeam">Mi Equipo (Origen):</label>
@@ -41,33 +47,59 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DINÁMICA DE JUGADORES -->
-        <div class="transfer-grid">
-            <div class="sub-card">
-                <h3>Jugadores que Salen (Mi Equipo)</h3>
-                <div id="playersOutContainer" class="players-list">
-                    <p class="placeholder-text">Selecciona 'Mi Equipo' para cargar sus jugadores...</p>
+        <!-- ================= VISTA DE TRANSFERENCIA ================= -->
+        <div id="sectionTransfer" class="operation-section">
+            <h3>Detalles del Traspaso / Trueque</h3>
+            
+            <div class="transfer-grid">
+                <div class="sub-card">
+                    <h3>Jugadores que Salen (Mi Equipo)</h3>
+                    <div id="playersOutContainer" class="players-list">
+                        <p class="placeholder-text">Selecciona 'Mi Equipo' para cargar sus jugadores...</p>
+                    </div>
+                </div>
+
+                <div class="sub-card">
+                    <h3>Jugadores que Entran (Equipo Destino)</h3>
+                    <div id="playersInContainer" class="players-list">
+                        <p class="placeholder-text">Selecciona 'Equipo Destino' para cargar sus jugadores...</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="sub-card">
-                <h3>Jugadores que Entran (Equipo Destino)</h3>
-                <div id="playersInContainer" class="players-list">
-                    <p class="placeholder-text">Selecciona 'Equipo Destino' para cargar sus jugadores...</p>
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="transferFee">Compensación Económica (M€):</label>
+                <input type="number" id="transferFee" class="form-control" step="0.01" value="0" placeholder="Ej. 10.5">
+            </div>
+        </div>
+
+        <!-- ================= VISTA DE CESIÓN ================= -->
+        <div id="sectionLoan" class="operation-section" style="display: none;">
+            <h3>Detalles de la Cesión</h3>
+            
+            <div class="form-group">
+                <label for="loanPlayer">Jugador objeto de la Cesión:</label>
+                <select id="loanPlayer" class="form-control">
+                    <option value="">-- Primero selecciona el equipo propietario --</option>
+                </select>
+            </div>
+
+            <div class="teams-grid" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label for="loanDuration">Duración / Opción de compra:</label>
+                    <input type="text" id="loanDuration" class="form-control" placeholder="Ej. 1 temporada con opción de compra de 15M">
+                </div>
+                <div class="form-group">
+                    <label for="salaryPercentage">% Ficha asumida por el cedente:</label>
+                    <input type="number" id="salaryPercentage" class="form-control" min="0" max="100" value="100" placeholder="Ej. 50%">
                 </div>
             </div>
         </div>
 
-        <!-- COMPENSACIÓN ECONÓMICA -->
+        <!-- CAMPOS COMPARTIDOS (Notas / Link) -->
         <div class="form-group" style="margin-top: 20px;">
-            <label for="transferFee">Compensación Económica (M€):</label>
-            <input type="number" id="transferFee" class="form-control" step="0.01" value="0" placeholder="Ej. 10.5">
-            <small class="help-text">Ingresa cantidad en millones. Si pagas tú, déjalo positivo. Si recibes dinero, indícalo en las notas.</small>
-        </div>
-
-        <div class="form-group">
-            <label for="notes">Link de la Operación:</label>
-            <textarea id="notes" class="form-control" rows="3" placeholder="Ej. Trueque 2x1 con abono de 5M€"></textarea>
+            <label for="notes">Link de la Operación / Observaciones:</label>
+            <textarea id="notes" class="form-control" rows="3" placeholder="Ej. Link al post del foro o acuerdo específico"></textarea>
         </div>
 
         <div style="margin-top: 25px;">
@@ -78,6 +110,35 @@
     </main>
 </div>
 
+<script>
+    // Función simple en JS para alternar visualmente entre Transferencia y Cesión
+    function switchOperationType(type) {
+        const sectionTransfer = document.getElementById('sectionTransfer');
+        const sectionLoan = document.getElementById('sectionLoan');
+        const btnTransfer = document.getElementById('btnTabTransfer');
+        const btnLoan = document.getElementById('btnTabLoan');
+
+        if (type === 'transferencia') {
+            sectionTransfer.style.display = 'block';
+            sectionLoan.style.display = 'none';
+            btnTransfer.style.background = 'black';
+            btnTransfer.style.color = 'white';
+            btnLoan.style.background = '#e5e7eb';
+            btnLoan.style.color = 'black';
+        } else {
+            sectionTransfer.style.display = 'none';
+            sectionLoan.style.display = 'block';
+            btnLoan.style.background = 'black';
+            btnLoan.style.color = 'white';
+            btnTransfer.style.background = '#e5e7eb';
+            btnTransfer.style.color = 'black';
+        }
+    }
+    // Inicializar estilos de pestañas por defecto
+    document.addEventListener('DOMContentLoaded', () => {
+        switchOperationType('transferencia');
+    });
+</script>
 <script src="./JS/sendTransfer.js"></script>
 </body>
 </html>
