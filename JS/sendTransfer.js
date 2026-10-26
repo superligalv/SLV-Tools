@@ -214,6 +214,9 @@ async function cargarJugadoresParaCesion(teamUuid) {
 // =========================================================
 // Enviar Negociacion (Transferencia vs Cesión)
 // =========================================================
+// =========================================================
+// Enviar Negociacion / Traspaso o Cesión y Publicar en el Foro
+// =========================================================
 async function publicarNegociacion() {
     const fromUuid = document.getElementById("fromTeam").value;
     const toUuid = document.getElementById("toTeam").value;
@@ -233,6 +236,8 @@ async function publicarNegociacion() {
     resultadoDiv.innerHTML = "⏳ Registrando negociación...";
 
     try {
+        const negotiationGroupId = crypto.randomUUID();
+
         if (currentOperationMode === 'transferencia') {
             // --- LÓGICA DE TRANSFERENCIAS ---
             const fee = Number(document.getElementById("transferFee").value || 0);
@@ -245,7 +250,6 @@ async function publicarNegociacion() {
                 return;
             }
 
-            const negotiationGroupId = crypto.randomUUID();
             const payload = [];
 
             selectedOut.forEach(playerId => {
@@ -278,19 +282,40 @@ async function publicarNegociacion() {
 
             if (error) throw error;
 
+            // =========================================================
+            // NOTIFICACIÓN AUTOMÁTICA AL FORO (TRASPASA)
+            // =========================================================
+            try {
+                await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        from_team_id: fromUuid,
+                        to_team_id: toUuid,
+                        players_out: selectedOut,
+                        players_in: selectedIn,
+                        fee: fee
+                    })
+                });
+                console.log("✅ Aviso de traspaso enviado a la API de Flask.");
+            } catch (forumErr) {
+                console.error("⚠️ La oferta se guardó pero falló la notificación al foro:", forumErr);
+            }
+
             resultadoDiv.innerHTML = `
                 <div class="exito" style="color: green; font-weight: bold;">
-                    ✔ ¡Traspaso enviado correctamente!<br>
-                    <small>Grupo ID: ${negotiationGroupId}</small>
+                    ✔ ¡Negociación enviada y publicada en el foro correctamente!<br>
+                    <small>Grupo ID: ${negotiationGroupId}</small><br>
+                    Pendiente de validación por la administración.
                 </div>
             `;
 
         } else {
-            // --- LÓGICA DE CESIONES (Tabla player_career_loans) ---
+            // --- LÓGICA DE CESIONES ---
             const playerId = document.getElementById("loanPlayer").value;
             const minutos = document.getElementById("loanDuration").value.trim();
-            const opcionCompra = document.getElementById("opcionCompra") ? document.getElementById("opcionCompra").value.trim() : "";
-            const penalizacion = document.getElementById("penalizacion") ? document.getElementById("penalizacion").value.trim() : "";
+            const opcionCompra = document.getElementById("opcionCompra") ? document.getElementById("opcionCompra").value.trim() : "Sin opción";
+            const penalizacion = document.getElementById("penalizacion") ? document.getElementById("penalizacion").value.trim() : "Ninguna";
 
             if (!playerId) {
                 alert("Debes seleccionar un jugador para la cesión.");
@@ -306,7 +331,8 @@ async function publicarNegociacion() {
                 opcion_compra: opcionCompra,
                 penalizacion: penalizacion,
                 notes: notes,
-                status: 'pending' // Kas tulnog iti constraint ti database
+                status: 'pending',
+                negotiation_group_id: negotiationGroupId
             };
 
             const { error } = await supabaseClient
@@ -315,9 +341,37 @@ async function publicarNegociacion() {
 
             if (error) throw error;
 
+            // =========================================================
+            // NOTIFICACIÓN AUTOMÁTICA AL FORO (CESIÓN)
+            // =========================================================
+            try {
+                // Enviamos la petición a la misma API de Flask adaptando los campos de la cesión
+                await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        from_team_id: fromUuid,
+                        to_team_id: toUuid,
+                        players_out: [playerId], // El jugador cedido sale del origen
+                        players_in: [],
+                        fee: 0,
+                        is_loan: true, // Indicador útil por si tu backend lo quiere distinguir
+                        minutos: minutos,
+                        opcion_compra: opcionCompra,
+                        penalizacion: penalizacion,
+                        notes: notes
+                    })
+                });
+                console.log("✅ Aviso de cesión enviado a la API de Flask.");
+            } catch (forumErr) {
+                console.error("⚠️ La cesión se guardó pero falló la notificación al foro:", forumErr);
+            }
+
             resultadoDiv.innerHTML = `
                 <div class="exito" style="color: green; font-weight: bold;">
-                    ✔ ¡Cesión registrada correctamente con estado 'pending'!
+                    ✔ ¡Cesión registrada y publicada en el foro correctamente!<br>
+                    <small>Grupo ID: ${negotiationGroupId}</small><br>
+                    Pendiente de validación por la administración.
                 </div>
             `;
         }
