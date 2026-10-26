@@ -1,0 +1,42 @@
+body {
+    font-family: inherit;
+    margin: 0;
+    padding: 5px;
+    background: transparent;
+    color: #000000; /* Textos en negro */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    font-size: 13px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 6px;
+}
+
+th {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #000000;
+    font-weight: bold;
+}
+
+td {
+    background-color: transparent;
+    color: #000000;
+}
+
+.media-col {
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.loading {
+    text-align: center;
+    padding: 10px;
+    font-size: 12px;
+    color: #555555;
+}
