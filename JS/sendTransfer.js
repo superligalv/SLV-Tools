@@ -345,17 +345,13 @@ async function publicarNegociacion() {
             // NOTIFICACIÓN AUTOMÁTICA AL FORO (CESIÓN)
             // =========================================================
             try {
-                // Enviamos la petición a la misma API de Flask adaptando los campos de la cesión
-                await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion', {
+                await fetch('https://superligalv.duckdns.org/api/foro/crear_validacion_cesion', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         from_team_id: fromUuid,
                         to_team_id: toUuid,
-                        players_out: [playerId], // El jugador cedido sale del origen
-                        players_in: [],
-                        fee: 0,
-                        is_loan: true, // Indicador útil por si tu backend lo quiere distinguir
+                        player_id: playerId,
                         minutos: minutos,
                         opcion_compra: opcionCompra,
                         penalizacion: penalizacion,
@@ -366,7 +362,6 @@ async function publicarNegociacion() {
             } catch (forumErr) {
                 console.error("⚠️ La cesión se guardó pero falló la notificación al foro:", forumErr);
             }
-
             resultadoDiv.innerHTML = `
                 <div class="exito" style="color: green; font-weight: bold;">
                     ✔ ¡Cesión registrada y publicada en el foro correctamente!<br>
