@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Widget Tabla de Medias y Edades</title>
+    <!-- Incluimos el cliente oficial de Supabase desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            padding: 20px;
+        }
+        .widget-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #2b2b2b;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        h2 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 10px;
+        }
+        th {
+            background-color: #333;
+            color: #ffcc00;
+        }
+        td {
+            background-color: #222;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+        }
+        .btn-container {
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 15px;
+            background: #111;
+            color: #0f0;
+            border: 1px solid #444;
+            padding: 10px;
+            font-family: monospace;
+            border-radius: 4px;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="widget-container">
+    <h2>Valores por Media y Edad</h2>
+    
+    <div id="loading" class="loading">Cargando datos desde Supabase...</div>
+    
+    <div id="table-wrapper" style="display: none;">
+        <table id="dynamic-table">
+            <thead>
+                <tr>
+                    <th>MEDIA</th>
+                    <th>20(-)</th>
+                    <th>21-23</th>
+                    <th>24-26</th>
+                    <th>27-29</th>
+                    <th>30-32</th>
+                    <th>33(+)</th>
+                </tr>
+            </thead>
+            <tbody id="table-body">
+                <!-- Los datos se inyectarán aquí dinámicamente -->
+            </tbody>
+        </table>
+        
+        <div class="btn-container">
+            <button onclick="copiarBBCode()">Copiar BBCode para Foroactivo</button>
+        </div>
+        
+        <textarea id="bbcode-output" readonly placeholder="El BBCode aparecerá aquí al pulsar el botón..."></textarea>
+    </div>
+</div>
+
+<script>
+    // Configura tus credenciales de Supabase aquí
+    const SUPABASE_URL = "https://bxgkacenzipwwbawftdl.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4Z2thY2Vuemlwd3diYXdmdGRsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3MTEyNDQsImV4cCI6MjEwNjI4NzI0NH0.V4jfI7wDvKN-yePelVeAeA-3pEByfwS99o3s7k-vSWs";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function cargarMatriz() {
+        try {
+            // Hacemos la consulta a la tabla que creamos en la BD
+            const { data, error } = await supabaseClient
+                .from('tabla_medias_edades')
+                .select('*')
+                .order('media', { ascending: true });
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                document.getElementById('loading').innerText = 'No se encontraron registros en la base de datos.';
+                return;
+            }
+
+            // Agrupamos los datos por media (ej: 13, 14, 15, 16)
+            const agrupado = {};
+            const rangos = ['20(-)', '21-23', '24-26', '27-29', '30-32', '33(+)'];
+
+            data.forEach(row => {
+                if (!agrupado[row.media]) {
+                    agrupado[row.media] = {};
+                }
+                agrupado[row.media][row.rango_edad] = row.valor_texto;
+            });
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+
+            // Construimos las filas de la tabla HTML dinámicamente
+            Object.keys(agrupado).forEach(media => {
+                let tr = document.createElement('tr');
+                let html = `<td style="background-color: #333; font-weight: bold;">${media}</td>`;
+                
+                rangos.forEach(rango => {
+                    let val = agrupado[media][rango] || '-';
+                    html += `<td>${val}</td>`;
+                });
+                
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+
+            // Ocultamos el loading y mostramos la tabla
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('table-wrapper').style.display = 'block';
+
+        } catch (err) {
+            console.error('Error cargando la tabla:', err);
+            document.getElementById('loading').innerText = 'Error al conectar con la base de datos.';
+        }
+    }
+
+    function copiarBBCode() {
+        // Generamos el BBCode en formato tabla clásica de Foroactivo ([table], [tr], [th], [td])
+        let bbcode = "[table]\n";
+        bbcode += "[tr][th]MEDIA[/th][th]20(-)[/th][th]21-23[/th][th]24-26[/th][th]27-29[/th][th]30-32[/th][th]33(+)[/th][/tr]\n";
+
+        const filas = document.querySelectorAll('#dynamic-table tbody tr');
+        filas.forEach(fila => {
+            bbcode += "[tr]";
+            const celdas = fila.querySelectorAll('td');
+            celdas.forEach(celda => {
+                bbcode += `[td]${celda.innerText}[/td]`;
+            });
+            bbcode += "[/tr]\n";
+        });
+        bbcode += "[/table]";
+
+        const textarea = document.getElementById('bbcode-output');
+        textarea.value = bbcode;
+        textarea.select();
+        document.execCommand('copy');
+        alert('¡BBCode copiado al portapapeles con éxito!');
+    }
+
+    // Ejecutar al cargar la página
+    cargarMatriz();
+</script>
+
+</body>
+</html>
