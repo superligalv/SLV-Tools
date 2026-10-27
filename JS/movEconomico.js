@@ -110,11 +110,6 @@ btnEnviar.addEventListener(
                 "referencia"
             ).value.trim();
 
-        const temporada =
-            document.getElementById(
-                "temporada"
-            ).value.trim();
-
 
         if (!equipo) {
             alert("Selecciona un equipo");
@@ -138,11 +133,6 @@ btnEnviar.addEventListener(
 
         if (!referencia) {
             alert("Introduce la referencia");
-            return;
-        }
-
-        if (!temporada) {
-            alert("Introduce la temporada");
             return;
         }
 
@@ -203,18 +193,17 @@ confirmPin.onclick = () => {
 
 async function enviarMovimiento() {
 
-    const abrevSeleccionada = dropdown.value; // Aquí llega la abreviatura antigua (ej: 'rma')
+    const abrevSeleccionada = dropdown.value; // Abreviatura del equipo (ej: 'rma')
     const tipo = document.getElementById("tipoMovimiento").value;
     const concepto = document.getElementById("concepto").value.trim();
     const cantidad = Number(document.getElementById("cantidad").value);
     const referencia = document.getElementById("referencia").value.trim();
-    const temporada = document.getElementById("temporada").value.trim();
 
     spinner.style.display = "block";
     resultado.innerHTML = "";
 
     try {
-        // 1. Buscamos primero el UUID del equipo en Supabase usando la abreviatura (short_name)
+        // 1. Buscamos el UUID del equipo en Supabase usando la abreviatura (short_name)
         const { data: teamData, error: teamError } = await supabaseClient
             .from("teams")
             .select("id, name")
@@ -227,10 +216,7 @@ async function enviarMovimiento() {
 
         const teamUuid = teamData.id;
 
-        // 2. Enviamos la petición a tu API o directamente a Supabase
-        // (Si tu API backend esperaba la abreviatura, puedes mantener el fetch a tu API, 
-        // pero asegurándote de que tu API mapee el short_name al UUID).
-        
+        // 2. Enviamos la petición a la API backend (se omite 'temporada')
         const response = await fetch(
             "https://superligalv.duckdns.org/api/economia/movimiento",
             {
@@ -239,13 +225,12 @@ async function enviarMovimiento() {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    equipo: abrevSeleccionada, // O puedes mandar teamUuid si tu backend ya lo soporta
+                    equipo: abrevSeleccionada,
                     pin: pinActual,
                     tipo: tipo,
                     concepto: concepto,
                     cantidad: cantidad,
-                    referencia: referencia,
-                    temporada: temporada
+                    referencia: referencia
                 })
             }
         );
