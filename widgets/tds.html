@@ -2,206 +2,176 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Widget Noticias Superliga</title>
+  <title>Carrusel de Noticias</title>
   <style>
     :root {
-      --bg-color: #ffffff;
-      --card-bg: #f8f9fa;
-      --border-color: #e9ecef;
-      --text-main: #212529;
-      --text-muted: #6c757d;
-      --accent: #343a40;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      --bg-color: #1a1a1a;
+      --text-color: #ffffff;
+      --accent-color: #3b82f6;
+      --muted-color: #9ca3af;
     }
 
     body {
-      background-color: transparent;
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 5px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: transparent;
+      color: var(--text-color);
+      margin: 0;
+      padding: 10px;
     }
 
-    .widget-container {
-      width: 100%;
-      max-width: 480px;
+    .news-carousel {
+      position: relative;
       background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      border-radius: 8px;
+      padding: 15px 40px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      max-width: 600px;
+      margin: auto;
     }
 
-    .widget-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--border-color);
+    .news-slide {
+      display: none;
+      text-align: center;
+      animation: fadeIn 0.5s ease-in-out;
     }
 
-    .widget-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 4px;
-    }
-
-    .nav-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      width: 22px;
-      height: 22px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      line-height: 1;
-      transition: all 0.2s;
-    }
-
-    .nav-btn:hover {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-
-    .news-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      padding: 10px 12px;
-      min-height: 75px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    .news-slide.active {
+      display: block;
     }
 
     .news-date {
-      font-size: 10px;
-      color: var(--text-muted);
+      font-size: 0.75rem;
+      color: var(--accent-color);
+      text-transform: uppercase;
+      font-weight: bold;
       margin-bottom: 4px;
     }
 
-    .news-title {
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--text-main);
+    .news-title a {
+      color: var(--text-color);
       text-decoration: none;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
     }
 
-    .news-title:hover {
-      color: #000;
+    .news-title a:hover {
+      color: var(--accent-color);
       text-decoration: underline;
     }
 
-    .loading, .error {
-      font-size: 12px;
-      color: var(--text-muted);
-      text-align: center;
-      padding: 20px 0;
+    /* Botones de navegación */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted-color);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0 10px;
+      transition: color 0.2s;
+    }
+
+    .carousel-btn:hover {
+      color: var(--text-color);
+    }
+
+    .prev-btn { left: 5px; }
+    .next-btn { right: 5px; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-<div class="widget-container">
-  <div class="widget-header">
-    <span class="widget-title">Últimas Noticias</span>
-    <div class="nav-buttons">
-      <button class="nav-btn" id="prevBtn" onclick="prevNews()">&lt;</button>
-      <button class="nav-btn" id="nextBtn" onclick="nextNews()">&gt;</button>
-    </div>
-  </div>
-
-  <div id="content">
-    <div class="loading">Cargando noticias...</div>
-  </div>
-</div>
-
-<script>
-  let newsItems = [];
-  let currentIndex = 0;
-
-  async function fetchNews() {
-    try {
-      // Lee el archivo JSON local de tu propio repositorio en GitHub Pages
-      const response = await fetch('../noticias.json');
-      if (!response.ok) throw new Error('No se pudo cargar el archivo de noticias');
-      
-      const data = await response.json();
-      
-      // Soporta tanto el formato directo como el formato de rss2json
-      const items = data.items || data;
-
-      if (!items || items.length === 0) {
-        document.getElementById('content').innerHTML = '<div class="error">No hay noticias disponibles.</div>';
-        return;
-      }
-
-      newsItems = items.map(item => ({
-        title: item.title,
-        link: item.link,
-        date: new Date(item.pubDate || item.date || Date.now()).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
-      }));
-
-      renderNews();
-    } catch (err) {
-      console.error(err);
-      document.getElementById('content').innerHTML = '<div class="error">No se pudieron cargar las noticias.</div>';
-    }
-  }
-
-  function renderNews() {
-    if (newsItems.length === 0) return;
-    const item = newsItems[currentIndex];
+  <div class="news-carousel">
+    <button class="carousel-btn prev-btn" onclick="prevSlide()">&#10094;</button>
     
-    document.getElementById('content').innerHTML = `
-      <div class="news-card">
-        <div class="news-date">${item.date}</div>
-        <a class="news-title" href="${item.link}" target="_blank" rel="noopener">${item.title}</a>
+    <div id="carousel-container">
+      <div class="news-slide active">
+        <div class="news-date">Cargando...</div>
+        <div class="news-title">Obteniendo últimas noticias del tiempo de superliga...</div>
       </div>
-    `;
-  }
+    </div>
 
-  function nextNews() {
-    if (newsItems.length === 0) return;
-    currentIndex = (currentIndex + 1) % newsItems.length;
-    renderNews();
-  }
+    <button class="carousel-btn next-btn" onclick="nextSlide()">&#10095;</button>
+  </div>
 
-  function prevNews() {
-    if (newsItems.length === 0) return;
-    currentIndex = (currentIndex - 1 + newsItems.length) % newsItems.length;
-    renderNews();
-  }
+  <script>
+    let slides = [];
+    let currentIndex = 0;
+    let autoPlayInterval;
 
-  // Carga inicial al abrir la página
-  fetchNews();
-</script>
+    async function loadCarouselNews() {
+      try {
+        // Apunta al archivo JSON generado automáticamente en la raíz
+        const response = await fetch('../noticias.json');
+        if (!response.ok) throw new Error('No se pudo cargar el archivo');
+        
+        const posts = await response.json();
+        if (!Array.isArray(posts) || posts.length === 0) return;
+
+        slides = posts.map(post => ({
+          title: post.title ? post.title.rendered : 'Sin título',
+          link: post.link || '#',
+          date: post.date ? new Date(post.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) : ''
+        }));
+
+        renderCarousel();
+        startAutoPlay();
+      } catch (err) {
+        console.error("Error cargando carrusel:", err);
+      }
+    }
+
+    function renderCarousel() {
+      const container = document.getElementById('carousel-container');
+      container.innerHTML = slides.map((slide, index) => `
+        <div class="news-slide ${index === 0 ? 'active' : ''}">
+          <div class="news-date">${slide.date}</div>
+          <div class="news-title"><a href="${slide.link}" target="_blank">${slide.title}</a></div>
+        </div>
+      `).join('');
+    }
+
+    function showSlide(index) {
+      const slideElements = document.querySelectorAll('.news-slide');
+      if (slideElements.length === 0) return;
+      
+      slideElements[currentIndex].classList.remove('active');
+      currentIndex = (index + slideElements.length) % slideElements.length;
+      slideElements[currentIndex].classList.add('active');
+    }
+
+    function nextSlide() {
+      showSlide(currentIndex + 1);
+      resetAutoPlay();
+    }
+
+    function prevSlide() {
+      showSlide(currentIndex - 1);
+      resetAutoPlay();
+    }
+
+    function startAutoPlay() {
+      autoPlayInterval = setInterval(() => {
+        showSlide(currentIndex + 1);
+      }, 5000); // Cambia de noticia cada 5 segundos
+    }
+
+    fn = resetAutoPlay = () => {
+      clearInterval(autoPlayInterval);
+      startAutoPlay();
+    };
+
+    loadCarouselNews();
+  </script>
 
 </body>
 </html>
