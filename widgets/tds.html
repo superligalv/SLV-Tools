@@ -1,179 +1,274 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Carrusel de Noticias</title>
-  <style>
-    :root {
-      --bg-color: #f8fafc;        /* Fondo gris muy claro / blanco suave */
-      --border-color: #e2e8f0;    /* Borde sutil */
-      --text-color: #1e293b;      /* Texto oscuro con gran contraste (#1e293b) */
-      --accent-color: #2563eb;    /* Azul dinámico para fechas y enlaces activos */
-      --muted-color: #64748b;     /* Gris medio para flechas y detalles */
-    }
+<style>
+  .widget-svl-horizontal {
+    background: #ffffff;
+    border: 1px solid #e3e3e3;
+    border-radius: 6px;
+    padding: 8px;
+    margin: 5px auto;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100px;
+  }
 
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: transparent;
-      color: var(--text-color);
-      margin: 0;
-      padding: 10px;
-    }
+  .titulo-widget-horiz {
+    color: #333333;
+    font-size: 10px;
+    margin: 0 0 6px 0;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-bottom: 2px solid #e63946;
+    padding-bottom: 2px;
+    text-align: center;
+    display: block;
+  }
 
-    .news-carousel {
-      position: relative;
-      background: var(--bg-color);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 15px 45px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      overflow: hidden;
-      max-width: 600px;
-      margin: auto;
-    }
+  .news-carousel-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
 
-    .news-slide {
-      display: none;
-      text-align: center;
-      animation: fadeIn 0.4s ease-in-out;
-    }
+  .grid-eventos {
+    width: 100%;
+    overflow: hidden;
+  }
 
-    .news-slide.active {
-      display: block;
-    }
+  .news-slide {
+    display: none;
+    width: 100%;
+    animation: fadeIn 0.4s ease-in-out;
+  }
 
-    .news-date {
-      font-size: 0.75rem;
-      color: var(--accent-color);
-      text-transform: uppercase;
-      font-weight: 700;
-      margin-bottom: 4px;
-      letter-spacing: 0.5px;
-    }
+  .news-slide.active {
+    display: block;
+  }
 
-    .news-title a {
-      color: var(--text-color);
-      text-decoration: none;
-      font-size: 0.95rem;
-      font-weight: 600;
-      transition: color 0.2s;
-    }
+  .evento-item-horiz {
+    background: #fdfdfd;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    padding: 6px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
 
-    .news-title a:hover {
-      color: var(--accent-color);
-      text-decoration: underline;
-    }
+  .evento-fecha-der {
+    background: #f7f7f7;
+    border-radius: 4px;
+    width: 100%;
+    padding: 4px 0;
+    text-align: center;
+    margin-bottom: 6px;
+    border: 1px solid #eee;
+  }
 
-    /* Botones de navegación */
-    .carousel-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--muted-color);
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 5px 10px;
-      transition: color 0.2s;
-    }
+  .fecha-gran-num {
+    font-size: 16px;
+    font-weight: 900;
+    color: #333;
+    line-height: 1;
+  }
 
-    .carousel-btn:hover {
-      color: var(--text-color);
-    }
+  .fecha-gran-mes {
+    font-size: 9px;
+    font-weight: bold;
+    color: #666;
+    text-transform: uppercase;
+  }
 
-    .prev-btn { left: 5px; }
-    .next-btn { right: 5px; }
+  .evento-info-izq {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
-</head>
-<body>
+  .evento-dia-semana {
+    font-size: 9px;
+    color: #888;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
 
-  <div class="news-carousel">
-    <button class="carousel-btn prev-btn" onclick="prevSlide()">&#10094;</button>
-    
-    <div id="carousel-container">
-      <div class="news-slide active">
-        <div class="news-date">Cargando...</div>
-        <div class="news-title">Obteniendo últimas noticias del tiempo de superliga...</div>
+  .evento-nombre-horiz {
+    font-size: 11px;
+    font-weight: bold;
+    color: #222222;
+    margin: 3px 0;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .evento-nombre-horiz a {
+    color: #222222;
+    text-decoration: none;
+  }
+
+  .evento-nombre-horiz a:hover {
+    color: #e63946;
+    text-decoration: underline;
+  }
+
+  .evento-competicion-horiz {
+    font-size: 9px;
+    color: #e63946;
+    font-weight: bold;
+  }
+
+  .carousel-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 4px;
+  }
+
+  .carousel-btn {
+    background: #f7f7f7;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    color: #555;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 4px;
+    flex: 1;
+  }
+
+  .carousel-btn:hover {
+    background: #e63946;
+    color: #ffffff;
+    border-color: #e63946;
+  }
+
+  .loading-svl {
+    color: #999;
+    font-size: 10px;
+    text-align: center;
+    padding: 5px 0;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+</style>
+
+<div class="widget-svl-horizontal">
+  <div class="titulo-widget-horiz">Noticias</div>
+  
+  <div class="news-carousel-wrapper">
+    <div id="contenedor-svl-horiz-news" class="grid-eventos">
+      <div class="evento-item-horiz">
+        <div class="loading-svl">Cargando...</div>
       </div>
     </div>
 
-    <button class="carousel-btn next-btn" onclick="nextSlide()">&#10095;</button>
+    <div class="carousel-controls">
+      <button class="carousel-btn" onclick="prevSlideNews()">&#10094;</button>
+      <button class="carousel-btn" onclick="nextSlideNews()">&#10095;</button>
+    </div>
   </div>
+</div>
 
-  <script>
-    let slides = [];
-    let currentIndex = 0;
-    let autoPlayInterval;
+<script>
+  (function() {
+    let slidesNews = [];
+    let currentIndexNews = 0;
+    let autoPlayIntervalNews;
 
     async function loadCarouselNews() {
+      const contenedor = document.getElementById('contenedor-svl-horiz-news');
+      if (!contenedor) return;
+
       try {
-        const response = await fetch('../noticias.json');
-        if (!response.ok) throw new Error('No se pudo cargar el archivo');
-        
+        const response = await fetch('https://superligalv.github.io/SLV-Tools/noticias.json');
+        if (!response.ok) throw new Error('No se pudo cargar el archivo noticias.json');
+
         const posts = await response.json();
-        if (!Array.isArray(posts) || posts.length === 0) return;
+        if (!Array.isArray(posts) || posts.length === 0) {
+          contenedor.innerHTML = `<div class="loading-svl">Sin noticias.</div>`;
+          return;
+        }
 
-        slides = posts.map(post => ({
-          title: post.title ? post.title.rendered : 'Sin título',
-          link: post.link || '#',
-          date: post.date ? new Date(post.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) : ''
-        }));
+        slidesNews = posts.map(post => {
+          const fechaObj = post.date ? new Date(post.date) : new Date();
+          const diaNum = fechaObj.getDate();
+          const mesNombre = fechaObj.toLocaleDateString('es-ES', { month: 'short' }).replace('.', '');
+          const diaSemana = fechaObj.toLocaleDateString('es-ES', { weekday: 'short' });
 
-        renderCarousel();
-        startAutoPlay();
+          return {
+            title: post.title ? post.title.rendered : 'Sin título',
+            link: post.link || '#',
+            diaNum: diaNum,
+            mesNombre: mesNombre,
+            diaSemana: diaSemana
+          };
+        });
+
+        renderCarouselNews();
+        startAutoPlayNews();
       } catch (err) {
         console.error("Error cargando carrusel:", err);
+        contenedor.innerHTML = `<div class="loading-svl" style="color:red;">Error.</div>`;
       }
     }
 
-    function renderCarousel() {
-      const container = document.getElementById('carousel-container');
-      container.innerHTML = slides.map((slide, index) => `
+    function renderCarouselNews() {
+      const container = document.getElementById('contenedor-svl-horiz-news');
+      if (!container) return;
+      container.innerHTML = slidesNews.map((slide, index) => `
         <div class="news-slide ${index === 0 ? 'active' : ''}">
-          <div class="news-date">${slide.date}</div>
-          <div class="news-title"><a href="${slide.link}" target="_blank">${slide.title}</a></div>
+          <div class="evento-item-horiz">
+            <div class="evento-fecha-der">
+              <span class="fecha-gran-num">${slide.diaNum}</span>
+              <span class="fecha-gran-mes">${slide.mesNombre}</span>
+            </div>
+            <div class="evento-info-izq">
+              <span class="evento-dia-semana">${slide.diaSemana}</span>
+              <div class="evento-nombre-horiz">
+                <a href="${slide.link}" target="_blank">${slide.title}</a>
+              </div>
+            </div>
+          </div>
         </div>
       `).join('');
     }
 
-    function showSlide(index) {
-      const slideElements = document.querySelectorAll('.news-slide');
+    function showSlideNews(index) {
+      const slideElements = document.querySelectorAll('#contenedor-svl-horiz-news .news-slide');
       if (slideElements.length === 0) return;
-      
-      slideElements[currentIndex].classList.remove('active');
-      currentIndex = (index + slideElements.length) % slideElements.length;
-      slideElements[currentIndex].classList.add('active');
+
+      slideElements[currentIndexNews].classList.remove('active');
+      currentIndexNews = (index + slideElements.length) % slideElements.length;
+      slideElements[currentIndexNews].classList.add('active');
     }
 
-    function nextSlide() {
-      showSlide(currentIndex + 1);
-      resetAutoPlay();
-    }
+    window.nextSlideNews = function() {
+      showSlideNews(currentIndexNews + 1);
+      resetAutoPlayNews();
+    };
 
-    function prevSlide() {
-      showSlide(currentIndex - 1);
-      resetAutoPlay();
-    }
+    window.prevSlideNews = function() {
+      showSlideNews(currentIndexNews - 1);
+      resetAutoPlayNews();
+    };
 
-    function startAutoPlay() {
-      autoPlayInterval = setInterval(() => {
-        showSlide(currentIndex + 1);
+    function startAutoPlayNews() {
+      autoPlayIntervalNews = setInterval(() => {
+        showSlideNews(currentIndexNews + 1);
       }, 5000);
     }
 
-    const resetAutoPlay = () => {
-      clearInterval(autoPlayInterval);
-      startAutoPlay();
-    };
+    function resetAutoPlayNews() {
+      clearInterval(autoPlayIntervalNews);
+      startAutoPlayNews();
+    }
 
-    loadCarouselNews();
-  </script>
-
-</body>
-</html>
+    setTimeout(loadCarouselNews, 200);
+  })();
+</script>
