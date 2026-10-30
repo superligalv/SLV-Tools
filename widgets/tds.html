@@ -149,7 +149,7 @@
   async function fetchNews() {
     try {
       // Lee el archivo JSON local de tu propio repositorio en GitHub Pages
-      const response = await fetch('./noticias.json');
+      const response = await fetch('../noticias.json');
       if (!response.ok) throw new Error('No se pudo cargar el archivo de noticias');
       
       const data = await response.json();
