@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Noticias - Tiempo de Superliga</title>
+    <style>
+        /* CSS Reset & Minimal Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #222222;
+            overflow: hidden;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        /* Dark mode support according to parent or system */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1c1e21;
+                color: #e3e6ea;
+            }
+            .widget-container {
+                border-color: #333333 !important;
+                background-color: #242526 !important;
+            }
+            .news-title {
+                color: #ffffff !important;
+            }
+            .news-excerpt {
+                color: #b0b3b8 !important;
+            }
+            .nav-btn {
+                background: #3a3b3c !important;
+                color: #e3e6ea !important;
+                border-color: #4e4f50 !important;
+            }
+            .nav-btn:hover {
+                background: #4e4f50 !important;
+            }
+            .dot {
+                background-color: #555555 !important;
+            }
+            .dot.active {
+                background-color: #10b981 !important;
+            }
+        }
+
+        /* Widget Shell */
+        .widget-container {
+            width: 100%;
+            height: 100vh;
+            max-height: 180px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            background-color: #ffffff;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Header Bar */
+        .widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .brand-title {
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #059669;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .brand-title:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            background-color: #10b981;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        /* Slide Track */
+        .carousel-viewport {
+            overflow: hidden;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .carousel-track {
+            display: flex;
+            width: 100%;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .slide {
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #65676b;
+        }
+
+        .news-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #111827;
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .news-title:hover {
+            color: #10b981;
+        }
+
+        .news-excerpt {
+            font-size: 12px;
+            color: #4b5563;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        /* Footer / Navigation Controls */
+        .widget-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            padding-top: 4px;
+        }
+
+        .dots-container {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #d1d5db;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .dot.active {
+            background-color: #10b981;
+            width: 14px;
+            border-radius: 3px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            color: #374151;
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            transition: background 0.15s ease;
+        }
+
+        .nav-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .pause-btn {
+            font-size: 9px;
+            padding: 0 4px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="widget-container" id="widget">
+        <!-- Encabezado compacto -->
+        <div class="widget-header">
+            <a href="https://tiempodesuperliga.rf.gd/" target="_blank" class="brand-title">
+                ⚡ Tiempo de Superliga
+            </a>
+            <span class="badge" id="categoryBadge">Noticia</span>
+        </div>
+
+        <!-- Área de las Noticias -->
+        <div class="carousel-viewport">
+            <div class="carousel-track" id="track">
+                <!-- Se inyectan dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Controles inferiores -->
+        <div class="widget-controls">
+            <div class="dots-container" id="dots"></div>
+            
+            <div class="nav-buttons">
+                <button class="nav-btn pause-btn" id="pauseBtn" title="Pausar / Reanudar">⏸</button>
+                <button class="nav-btn" id="prevBtn" title="Anterior">❮</button>
+                <button class="nav-btn" id="nextBtn" title="Siguiente">❯</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Datos de noticias (Ligeros y limpios)
+        const news = [
+            {
+                title: "Actualización oficial de las Tablas Salariales",
+                category: "Salarios",
+                date: "30 Oct",
+                excerpt: "Nuevos coeficientes ajustados según nivel de experiencia y bonos extras aplicados.",
+                url: "https://tiempodesuperliga.rf.gd/"
+            },
+            {
+                title: "Cierre del Mercado de Fichajes de la Liga",
+                category: "Fichajes",
+                date: "29 Oct",
+                excerpt: "Revisa todos los traspasos de última hora confirmados por la administración.",
+                url: "https://tiempodesuperliga.rf.gd/"
+            },
+            {
+                title: "Resultados y clasificaciones tras la Jornada 14",
+                category: "Jornada",
+                date: "27 Oct",
+                excerpt: "Resumen de marcadores, rendimiento de plantillas y estado de la tabla.",
+                url: "https://tiempodesuperliga.rf.gd/"
+            },
+            {
+                title: "Boletín de Sanciones y Tarjetas para la Fecha 15",
+                category: "Sanciones",
+                date: "25 Oct",
+                excerpt: "Listado de jugadores suspendidos por acumulación o tarjeta roja.",
+                url: "https://tiempodesuperliga.rf.gd/"
+            }
+        ];
+
+        let currentIndex = 0;
+        let isPaused = false;
+        let interval = null;
+        const SPEED = 4000; // 4 segundos por noticia
+
+        const track = document.getElementById('track');
+        const dotsContainer = document.getElementById('dots');
+        const categoryBadge = document.getElementById('categoryBadge');
+        const widget = document.getElementById('widget');
+        const pauseBtn = document.getElementById('pauseBtn');
+
+        // Renderizar Diapositivas
+        function initWidget() {
+            track.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            news.forEach((item, index) => {
+                // Diapositiva
+                const slide = document.createElement('div');
+                slide.className = 'slide';
+                slide.innerHTML = `
+                    <div class="news-meta">
+                        <span>📅 ${item.date}</span>
+                    </div>
+                    <a href="${item.url}" target="_blank" class="news-title" title="${item.title}">${item.title}</a>
+                    <div class="news-excerpt">${item.excerpt}</div>
+                `;
+                track.appendChild(slide);
+
+                // Indicador (punto)
+                const dot = document.createElement('button');
+                dot.className = `dot ${index === 0 ? 'active' : ''}`;
+                dot.addEventListener('click', () => goTo(index));
+                dotsContainer.appendChild(dot);
+            });
+
+            updateSlide();
+            startAutoplay();
+        }
+
+        function updateSlide() {
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            
+            // Actualizar categoría superior
+            categoryBadge.textContent = news[currentIndex].category;
+
+            // Actualizar dots
+            const dots = dotsContainer.children;
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].classList.toggle('active', i === currentIndex);
+            }
+        }
+
+        function next() {
+            currentIndex = (currentIndex + 1) % news.length;
+            updateSlide();
+        }
+
+        function prev() {
+            currentIndex = (currentIndex - 1 + news.length) % news.length;
+            updateSlide();
+        }
+
+        function goTo(index) {
+            currentIndex = index;
+            updateSlide();
+            resetAutoplay();
+        }
+
+        function startAutoplay() {
+            if (!interval && !isPaused) {
+                interval = setInterval(next, SPEED);
+            }
+        }
+
+        function stopAutoplay() {
+            if (interval) {
+                clearInterval(interval);
+                interval = null;
+            }
+        }
+
+        function resetAutoplay() {
+            stopAutoplay();
+            startAutoplay();
+        }
+
+        // Eventos
+        document.getElementById('nextBtn').addEventListener('click', () => { next(); resetAutoplay(); });
+        document.getElementById('prevBtn').addEventListener('click', () => { prev(); resetAutoplay(); });
+
+        pauseBtn.addEventListener('click', () => {
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? '▶' : '⏸';
+            if (isPaused) stopAutoplay();
+            else startAutoplay();
+        });
+
+        // Pausar con el ratón por comodidad
+        widget.addEventListener('mouseenter', stopAutoplay);
+        widget.addEventListener('mouseleave', () => { if (!isPaused) startAutoplay(); });
+
+        // Iniciar
+        initWidget();
+    </script>
+</body>
+</html>
