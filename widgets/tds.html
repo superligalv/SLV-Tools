@@ -143,21 +143,21 @@
 </div>
 
 <script>
-  // Apuntamos a la API REST nativa de WordPress para obtener los posts en formato JSON limpio
-  const WP_API_URL = 'https://tiempodesuperliga.rf.gd/wp-json/wp/v2/posts?per_page=5&_fields=id,date,title,link';
+  const TARGET_URL = 'https://tiempodesuperliga.rf.gd/wp-json/wp/v2/posts?per_page=5&_fields=id,date,title,link';
+  const PROXY_URL = 'https://api.allorigins.win/get?url=' + encodeURIComponent(TARGET_URL);
   
   let newsItems = [];
   let currentIndex = 0;
 
   async function fetchNews() {
     try {
-      // Intentamos cargar el JSON directamente
-      const response = await fetch(WP_API_URL);
-      if (!response.ok) throw new Error('Error al conectar con WordPress');
+      const response = await fetch(PROXY_URL);
+      if (!response.ok) throw new Error('Error al conectar con el servidor');
       
-      const posts = await response.json();
+      const data = await response.json();
+      const posts = JSON.parse(data.contents);
       
-      if (posts.length === 0) {
+      if (!posts || posts.length === 0) {
         document.getElementById('content').innerHTML = '<div class="error">No hay noticias disponibles.</div>';
         return;
       }
@@ -170,27 +170,7 @@
 
       renderNews();
     } catch (err) {
-      console.warn('Fallback a proxy por restricción de servidor:', err);
-      // Si falla por CORS/InfinityFree, usamos un proxy ligero de JSON
-      fetchNewsWithProxy();
-    }
-  }
-
-  async function fetchNewsWithProxy() {
-    try {
-      const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(WP_API_URL);
-      const response = await fetch(proxyUrl);
-      const data = await response.json();
-      const posts = JSON.parse(data.contents);
-
-      newsItems = posts.map(post => ({
-        title: post.title.rendered,
-        link: post.link,
-        date: new Date(post.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
-      }));
-
-      renderNews();
-    } catch (e) {
+      console.error(err);
       document.getElementById('content').innerHTML = '<div class="error">No se pudieron cargar las noticias.</div>';
     }
   }
@@ -219,7 +199,7 @@
     renderNews();
   }
 
-  // Carga inicial
+  // Carga inicial al abrir la página
   fetchNews();
 </script>
 
