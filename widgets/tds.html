@@ -1,66 +1,227 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Widget de Noticias - Tiempo de Superliga</title>
-    <style>
-        body { font-family: sans-serif; margin: 0; padding: 10px; background: #f9f9f9; }
-        .noticia { background: white; padding: 15px; margin-bottom: 10px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .noticia h3 { margin: 0 0 8px 0; font-size: 16px; }
-        .noticia a { color: #0066cc; text-decoration: none; }
-        .noticia p { font-size: 13px; color: #666; margin: 0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widget Noticias Superliga</title>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --card-bg: #f8f9fa;
+      --border-color: #e9ecef;
+      --text-main: #212529;
+      --text-muted: #6c757d;
+      --accent: #343a40;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      background-color: transparent;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 5px;
+    }
+
+    .widget-container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .widget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .widget-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 4px;
+    }
+
+    .nav-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      line-height: 1;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .news-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 10px 12px;
+      min-height: 75px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .news-date {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .news-title {
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text-main);
+      text-decoration: none;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .news-title:hover {
+      color: #000;
+      text-decoration: underline;
+    }
+
+    .loading, .error {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 20px 0;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="news-widget">Cargando noticias...</div>
+<div class="widget-container">
+  <div class="widget-header">
+    <span class="widget-title">Últimas Noticias</span>
+    <div class="nav-buttons">
+      <button class="nav-btn" id="prevBtn" onclick="prevNews()">&lt;</button>
+      <button class="nav-btn" id="nextBtn" onclick="nextNews()">&gt;</button>
+    </div>
+  </div>
 
-    <script>
-        // Usamos la API REST de WordPress en lugar del archivo /feed/ tradicional
-        // para saltarnos el bloqueo del hosting gratuito
-        const urlAPI = "https://rf.gd"; 
-        
-        // Usamos AllOrigins por si el navegador exige el bypass de CORS directo
-        const urlProxy = `https://allorigins.win{encodeURIComponent(urlAPI)}`;
-        const widgetContainer = document.getElementById('news-widget');
+  <div id="content">
+    <div class="loading">Cargando noticias...</div>
+  </div>
+</div>
 
-        fetch(urlProxy)
-            .then(response => {
-                if (response.ok) return response.json();
-                throw new Error('Error de conexión con el servidor.');
-            })
-            .then(data => {
-                // Parseamos la respuesta JSON que viene dentro del proxy
-                const posts = JSON.parse(data.contents);
-                
-                if(!Array.isArray(posts) || posts.length === 0) {
-                    widgetContainer.innerHTML = 'No se encontraron noticias publicadas.';
-                    return;
-                }
+<script>
+  // Apuntamos a la API REST nativa de WordPress para obtener los posts en formato JSON limpio
+  const WP_API_URL = 'https://tiempodesuperliga.rf.gd/wp-json/wp/v2/posts?per_page=5&_fields=id,date,title,link';
+  
+  let newsItems = [];
+  let currentIndex = 0;
 
-                let html = '';
-                
-                posts.forEach(post => {
-                    const title = post.title.rendered;
-                    const link = post.link;
-                    // Extraemos el texto limpio del extracto de WordPress
-                    let description = post.excerpt.rendered.replace(/<[^>]*>/g, '').substring(0, 120);
+  async function fetchNews() {
+    try {
+      // Intentamos cargar el JSON directamente
+      const response = await fetch(WP_API_URL);
+      if (!response.ok) throw new Error('Error al conectar con WordPress');
+      
+      const posts = await response.json();
+      
+      if (posts.length === 0) {
+        document.getElementById('content').innerHTML = '<div class="error">No hay noticias disponibles.</div>';
+        return;
+      }
 
-                    html += `
-                        <div class="noticia">
-                            <h3><a href="${link}" target="_blank">${title}</a></h3>
-                            <p>${description}...</p>
-                        </div>
-                    `;
-                });
-                
-                widgetContainer.innerHTML = html;
-            })
-            .catch(error => {
-                console.error("Error detectado:", error);
-                widgetContainer.innerHTML = `No se pudieron conectar las noticias. (Detalle: ${error.message})`;
-            });
-    </script>
+      newsItems = posts.map(post => ({
+        title: post.title.rendered,
+        link: post.link,
+        date: new Date(post.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      }));
+
+      renderNews();
+    } catch (err) {
+      console.warn('Fallback a proxy por restricción de servidor:', err);
+      // Si falla por CORS/InfinityFree, usamos un proxy ligero de JSON
+      fetchNewsWithProxy();
+    }
+  }
+
+  async function fetchNewsWithProxy() {
+    try {
+      const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(WP_API_URL);
+      const response = await fetch(proxyUrl);
+      const data = await response.json();
+      const posts = JSON.parse(data.contents);
+
+      newsItems = posts.map(post => ({
+        title: post.title.rendered,
+        link: post.link,
+        date: new Date(post.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      }));
+
+      renderNews();
+    } catch (e) {
+      document.getElementById('content').innerHTML = '<div class="error">No se pudieron cargar las noticias.</div>';
+    }
+  }
+
+  function renderNews() {
+    if (newsItems.length === 0) return;
+    const item = newsItems[currentIndex];
+    
+    document.getElementById('content').innerHTML = `
+      <div class="news-card">
+        <div class="news-date">${item.date}</div>
+        <a class="news-title" href="${item.link}" target="_blank" rel="noopener">${item.title}</a>
+      </div>
+    `;
+  }
+
+  function nextNews() {
+    if (newsItems.length === 0) return;
+    currentIndex = (currentIndex + 1) % newsItems.length;
+    renderNews();
+  }
+
+  function prevNews() {
+    if (newsItems.length === 0) return;
+    currentIndex = (currentIndex - 1 + newsItems.length) % newsItems.length;
+    renderNews();
+  }
+
+  // Carga inicial
+  fetchNews();
+</script>
+
 </body>
 </html>
-
