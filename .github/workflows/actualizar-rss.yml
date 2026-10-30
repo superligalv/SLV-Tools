@@ -17,7 +17,10 @@ jobs:
 
       - name: Descargar JSON desde la API de WordPress
         run: |
-          curl -s "https://tiempodesuperliga.rf.gd/wp-json/wp/v2/posts?per_page=5&_fields=id,date,title,link" -o noticias.json
+          curl -s -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+            -H "Accept: application/json, text/plain, */*" \
+            -H "Accept-Language: es-ES,es;q=0.9" \
+            -L "https://tiempodesuperliga.rf.gd/wp-json/wp/v2/posts?per_page=5&_fields=id,date,title,link" -o noticias.json
 
       - name: Subir cambios al repositorio
         uses: stefanzweifel/git-auto-commit-action@v5
