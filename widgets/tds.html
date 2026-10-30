@@ -255,42 +255,30 @@
     </div>
 
     <script>
-        // Datos de noticias (Ligeros y limpios)
-        const news = [
+        // Configuración del Feed RSS de WordPress
+        const RSS_URL = 'https://tiempodesuperliga.rf.gd/feed/';
+        
+        // API principal RSS2JSON
+        const PRIMARY_API = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
+        // Proxy secundario de respaldo por si acaso hay problemas de CORS o límites de API
+        const FALLBACK_API = `https://api.allorigins.win/get?url=${encodeURIComponent(RSS_URL)}`;
+
+        // Noticias de respaldo en caso de que falle la conexión externa o servidor offline
+        const FALLBACK_NEWS = [
             {
-                title: "Actualización oficial de las Tablas Salariales",
-                category: "Salarios",
-                date: "30 Oct",
-                excerpt: "Nuevos coeficientes ajustados según nivel de experiencia y bonos extras aplicados.",
-                url: "https://tiempodesuperliga.rf.gd/"
-            },
-            {
-                title: "Cierre del Mercado de Fichajes de la Liga",
-                category: "Fichajes",
-                date: "29 Oct",
-                excerpt: "Revisa todos los traspasos de última hora confirmados por la administración.",
-                url: "https://tiempodesuperliga.rf.gd/"
-            },
-            {
-                title: "Resultados y clasificaciones tras la Jornada 14",
-                category: "Jornada",
-                date: "27 Oct",
-                excerpt: "Resumen de marcadores, rendimiento de plantillas y estado de la tabla.",
-                url: "https://tiempodesuperliga.rf.gd/"
-            },
-            {
-                title: "Boletín de Sanciones y Tarjetas para la Fecha 15",
-                category: "Sanciones",
-                date: "25 Oct",
-                excerpt: "Listado de jugadores suspendidos por acumulación o tarjeta roja.",
+                title: "No se pudieron cargar las noticias en directo",
+                category: "Info",
+                date: "Hoy",
+                excerpt: "Haz clic aquí para visitar directamente el sitio de Tiempo de Superliga.",
                 url: "https://tiempodesuperliga.rf.gd/"
             }
         ];
 
+        let news = [];
         let currentIndex = 0;
         let isPaused = false;
         let interval = null;
-        const SPEED = 4000; // 4 segundos por noticia
+        const SPEED = 4500; // 4.5 segundos por noticia
 
         const track = document.getElementById('track');
         const dotsContainer = document.getElementById('dots');
@@ -298,8 +286,104 @@
         const widget = document.getElementById('widget');
         const pauseBtn = document.getElementById('pauseBtn');
 
-        // Renderizar Diapositivas
-        function initWidget() {
+        // Función para limpiar etiquetas HTML del extracto/descripción
+        function stripHtml(html) {
+            const tmp = document.createElement("DIV");
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || "";
+        }
+
+        // Formatear la fecha del RSS
+        function formatDate(dateString) {
+            try {
+                const d = new Date(dateString);
+                if (isNaN(d.getTime())) return "Reciente";
+                return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+            } catch (e) {
+                return "Reciente";
+            }
+        }
+
+        // Obtener datos desde el RSS de WordPress
+        async function fetchFeed() {
+            try {
+                // Intentar con API 1: rss2json
+                const res = await fetch(PRIMARY_API);
+                if (!res.ok) throw new Error("Error en API principal");
+                const data = await res.json();
+                
+                if (data.status === 'ok' && data.items && data.items.length > 0) {
+                    return data.items.map(item => {
+                        // Extraer categoría si existe
+                        const category = (item.categories && item.categories.length > 0) ? item.categories[0] : 'Noticia';
+                        // Limpiar resumen
+                        let cleanExcerpt = stripHtml(item.description || item.content || '');
+                        if (cleanExcerpt.length > 110) cleanExcerpt = cleanExcerpt.substring(0, 110) + '...';
+
+                        return {
+                            title: item.title,
+                            category: category,
+                            date: formatDate(item.pubDate),
+                            excerpt: cleanExcerpt,
+                            url: item.link
+                        };
+                    });
+                } else {
+                    throw new Error("Respuesta no válida de RSS2JSON");
+                }
+            } catch (err) {
+                console.warn("Fallo en API principal, intentando método secundario...", err);
+                
+                try {
+                    // Intentar con API 2: AllOrigins (parsing directo de XML)
+                    const res = await fetch(FALLBACK_API);
+                    const data = await res.json();
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                    const items = xmlDoc.querySelectorAll("item");
+
+                    if (items.length > 0) {
+                        const parsedNews = [];
+                        items.forEach((item, index) => {
+                            if (index >= 8) return; // Limitar a las 8 más recientes
+                            const title = item.querySelector("title")?.textContent || "Sin título";
+                            const link = item.querySelector("link")?.textContent || RSS_URL;
+                            const pubDate = item.querySelector("pubDate")?.textContent || "";
+                            const description = item.querySelector("description")?.textContent || "";
+                            const category = item.querySelector("category")?.textContent || "Noticia";
+
+                            let cleanExcerpt = stripHtml(description);
+                            if (cleanExcerpt.length > 110) cleanExcerpt = cleanExcerpt.substring(0, 110) + '...';
+
+                            parsedNews.push({
+                                title,
+                                category,
+                                date: formatDate(pubDate),
+                                excerpt: cleanExcerpt,
+                                url: link
+                            });
+                        });
+                        return parsedNews;
+                    }
+                } catch (fallbackErr) {
+                    console.error("Error al obtener el feed RSS:", fallbackErr);
+                }
+            }
+
+            // Si falla todo, devolver noticias de contingencia
+            return FALLBACK_NEWS;
+        }
+
+        // Inicializar Widget
+        async function initWidget() {
+            // Estado de carga inicial
+            track.innerHTML = `
+                <div class="slide">
+                    <div class="news-excerpt" style="text-align:center;">⏳ Cargando últimas noticias del feed...</div>
+                </div>`;
+            
+            news = await fetchFeed();
+
             track.innerHTML = '';
             dotsContainer.innerHTML = '';
 
@@ -323,29 +407,33 @@
                 dotsContainer.appendChild(dot);
             });
 
+            currentIndex = 0;
             updateSlide();
             startAutoplay();
         }
 
         function updateSlide() {
+            if (news.length === 0) return;
             track.style.transform = `translateX(-${currentIndex * 100}%)`;
             
-            // Actualizar categoría superior
+            // Actualizar categoría
             categoryBadge.textContent = news[currentIndex].category;
 
             // Actualizar dots
             const dots = dotsContainer.children;
             for (let i = 0; i < dots.length; i++) {
-                dots[i].classList.toggle('active', i === currentIndex);
+                if (dots[i]) dots[i].classList.toggle('active', i === currentIndex);
             }
         }
 
         function next() {
+            if (news.length === 0) return;
             currentIndex = (currentIndex + 1) % news.length;
             updateSlide();
         }
 
         function prev() {
+            if (news.length === 0) return;
             currentIndex = (currentIndex - 1 + news.length) % news.length;
             updateSlide();
         }
@@ -357,7 +445,7 @@
         }
 
         function startAutoplay() {
-            if (!interval && !isPaused) {
+            if (!interval && !isPaused && news.length > 1) {
                 interval = setInterval(next, SPEED);
             }
         }
@@ -374,7 +462,7 @@
             startAutoplay();
         }
 
-        // Eventos
+        // Escuchadores de eventos
         document.getElementById('nextBtn').addEventListener('click', () => { next(); resetAutoplay(); });
         document.getElementById('prevBtn').addEventListener('click', () => { prev(); resetAutoplay(); });
 
@@ -385,11 +473,11 @@
             else startAutoplay();
         });
 
-        // Pausar con el ratón por comodidad
+        // Pausar con el ratón
         widget.addEventListener('mouseenter', stopAutoplay);
         widget.addEventListener('mouseleave', () => { if (!isPaused) startAutoplay(); });
 
-        // Iniciar
+        // Iniciar widget
         initWidget();
     </script>
 </body>
