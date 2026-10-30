@@ -15,13 +15,13 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v4
 
-      - name: Descargar feed RSS de WordPress
+      - name: Descargar JSON desde la API de WordPress
         run: |
-          curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://tiempodesuperliga.rf.gd/feed/" -o noticias.json
+          curl -s "https://tiempodesuperliga.rf.gd/wp-json/wp/v2/posts?per_page=5&_fields=id,date,title,link" -o noticias.json
 
       - name: Subir cambios al repositorio
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Auto-actualización de noticias RSS"
+          commit_message: "Auto-actualización de noticias"
           file_pattern: noticias.json
           push_options: '--force'
