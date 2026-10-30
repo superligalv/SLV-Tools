@@ -1,7 +1,8 @@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Widget de Noticias RSS</title>
+    <title>Widget de Noticias - Tiempo de Superliga</title>
     <style>
         body { font-family: sans-serif; margin: 0; padding: 10px; background: #f9f9f9; }
         .noticia { background: white; padding: 15px; margin-bottom: 10px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -15,34 +16,51 @@
     <div id="news-widget">Cargando noticias...</div>
 
     <script>
-        // Reemplaza con la URL de tu feed de WordPress
-        const urlWordpressRSS = "https://tiempodesuperliga.rf.gd"; 
+        // Usamos la API REST de WordPress en lugar del archivo /feed/ tradicional
+        // para saltarnos el bloqueo del hosting gratuito
+        const urlAPI = "https://rf.gd"; 
         
-        // Usamos una API intermediaria pública para convertir el XML del RSS a JSON y evitar CORS
-        const urlAPI = `https://rss2json.com{encodeURIComponent(urlWordpressRSS)}`;
+        // Usamos AllOrigins por si el navegador exige el bypass de CORS directo
+        const urlProxy = `https://allorigins.win{encodeURIComponent(urlAPI)}`;
+        const widgetContainer = document.getElementById('news-widget');
 
-        fetch(urlAPI)
-            .then(response => response.json())
-            .then(data => {
-                if(data.status === 'ok') {
-                    let html = '';
-                    // Limitamos a las últimas 5 noticias
-                    data.items.slice(0, 5).forEach(item => {
-                        html += `
-                            <div class="noticia">
-                                <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
-                                <p>${item.description.replace(/<[^>]*>/g, '').substring(0, 120)}...</p>
-                            </div>
-                        `;
-                    });
-                    document.getElementById('news-widget').innerHTML = html;
-                } else {
-                    document.getElementById('news-widget').innerHTML = 'Error al cargar las noticias.';
-                }
+        fetch(urlProxy)
+            .then(response => {
+                if (response.ok) return response.json();
+                throw new Error('Error de conexión con el servidor.');
             })
-            .catch(() => {
-                document.getElementById('news-widget').innerHTML = 'No se pudieron conectar las noticias.';
+            .then(data => {
+                // Parseamos la respuesta JSON que viene dentro del proxy
+                const posts = JSON.parse(data.contents);
+                
+                if(!Array.isArray(posts) || posts.length === 0) {
+                    widgetContainer.innerHTML = 'No se encontraron noticias publicadas.';
+                    return;
+                }
+
+                let html = '';
+                
+                posts.forEach(post => {
+                    const title = post.title.rendered;
+                    const link = post.link;
+                    // Extraemos el texto limpio del extracto de WordPress
+                    let description = post.excerpt.rendered.replace(/<[^>]*>/g, '').substring(0, 120);
+
+                    html += `
+                        <div class="noticia">
+                            <h3><a href="${link}" target="_blank">${title}</a></h3>
+                            <p>${description}...</p>
+                        </div>
+                    `;
+                });
+                
+                widgetContainer.innerHTML = html;
+            })
+            .catch(error => {
+                console.error("Error detectado:", error);
+                widgetContainer.innerHTML = `No se pudieron conectar las noticias. (Detalle: ${error.message})`;
             });
     </script>
 </body>
 </html>
+
