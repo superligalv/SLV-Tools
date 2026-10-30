@@ -1,0 +1,25 @@
+name: Actualizar Feed RSS
+
+on:
+  schedule:
+    # Se ejecuta automáticamente cada 4 horas
+    - cron: '0 */4 * * *'
+  workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Descargar feed RSS de WordPress
+        run: |
+          # Descargamos el RSS y lo convertimos a JSON básico o guardamos el estado
+          curl -s "https://api.rss2json.com/v1/api.json?rss_url=https://tiempodesuperliga.rf.gd/feed/" -o noticias.json
+
+      - name: Subir cambios al repositorio
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Auto-actualización de noticias RSS"
+          file_pattern: noticias.json

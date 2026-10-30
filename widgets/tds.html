@@ -143,29 +143,29 @@
 </div>
 
 <script>
-  // Usamos rss2json para parsear el feed directamente sin bloqueos de navegador
-  const RSS_URL = 'https://tiempodesuperliga.rf.gd/feed/';
-  const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
-  
   let newsItems = [];
   let currentIndex = 0;
 
   async function fetchNews() {
     try {
-      const response = await fetch(API_URL);
-      if (!response.ok) throw new Error('Error al conectar con el servicio de feed');
+      // Lee el archivo JSON local de tu propio repositorio en GitHub Pages
+      const response = await fetch('./noticias.json');
+      if (!response.ok) throw new Error('No se pudo cargar el archivo de noticias');
       
       const data = await response.json();
       
-      if (data.status !== 'ok' || !data.items || data.items.length === 0) {
+      // Soporta tanto el formato directo como el formato de rss2json
+      const items = data.items || data;
+
+      if (!items || items.length === 0) {
         document.getElementById('content').innerHTML = '<div class="error">No hay noticias disponibles.</div>';
         return;
       }
 
-      newsItems = data.items.map(item => ({
+      newsItems = items.map(item => ({
         title: item.title,
         link: item.link,
-        date: new Date(item.pubDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+        date: new Date(item.pubDate || item.date || Date.now()).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
       }));
 
       renderNews();
