@@ -143,29 +143,29 @@
 </div>
 
 <script>
-  const TARGET_URL = 'https://tiempodesuperliga.rf.gd/wp-json/wp/v2/posts?per_page=5&_fields=id,date,title,link';
-  const PROXY_URL = 'https://api.allorigins.win/get?url=' + encodeURIComponent(TARGET_URL);
+  // Usamos rss2json para parsear el feed directamente sin bloqueos de navegador
+  const RSS_URL = 'https://tiempodesuperliga.rf.gd/feed/';
+  const API_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_URL)}`;
   
   let newsItems = [];
   let currentIndex = 0;
 
   async function fetchNews() {
     try {
-      const response = await fetch(PROXY_URL);
-      if (!response.ok) throw new Error('Error al conectar con el servidor');
+      const response = await fetch(API_URL);
+      if (!response.ok) throw new Error('Error al conectar con el servicio de feed');
       
       const data = await response.json();
-      const posts = JSON.parse(data.contents);
       
-      if (!posts || posts.length === 0) {
+      if (data.status !== 'ok' || !data.items || data.items.length === 0) {
         document.getElementById('content').innerHTML = '<div class="error">No hay noticias disponibles.</div>';
         return;
       }
 
-      newsItems = posts.map(post => ({
-        title: post.title.rendered,
-        link: post.link,
-        date: new Date(post.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
+      newsItems = data.items.map(item => ({
+        title: item.title,
+        link: item.link,
+        date: new Date(item.pubDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })
       }));
 
       renderNews();
