@@ -43,7 +43,7 @@ export function calcularSalarioJugador(jugador, tablaSalarios) {
   const mediaPrincipal = medias[0];
   const mediaSecundaria = medias[1];
 
-  const tieneSecundaria = mediaSecundaria >= 8 ? "SI" : "NO";
+  const tieneSecundaria = mediaSecundaria >= 9 ? "SI" : "NO";
 
   const fila = tablaSalarios.find(f =>
     f.avg === mediaPrincipal && f.sec === tieneSecundaria
