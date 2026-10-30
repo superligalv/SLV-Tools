@@ -5,10 +5,11 @@
   <title>Carrusel de Noticias</title>
   <style>
     :root {
-      --bg-color: #1a1a1a;
-      --text-color: #ffffff;
-      --accent-color: #3b82f6;
-      --muted-color: #9ca3af;
+      --bg-color: #f8fafc;        /* Fondo gris muy claro / blanco suave */
+      --border-color: #e2e8f0;    /* Borde sutil */
+      --text-color: #1e293b;      /* Texto oscuro con gran contraste (#1e293b) */
+      --accent-color: #2563eb;    /* Azul dinámico para fechas y enlaces activos */
+      --muted-color: #64748b;     /* Gris medio para flechas y detalles */
     }
 
     body {
@@ -22,9 +23,10 @@
     .news-carousel {
       position: relative;
       background: var(--bg-color);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 15px 40px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      padding: 15px 45px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
       overflow: hidden;
       max-width: 600px;
       margin: auto;
@@ -33,7 +35,7 @@
     .news-slide {
       display: none;
       text-align: center;
-      animation: fadeIn 0.5s ease-in-out;
+      animation: fadeIn 0.4s ease-in-out;
     }
 
     .news-slide.active {
@@ -44,15 +46,16 @@
       font-size: 0.75rem;
       color: var(--accent-color);
       text-transform: uppercase;
-      font-weight: bold;
+      font-weight: 700;
       margin-bottom: 4px;
+      letter-spacing: 0.5px;
     }
 
     .news-title a {
       color: var(--text-color);
       text-decoration: none;
       font-size: 0.95rem;
-      font-weight: 500;
+      font-weight: 600;
       transition: color 0.2s;
     }
 
@@ -71,7 +74,7 @@
       color: var(--muted-color);
       font-size: 1.2rem;
       cursor: pointer;
-      padding: 0 10px;
+      padding: 5px 10px;
       transition: color 0.2s;
     }
 
@@ -83,7 +86,7 @@
     .next-btn { right: 5px; }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(5px); }
+      from { opacity: 0; transform: translateY(4px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
@@ -110,7 +113,6 @@
 
     async function loadCarouselNews() {
       try {
-        // Apunta al archivo JSON generado automáticamente en la raíz
         const response = await fetch('../noticias.json');
         if (!response.ok) throw new Error('No se pudo cargar el archivo');
         
@@ -162,10 +164,10 @@
     function startAutoPlay() {
       autoPlayInterval = setInterval(() => {
         showSlide(currentIndex + 1);
-      }, 5000); // Cambia de noticia cada 5 segundos
+      }, 5000);
     }
 
-    fn = resetAutoPlay = () => {
+    const resetAutoPlay = () => {
       clearInterval(autoPlayInterval);
       startAutoPlay();
     };
