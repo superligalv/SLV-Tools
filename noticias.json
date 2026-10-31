@@ -1,5 +1,13 @@
 [
   {
+    "id": 1680,
+    "date": "2026-10-31T20:57:43",
+    "link": "https://tiempodesuperliga.rf.gd/alvaro-ramos-nuevo-entrenador-del-inter-de-milan/",
+    "title": {
+      "rendered": "ALVARO RAMOS, NUEVO ENTRENADOR DEL INTER DE MILÁN"
+    }
+  },
+  {
     "id": 1675,
     "date": "2026-10-31T15:06:47",
     "link": "https://tiempodesuperliga.rf.gd/hakimi-el-primer-gran-golpe-de-david/",
@@ -29,14 +37,6 @@
     "link": "https://tiempodesuperliga.rf.gd/comienza-una-nueva-era-en-manchester/",
     "title": {
       "rendered": "COMIENZA UNA NUEVA ERA EN MANCHESTER"
-    }
-  },
-  {
-    "id": 1662,
-    "date": "2026-10-30T17:30:37",
-    "link": "https://tiempodesuperliga.rf.gd/silkho-nuevo-manager-del-psg/",
-    "title": {
-      "rendered": "Silkho nuevo manager del PSG"
     }
   }
 ]
