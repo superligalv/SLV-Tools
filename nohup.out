@@ -1,0 +1,34 @@
+Procesando club desde fichero: liv.txt (Código: liv)
+Procesando club desde fichero: rbl.txt (Código: rbl)
+Procesando club desde fichero: bay.txt (Código: bay)
+Procesando club desde fichero: atm.txt (Código: atm)
+Procesando club desde fichero: psg.txt (Código: psg)
+Procesando club desde fichero: che.txt (Código: che)
+Procesando club desde fichero: mci.txt (Código: mci)
+Procesando club desde fichero: mun.txt (Código: mun)
+Procesando club desde fichero: ast.txt (Código: ast)
+⚠️ Advertencia: No se encontró el equipo con abreviatura 'ast' en la tabla teams. Se omite este fichero.
+Procesando club desde fichero: new.txt (Código: new)
+⚠️ Advertencia: No se encontró el equipo con abreviatura 'new' en la tabla teams. Se omite este fichero.
+Procesando club desde fichero: gir.txt (Código: gir)
+⚠️ Advertencia: No se encontró el equipo con abreviatura 'gir' en la tabla teams. Se omite este fichero.
+Procesando club desde fichero: aja.txt (Código: aja)
+⚠️ Advertencia: No se encontró el equipo con abreviatura 'aja' en la tabla teams. Se omite este fichero.
+Procesando club desde fichero: vil.txt (Código: vil)
+⚠️ Advertencia: No se encontró el equipo con abreviatura 'vil' en la tabla teams. Se omite este fichero.
+Procesando club desde fichero: nap.txt (Código: nap)
+⚠️ Advertencia: No se encontró el equipo con abreviatura 'nap' en la tabla teams. Se omite este fichero.
+Procesando club desde fichero: fey.txt (Código: fey)
+Procesando club desde fichero: par.txt (Código: par)
+Procesando club desde fichero: dor.txt (Código: dor)
+Procesando club desde fichero: rso.txt (Código: rso)
+⚠️ Advertencia: No se encontró el equipo con abreviatura 'rso' en la tabla teams. Se omite este fichero.
+Procesando club desde fichero: ben.txt (Código: ben)
+⚠️ Advertencia: No se encontró el equipo con abreviatura 'ben' en la tabla teams. Se omite este fichero.
+Procesando club desde fichero: por.txt (Código: por)
+Traceback (most recent call last):
+  File "/opt/superligalv/python_scripts/importar_plantillas.py", line 135, in <module>
+    procesar_ficheros()
+  File "/opt/superligalv/python_scripts/importar_plantillas.py", line 54, in procesar_ficheros
+    age = int(columnas[1])
+ValueError: invalid literal for int() with base 10: '='
