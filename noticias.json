@@ -1,5 +1,13 @@
 [
   {
+    "id": 1762,
+    "date": "2026-11-04T22:26:48",
+    "link": "https://tiempodesuperliga.rf.gd/calma-en-el-mercado/",
+    "title": {
+      "rendered": "CALMA EN EL MERCADO"
+    }
+  },
+  {
     "id": 1752,
     "date": "2026-11-03T22:26:11",
     "link": "https://tiempodesuperliga.rf.gd/el-city-dinamita-su-medular/",
@@ -29,14 +37,6 @@
     "link": "https://tiempodesuperliga.rf.gd/tras-48-horas-de-pura-tension-mykhailo-mudryk-es-nuevo-jugador-del-fc-kobenhavn/",
     "title": {
       "rendered": "Tras 48 horas de pura tensión, Mykhailo Mudryk es nuevo jugador del FC København"
-    }
-  },
-  {
-    "id": 1715,
-    "date": "2026-11-02T21:05:09",
-    "link": "https://tiempodesuperliga.rf.gd/le-mercato-1-los-lucas-cruzan-la-acera/",
-    "title": {
-      "rendered": "Le Mercato #1: Los Lucas cruzan la acera"
     }
   }
 ]
