@@ -1,5 +1,13 @@
 [
   {
+    "id": 1804,
+    "date": "2026-11-09T14:07:13",
+    "link": "https://tiempodesuperliga.rf.gd/configuracion-de-la-plantilla/",
+    "title": {
+      "rendered": "Configuración de la plantilla"
+    }
+  },
+  {
     "id": 1800,
     "date": "2026-11-08T23:08:21",
     "link": "https://tiempodesuperliga.rf.gd/movimientos-del-club-parisino/",
@@ -29,14 +37,6 @@
     "link": "https://tiempodesuperliga.rf.gd/le-mercato-4-e-quando-arrivi-a-casa/",
     "title": {
       "rendered": "Le Mercato #4: E quando arrivi a casa&#8230;"
-    }
-  },
-  {
-    "id": 1758,
-    "date": "2026-11-05T23:08:50",
-    "link": "https://tiempodesuperliga.rf.gd/le-mercato-3-goltemade-is-in-da-house/",
-    "title": {
-      "rendered": "Le Mercato #3: &#8216;Goltemade&#8217; is in da house"
     }
   }
 ]
