@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superliga Europea - Introducir Resultados</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/adminTransfer.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .match-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .team-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 150px;
+        }
+        .team-info.home {
+            justify-content: flex-end;
+            text-align: right;
+        }
+        .team-info.away {
+            justify-content: flex-start;
+            text-align: left;
+        }
+        .score-input {
+            width: 50px;
+            height: 40px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+        }
+        .score-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .btn-save {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-save:hover {
+            background-color: #1d4ed8;
+        }
+        .matchday-selector {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor protegido inicialmente oculto -->
+    <div class="page-container" id="adminContainer" style="display: none;">
+        <!-- Cabecera -->
+        <header class="simple-header">
+            <div class="header-title-wrap">
+                <h1>⚽ Gestión de Resultados</h1>
+                <p>Introduce los goles de los partidos y guárdalos para actualizar la clasificación</p>
+            </div>
+            <div>
+                <label for="matchdaySelect" style="font-size: 0.85rem; font-weight: 600; color: #64748b; margin-right: 8px;">Jornada:</label>
+                <select id="matchdaySelect" class="matchday-selector">
+                    <option value="">Selecciona jornada...</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Contenedor de Partidos -->
+        <main class="table-card">
+            <div id="matchesContainer">
+                <div class="text-center text-muted" style="padding: 30px;">⏳ Selecciona una jornada para ver los partidos...</div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../JS/resultados.js"></script>
+</body>
+</html>
