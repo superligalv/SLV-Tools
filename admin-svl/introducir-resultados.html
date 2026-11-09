@@ -65,13 +65,20 @@
         .btn-save:hover {
             background-color: #1d4ed8;
         }
-        .matchday-selector {
+        .select-filter {
             padding: 8px 12px;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
             font-size: 0.9rem;
             outline: none;
             background: white;
+            margin-right: 15px;
+        }
+        .filters-wrap {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
     </style>
 </head>
@@ -83,20 +90,28 @@
         <header class="simple-header">
             <div class="header-title-wrap">
                 <h1>⚽ Gestión de Resultados</h1>
-                <p>Introduce los goles de los partidos y guárdalos para actualizar la clasificación</p>
+                <p>Selecciona competición y jornada para introducir los goles</p>
             </div>
-            <div>
-                <label for="matchdaySelect" style="font-size: 0.85rem; font-weight: 600; color: #64748b; margin-right: 8px;">Jornada:</label>
-                <select id="matchdaySelect" class="matchday-selector">
-                    <option value="">Selecciona jornada...</option>
-                </select>
+            <div class="filters-wrap">
+                <div>
+                    <label for="competitionSelect" style="font-size: 0.85rem; font-weight: 600; color: #64748b; margin-right: 6px;">Liga:</label>
+                    <select id="competitionSelect" class="select-filter">
+                        <option value="">Cargando competiciones...</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="matchdaySelect" style="font-size: 0.85rem; font-weight: 600; color: #64748b; margin-right: 6px;">Jornada:</label>
+                    <select id="matchdaySelect" class="select-filter">
+                        <option value="">Selecciona jornada...</option>
+                    </select>
+                </div>
             </div>
         </header>
 
         <!-- Contenedor de Partidos -->
         <main class="table-card">
             <div id="matchesContainer">
-                <div class="text-center text-muted" style="padding: 30px;">⏳ Selecciona una jornada para ver los partidos...</div>
+                <div class="text-center text-muted" style="padding: 30px;">⏳ Selecciona una competición y jornada...</div>
             </div>
         </main>
     </div>

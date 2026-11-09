@@ -3,39 +3,49 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Define aquí tu supercontraseña de administración
 const SUPER_PASSWORD = "SUPER_PASSWORD_2026";
 
-const currentCompetitionId = "a579b018-aaf1-42b8-8df8-7d1dd9dea814";
 let currentSeasonId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Solicitar la supercontraseña al entrar
+    // 1. Solicitar contraseña
     const passwordIngresada = prompt("🔒 Introduce la supercontraseña de administración:");
 
     if (passwordIngresada !== SUPER_PASSWORD) {
         alert("❌ Contraseña incorrecta. Acceso denegado.");
-        window.location.href = "index.html"; // Redirigir al inicio si falla
+        window.location.href = "index.html";
         return;
     }
 
-    // 2. Si la contraseña es correcta, mostrar el panel y cargar datos
+    // 2. Mostrar panel y cargar datos iniciales
     document.getElementById("adminContainer").style.display = "block";
-    await inicializarTemporadaYJornadas();
+    await inicializarDatos();
 
-    const selectJornada = document.getElementById("matchdaySelect");
-    selectJornada.addEventListener("change", (e) => {
-        if (e.target.value) {
-            cargarPartidosJornada(e.target.value);
+    // Eventos de cambio en los selectores
+    document.getElementById("competitionSelect").addEventListener("change", async (e) => {
+        const compId = e.target.value;
+        if (compId) {
+            await cargarJornadasDeCompeticion(compId);
         } else {
-            document.getElementById("matchesContainer").innerHTML = `<div class="text-center text-muted" style="padding: 30px;">Selecciona una jornada para ver los partidos.</div>`;
+            document.getElementById("matchdaySelect").innerHTML = `<option value="">Selecciona jornada...</option>`;
+            document.getElementById("matchesContainer").innerHTML = `<div class="text-center text-muted" style="padding: 30px;">Selecciona una competición.</div>`;
+        }
+    });
+
+    document.getElementById("matchdaySelect").addEventListener("change", (e) => {
+        const matchday = e.target.value;
+        const compId = document.getElementById("competitionSelect").value;
+        if (compId && matchday) {
+            cargarPartidosJornada(compId, matchday);
+        } else {
+            document.getElementById("matchesContainer").innerHTML = `<div class="text-center text-muted" style="padding: 30px;">Selecciona jornada para ver los partidos.</div>`;
         }
     });
 });
 
-async function inicializarTemporadaYJornadas() {
+async function inicializarDatos() {
     try {
-        // Obtener la última temporada activa
+        // Obtener temporada actual / última
         let { data: seasonData } = await supabaseClient
             .from("seasons")
             .select("id")
@@ -56,33 +66,61 @@ async function inicializarTemporadaYJornadas() {
         if (!seasonData) return;
         currentSeasonId = seasonData.id;
 
-        // Obtener las jornadas disponibles
+        // Cargar todas las competiciones (o filtrar por tipo league si lo prefieres)
+        const { data: comps, error: compsErr } = await supabaseClient
+            .from("competitions")
+            .select("id, name, type")
+            .order("name", { ascending: true });
+
+        if (compsErr || !comps) return;
+
+        const selectComp = document.getElementById("competitionSelect");
+        selectComp.innerHTML = `<option value="">Selecciona competición...</option>` +
+            comps.map(c => `<option value="${c.id}">${c.name} (${c.type})</option>`).join("");
+
+        // Si hay competiciones, seleccionamos la primera por defecto automáticamente
+        if (comps.length > 0) {
+            selectComp.value = comps[0].id;
+            await cargarJornadasDeCompeticion(comps[0].id);
+        }
+
+    } catch (err) {
+        console.error("Error inicializando datos:", err);
+    }
+}
+
+async function cargarJornadasDeCompeticion(competitionId) {
+    try {
         const { data: matches, error } = await supabaseClient
             .from("matches")
             .select("matchday")
-            .eq("competition_id", currentCompetitionId)
+            .eq("competition_id", competitionId)
             .eq("season_id", currentSeasonId)
             .order("matchday", { ascending: true });
 
-        if (error || !matches) return;
+        const selectJornada = document.getElementById("matchdaySelect");
+        if (error || !matches || matches.length === 0) {
+            selectJornada.innerHTML = `<option value="">Sin jornadas disponibles</option>`;
+            document.getElementById("matchesContainer").innerHTML = `<div class="text-center text-muted" style="padding: 30px;">No hay partidos programados para esta competición.</div>`;
+            return;
+        }
 
         const jornadasUnicas = [...new Set(matches.map(m => m.matchday))].filter(j => j !== null);
         
-        const selectJornada = document.getElementById("matchdaySelect");
         selectJornada.innerHTML = `<option value="">Selecciona jornada...</option>` + 
             jornadasUnicas.map(j => `<option value="${j}">Jornada ${j}</option>`).join("");
 
         if (jornadasUnicas.length > 0) {
             selectJornada.value = jornadasUnicas[0];
-            cargarPartidosJornada(jornadasUnicas[0]);
+            cargarPartidosJornada(competitionId, jornadasUnicas[0]);
         }
 
     } catch (err) {
-        console.error("Error inicializando jornadas:", err);
+        console.error("Error al cargar jornadas:", err);
     }
 }
 
-async function cargarPartidosJornada(matchday) {
+async function cargarPartidosJornada(competitionId, matchday) {
     const container = document.getElementById("matchesContainer");
     container.innerHTML = `<div class="text-center text-muted" style="padding: 30px;">⏳ Cargando partidos...</div>`;
 
@@ -98,13 +136,13 @@ async function cargarPartidosJornada(matchday) {
                 home_team:teams!matches_home_team_id_fkey(name, short_name, logo_url),
                 away_team:teams!matches_away_team_id_fkey(name, short_name, logo_url)
             `)
-            .eq("competition_id", currentCompetitionId)
+            .eq("competition_id", competitionId)
             .eq("season_id", currentSeasonId)
             .eq("matchday", matchday)
             .order("id", { ascending: true });
 
         if (error || !matches || matches.length === 0) {
-            container.innerHTML = `<div class="text-center text-muted" style="padding: 30px;">No hay partidos programados para esta jornada.</div>`;
+            container.innerHTML = `<div class="text-center text-muted" style="padding: 30px;">No hay partidos en esta jornada.</div>`;
             return;
         }
 
