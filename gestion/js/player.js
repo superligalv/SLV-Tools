@@ -114,6 +114,7 @@ async function cargarHistorialTraspasos(playerId) {
                 to_team:teams!to_team_id (name, short_name)
             `)
             .eq("player_id", playerId)
+	    .eq("status", "confirmed") // <-- Filtra solo los confirmados
             .order("created_at", { ascending: false });
 
         if (error) {

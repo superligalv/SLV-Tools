@@ -145,3 +145,29 @@ body {
     color: #64748b;
     font-style: italic;
 }
+
+/* Estilos adicionales para la tabla de clasificación */
+.font-bold {
+    font-weight: 700;
+}
+
+.text-primary {
+    color: #2563eb;
+}
+
+.text-green {
+    color: #16a34a;
+    font-weight: 600;
+}
+
+.text-red {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.team-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Superliga Europea - Clasificación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="page-container">
+        <!-- Cabecera limpia con Buscador -->
+        <header class="simple-header">
+            <div class="header-title-wrap">
+                <h1 id="competitionTitle">🏆 Clasificación de la Liga</h1>
+                <p>Haz clic en cualquier cabecera para reordenar la tabla o busca tu equipo</p>
+            </div>
+            <div class="search-wrap">
+                <input type="text" id="searchTeamInput" placeholder="Buscar equipo..." class="search-input">
+            </div>
+        </header>
+
+        <!-- Contenedor de la Tabla -->
+        <main class="table-card">
+            <div class="table-responsive">
+                <table class="besoccer-table" id="standingsTable">
+                    <thead>
+                        <tr>
+                            <th class="text-center sortable" data-sort="position">Pos ↕</th>
+                            <th class="sortable" data-sort="team_name">Equipo ↕</th>
+                            <th class="text-center sortable" data-sort="pts">PTS ↕</th>
+                            <th class="text-center sortable" data-sort="pj">PJ ↕</th>
+                            <th class="text-center sortable" data-sort="pg">PG ↕</th>
+                            <th class="text-center sortable" data-sort="pe">PE ↕</th>
+                            <th class="text-center sortable" data-sort="pp">PP ↕</th>
+                            <th class="text-center sortable" data-sort="gf">GF ↕</th>
+                            <th class="text-center sortable" data-sort="gc">GC ↕</th>
+                            <th class="text-center sortable" data-sort="dg">DG ↕</th>
+                        </tr>
+                    </thead>
+                    <tbody id="standingsTableBody">
+                        <tr>
+                            <td colspan="10" class="text-center text-muted">⏳ Cargando clasificación...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/clasificacion.js"></script>
+</body>
+</html>
