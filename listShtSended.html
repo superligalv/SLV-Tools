@@ -18,7 +18,7 @@ body{
     justify-content:center;
     align-items:center;
     gap:8px;
-    flex-wrap:nowrap;
+    flex-wrap:wrap;
 }
 
 #equipos img{
@@ -40,7 +40,6 @@ fetch("https://superligalv.duckdns.org/api/listShtSended")
 .then(equipos => {
 
     const contenedor = document.getElementById("equipos");
-    contenedor.width = 400;
 
     equipos.forEach(equipo => {
 
