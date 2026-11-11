@@ -40,6 +40,7 @@ fetch("https://superligalv.duckdns.org/api/listShtSended")
 .then(equipos => {
 
     const contenedor = document.getElementById("equipos");
+    contenedor.width = 400;
 
     equipos.forEach(equipo => {
 
