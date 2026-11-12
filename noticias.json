@@ -1,5 +1,13 @@
 [
   {
+    "id": 1817,
+    "date": "2026-11-12T16:52:13",
+    "link": "https://tiempodesuperliga.rf.gd/tablas-con-sabor-a-epica/",
+    "title": {
+      "rendered": "Tablas con sabor a épica"
+    }
+  },
+  {
     "id": 1814,
     "date": "2026-11-11T17:58:19",
     "link": "https://tiempodesuperliga.rf.gd/haaland-y-compania-a-escena/",
@@ -29,14 +37,6 @@
     "link": "https://tiempodesuperliga.rf.gd/configuracion-de-la-plantilla/",
     "title": {
       "rendered": "Configuración de la plantilla"
-    }
-  },
-  {
-    "id": 1800,
-    "date": "2026-11-08T23:08:21",
-    "link": "https://tiempodesuperliga.rf.gd/movimientos-del-club-parisino/",
-    "title": {
-      "rendered": "Movimientos del club parisino"
     }
   }
 ]
