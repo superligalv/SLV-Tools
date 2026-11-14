@@ -1,5 +1,13 @@
 [
   {
+    "id": 1820,
+    "date": "2026-11-14T01:06:27",
+    "link": "https://tiempodesuperliga.rf.gd/le-pariciel-2-como-quedarse-sin-champions/",
+    "title": {
+      "rendered": "Le Pariciel #2: Como quedarse sin Champions"
+    }
+  },
+  {
     "id": 1817,
     "date": "2026-11-12T16:52:13",
     "link": "https://tiempodesuperliga.rf.gd/tablas-con-sabor-a-epica/",
@@ -29,14 +37,6 @@
     "link": "https://tiempodesuperliga.rf.gd/esta-es-nuestra-nueva-armada/",
     "title": {
       "rendered": "ESTA ES NUESTRA NUEVA ARMADA"
-    }
-  },
-  {
-    "id": 1804,
-    "date": "2026-11-09T14:07:13",
-    "link": "https://tiempodesuperliga.rf.gd/configuracion-de-la-plantilla/",
-    "title": {
-      "rendered": "Configuración de la plantilla"
     }
   }
 ]
