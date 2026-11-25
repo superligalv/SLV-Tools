@@ -3,241 +3,572 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calendario - SuperLigaLV</title>
+  <title>Calendario Mensual - SuperLigaLV</title>
   <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --border: #334155;
-      --accent: #38bdf8;
-      --apertura: #a855f7;
-      --mercado: #f59e0b;
-      --liga: #22c55e;
-      --europa: #3b82f6;
-      --copa: #ef4444;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 2rem 1rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      margin: 0;
+      padding: 2rem;
     }
-    .container { max-width: 960px; margin: 0 auto; }
-    header { margin-bottom: 1.5rem; }
-    h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
-    .subtitle { color: var(--muted); font-size: 0.9rem; }
-    .controls {
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+    section {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: 0 auto;
+      white-space: pre-wrap;
+    }
+    .error {
+      text-align: center;
+      color: red;
+      font-weight: bold;
+    }
+    #teamContent {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 500px;
+      overflow-x: auto;
+      overflow-y: auto;
+      white-space: nowrap;
+    }
+    #teamContent table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #teamStats {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 100px;
+      overflow-x: auto;
+      overflow-y: auto;
+      white-space: nowrap;
+    }
+    #teamName {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 1.25rem;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+    #teamsContainer {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 100px;
+      overflow-x: auto;
+      overflow-y: auto;
+      white-space: nowrap;
+    }
+    #teamsContainer table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    details {
+      max-width: 1300px;
+      width: 88%;
+      margin: 1rem auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    summary {
+      padding: 1rem 1rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+      cursor: pointer;
+      background: #2c3e50;
+      color: white;
+      list-style: none;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary::after {
+      content: "▼";
+      float: right;
+      transition: transform 0.2s ease;
+    }
+    details[open] summary::after {
+      transform: rotate(180deg);
+    }
+    .maincontainer {
+      max-width: 900px;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+      margin: 0 auto;
+    }
+    .mainsubtitle {
+      opacity: 0.8;
+      margin-bottom: 2rem;
+    }
+    .maingrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      text-decoration: none;
+      color: #000;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .card h2 {
+      margin-bottom: 0.5rem;
+    }
+    .card p {
+      font-size: 1.1rem;
+      opacity: 0.85;
+    }
+    .card.new {
+      border: 2px solid #4caf50;
+    }
+    .card.old {
+      border: 2px solid #ff9800;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
       align-items: center;
     }
-    input, select, label.file-btn {
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--border);
+    .modal-content {
+      background: white;
+      padding: 25px;
       border-radius: 8px;
-      padding: 0.55rem 0.8rem;
-      font-size: 0.9rem;
+      width: 280px;
+      text-align: center;
     }
-    input[type="search"] { flex: 1; min-width: 200px; }
-    input[type="file"] { display: none; }
-    label.file-btn { cursor: pointer; border-style: dashed; }
-    label.file-btn:hover { border-color: var(--accent); }
-    .status {
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin-bottom: 0.75rem;
+    #pinError {
+      color: red;
+      margin-top: 10px;
     }
-    .table-wrap {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow-x: auto;
+
+    /* Estilos específicos del calendario mensual */
+    .cal-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    table { width: 100%; border-collapse: collapse; text-align: left; }
-    th, td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-    th { color: var(--muted); font-weight: 600; background: rgba(15, 23, 42, 0.5); }
-    tr:last-child td { border-bottom: none; }
-    tr.is-today { background: rgba(56, 189, 248, 0.12); outline: 1px solid var(--accent); }
-    tr.is-past { opacity: 0.65; }
-    .badge {
-      display: inline-block;
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 600;
+    .cal-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .month-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .month-nav h2 {
+      margin: 0;
+      color: #2c3e50;
+      min-width: 200px;
+      text-align: center;
+      text-transform: capitalize;
+    }
+    button, select, .btn-file {
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid #d0d7de;
+      background: #2c3e50;
       color: #fff;
+      cursor: pointer;
     }
-    .b-apertura { background: var(--apertura); }
-    .b-mercado  { background: var(--mercado); color: #0f172a; }
-    .b-liga     { background: var(--liga); color: #0f172a; }
-    .b-europa   { background: var(--europa); }
-    .b-copa     { background: var(--copa); }
-    .b-otro     { background: var(--border); }
-    .tag-hoy {
-      margin-left: 0.5rem;
-      font-size: 0.7rem;
-      background: var(--accent);
-      color: #0f172a;
-      padding: 0.1rem 0.4rem;
-      border-radius: 4px;
-      font-weight: 700;
+    button:hover, .btn-file:hover {
+      background: #1a252f;
+    }
+    select {
+      background: #fff;
+      color: #333;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .cal-status {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 1rem;
+    }
+    .cal-grid-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 6px;
+      text-align: center;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .day-cell {
+      min-height: 115px;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 6px;
+      background: #fafbfc;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .day-cell.other-month {
+      background: #f1f3f5;
+      opacity: 0.55;
+    }
+    .day-cell.is-today {
+      border: 2px solid #2c3e50;
+      background: #eef4fb;
+    }
+    .day-number {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #2c3e50;
+    }
+    .event-pill {
+      font-size: 0.78rem;
+      padding: 4px 6px;
+      border-radius: 6px;
+      color: #fff;
+      background: #2c3e50;
+      line-height: 1.25;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .event-pill.comp-apertura { background: #7e22ce; }
+    .event-pill.comp-mercado  { background: #d97706; }
+    .event-pill.comp-liga     { background: #15803d; }
+    .event-pill.comp-europa   { background: #1d4ed8; }
+    .event-pill.comp-copa     { background: #b91c1c; }
+    .event-comp-label {
+      display: block;
+      font-size: 0.68rem;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+    .month-list {
+      padding: 1rem 1.5rem;
+      white-space: normal;
+    }
+    .month-list ul {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+    .month-list li {
+      margin-bottom: 0.45rem;
+    }
+    @media (max-width: 768px) {
+      .cal-grid-header, .cal-grid {
+        grid-template-columns: 1fr;
+      }
+      .day-cell {
+        min-height: auto;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Calendario de Competición</h1>
-      <p class="subtitle">Lectura dinámica desde <code>calendar.csv</code></p>
-    </header>
+  <h1>Calendario Mensual - SuperLigaLV</h1>
 
-    <div class="controls">
-      <input type="search" id="searchInput" placeholder="Buscar evento o día..." />
-      <select id="compFilter">
-        <option value="">Todas las competiciones</option>
-      </select>
-      <select id="timeFilter">
-        <option value="all">Todos los eventos</option>
-        <option value="upcoming">Hoy y próximos</option>
-        <option value="past">Pasados</option>
-      </select>
-      <label class="file-btn" for="csvFileInput">Seleccionar calendar.csv</label>
-      <input type="file" id="csvFileInput" accept=".csv,text/csv" />
+  <div class="cal-wrapper">
+    <div class="cal-toolbar">
+      <div class="month-nav">
+        <button id="prevMonthBtn" type="button">&lt; Anterior</button>
+        <h2 id="monthTitle">Mes</h2>
+        <button id="nextMonthBtn" type="button">Siguiente &gt;</button>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center;">
+        <select id="compFilter">
+          <option value="">Todas las competiciones</option>
+        </select>
+        <label class="btn-file" for="csvInput">Cargar calendar.csv</label>
+        <input type="file" id="csvInput" accept=".csv,text/csv" />
+      </div>
     </div>
 
-    <div class="status" id="statusMsg">Cargando calendar.csv...</div>
+    <div class="cal-status" id="statusBar">Leyendo calendar.csv...</div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Día</th>
-            <th>Evento</th>
-            <th>Competición</th>
-          </tr>
-        </thead>
-        <tbody id="calendarBody"></tbody>
-      </table>
+    <div class="cal-grid-header">
+      <div>Lun</div>
+      <div>Mar</div>
+      <div>Mié</div>
+      <div>Jue</div>
+      <div>Vie</div>
+      <div>Sáb</div>
+      <div>Dom</div>
     </div>
+    <div class="cal-grid" id="calendarGrid"></div>
   </div>
 
+  <details open>
+    <summary>Eventos del mes seleccionado</summary>
+    <div class="month-list" id="monthEventsList"></div>
+  </details>
+
   <script>
-    const CSV_URL = "./calendar.csv";
-    let rows = [];
+    const CSV_PATH = "./calendar.csv";
+    let events = [];
+    let currentYear = 2026;
+    let currentMonth = 9; // 0-indexed: 9 = Octubre 2026
 
-    const compSelect = document.getElementById("compFilter");
-    const searchInput = document.getElementById("searchInput");
-    const timeFilter = document.getElementById("timeFilter");
-    const csvFileInput = document.getElementById("csvFileInput");
-    const statusMsg = document.getElementById("statusMsg");
-    const tbody = document.getElementById("calendarBody");
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const monthTitle = document.getElementById("monthTitle");
+    const calendarGrid = document.getElementById("calendarGrid");
+    const monthEventsList = document.getElementById("monthEventsList");
+    const compFilter = document.getElementById("compFilter");
+    const statusBar = document.getElementById("statusBar");
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const csvInput = document.getElementById("csvInput");
 
-    function parseCSV(raw) {
-      const lines = raw.trim().split(/\r?\n/).slice(1);
-      return lines.map(line => {
-        const parts = line.split(",").map(s => s.trim()).filter((_, idx, arr) => {
-          return !(s === "" && idx > 0 && idx < arr.length - 1);
+    function getTodayISO() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length <= 1) return [];
+      return lines.slice(1).map(line => {
+        // Limpia comas vacías dobles como "2026-12-21,Lunes,,Jornada 7,Competiciones Europeas"
+        const parts = line.split(",").map(s => s.trim()).filter((val, idx, arr) => {
+          return !(val === "" && idx > 0 && idx < arr.length - 1);
         });
         return {
           fecha: parts[0] || "",
           dia: parts[1] || "",
           evento: parts[2] || "",
-          comp: parts[3] || ""
+          competicion: parts[3] || ""
         };
-      }).filter(r => r.fecha);
+      }).filter(item => /^\d{4}-\d{2}-\d{2}$/.test(item.fecha));
     }
 
-    function badgeClass(comp) {
+    function getCompClass(comp) {
       const c = comp.toLowerCase();
-      if (c.includes("apertura")) return "b-apertura";
-      if (c.includes("mercado"))  return "b-mercado";
-      if (c === "liga")          return "b-liga";
-      if (c.includes("europa"))  return "b-europa";
-      if (c.includes("copa"))    return "b-copa";
-      return "b-otro";
+      if (c.includes("apertura")) return "comp-apertura";
+      if (c.includes("mercado"))  return "comp-mercado";
+      if (c === "liga")          return "comp-liga";
+      if (c.includes("europa"))  return "comp-europa";
+      if (c.includes("copa"))    return "comp-copa";
+      return "";
     }
 
-    function populateCompetitions() {
-      const current = compSelect.value;
-      compSelect.innerHTML = `<option value="">Todas las competiciones</option>`;
-      const comps = [...new Set(rows.map(r => r.comp).filter(Boolean))];
-      comps.forEach(c => {
+    function populateFilter() {
+      const selected = compFilter.value;
+      const comps = [...new Set(events.map(e => e.competicion).filter(Boolean))];
+      compFilter.innerHTML = `<option value="">Todas las competiciones</option>`;
+      comps.forEach(comp => {
         const opt = document.createElement("option");
-        opt.value = c;
-        opt.textContent = c;
-        compSelect.appendChild(opt);
+        opt.value = comp;
+        opt.textContent = comp;
+        compFilter.appendChild(opt);
       });
-      if (comps.includes(current)) compSelect.value = current;
-    }
-
-    function render() {
-      const q = searchInput.value.toLowerCase().trim();
-      const comp = compSelect.value;
-      const tf = timeFilter.value;
-
-      const filtered = rows.filter(r => {
-        if (comp && r.comp !== comp) return false;
-        if (tf === "upcoming" && r.fecha < todayStr) return false;
-        if (tf === "past" && r.fecha >= todayStr) return false;
-        if (q && !`${r.fecha} ${r.dia} ${r.evento} ${r.comp}`.toLowerCase().includes(q)) return false;
-        return true;
-      });
-
-      tbody.innerHTML = filtered.map(r => {
-        const isToday = r.fecha === todayStr;
-        const isPast = r.fecha < todayStr;
-        const cls = isToday ? "is-today" : (isPast ? "is-past" : "");
-        const hoyTag = isToday ? `<span class="tag-hoy">HOY</span>` : "";
-        return `
-          <tr class="${cls}">
-            <td>${r.fecha}${hoyTag}</td>
-            <td>${r.dia}</td>
-            <td>${r.evento}</td>
-            <td><span class="badge ${badgeClass(r.comp)}">${r.comp}</span></td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    function loadCSVText(text, sourceLabel) {
-      rows = parseCSV(text);
-      populateCompetitions();
-      render();
-      statusMsg.textContent = `Cargados ${rows.length} eventos desde ${sourceLabel}.`;
-    }
-
-    async function loadFromServer() {
-      try {
-        const res = await fetch(`${CSV_URL}?t=${Date.now()}`, { cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const text = await res.text();
-        loadCSVText(text, "calendar.csv");
-      } catch (err) {
-        statusMsg.textContent =
-          "No se pudo leer calendar.csv automáticamente (si abres el archivo en local, usa el botón 'Seleccionar calendar.csv' o sirve la carpeta por HTTP).";
+      if (comps.includes(selected)) {
+        compFilter.value = selected;
       }
     }
 
-    csvFileInput.addEventListener("change", async (e) => {
+    function formatDateISO(year, month0, day) {
+      const m = String(month0 + 1).padStart(2, "0");
+      const d = String(day).padStart(2, "0");
+      return `${year}-${m}-${d}`;
+    }
+
+    function renderCalendar() {
+      const activeComp = compFilter.value;
+      const filteredEvents = activeComp
+        ? events.filter(e => e.competicion === activeComp)
+        : events;
+
+      const byDate = {};
+      filteredEvents.forEach(ev => {
+        if (!byDate[ev.fecha]) byDate[ev.fecha] = [];
+        byDate[ev.fecha].push(ev);
+      });
+
+      const dateObj = new Date(currentYear, currentMonth, 1);
+      monthTitle.textContent = dateObj.toLocaleDateString("es-ES", {
+        month: "long",
+        year: "numeric"
+      });
+
+      const firstWeekdayMon0 = (dateObj.getDay() + 6) % 7; // 0 = Lun ... 6 = Dom
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+      const todayISO = getTodayISO();
+
+      const cells = [];
+
+      // Días del mes anterior para completar la primera semana
+      for (let i = firstWeekdayMon0 - 1; i >= 0; i--) {
+        const dayNum = prevMonthDays - i;
+        const prevM = currentMonth === 0 ? 11 : currentMonth - 1;
+        const prevY = currentMonth === 0 ? currentYear - 1 : currentYear;
+        cells.push({
+          day: dayNum,
+          iso: formatDateISO(prevY, prevM, dayNum),
+          otherMonth: true
+        });
+      }
+
+      // Días del mes actual
+      for (let d = 1; d <= daysInMonth; d++) {
+        cells.push({
+          day: d,
+          iso: formatDateISO(currentYear, currentMonth, d),
+          otherMonth: false
+        });
+      }
+
+      // Rellenar hasta múltiplo de 7
+      while (cells.length % 7 !== 0) {
+        const nextDay = cells.length - (firstWeekdayMon0 + daysInMonth) + 1;
+        const nextM = currentMonth === 11 ? 0 : currentMonth + 1;
+        const nextY = currentMonth === 11 ? currentYear + 1 : currentYear;
+        cells.push({
+          day: nextDay,
+          iso: formatDateISO(nextY, nextM, nextDay),
+          otherMonth: true
+        });
+      }
+
+      calendarGrid.innerHTML = cells.map(cell => {
+        const dayEvents = byDate[cell.iso] || [];
+        const isToday = cell.iso === todayISO;
+        const classes = [
+          "day-cell",
+          cell.otherMonth ? "other-month" : "",
+          isToday ? "is-today" : ""
+        ].filter(Boolean).join(" ");
+
+        const pillsHTML = dayEvents.map(ev => `
+          <div class="event-pill ${getCompClass(ev.competicion)}">
+            <span>${ev.evento}</span>
+            <span class="event-comp-label">${ev.competicion}</span>
+          </div>
+        `).join("");
+
+        return `
+          <div class="${classes}">
+            <div class="day-number">${cell.day}</div>
+            ${pillsHTML}
+          </div>
+        `;
+      }).join("");
+
+      // Lista resumen de eventos del mes visible
+      const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, "0")}-`;
+      const monthItems = filteredEvents.filter(e => e.fecha.startsWith(prefix));
+
+      if (monthItems.length === 0) {
+        monthEventsList.innerHTML = `<p>No hay eventos programados en este mes${activeComp ? ` para ${activeComp}` : ""}.</p>`;
+      } else {
+        monthEventsList.innerHTML = `
+          <ul>
+            ${monthItems.map(e => `
+              <li><strong>${e.fecha}</strong> (${e.dia}): ${e.evento} — <em>${e.competicion}</em></li>
+            `).join("")}
+          </ul>
+        `;
+      }
+    }
+
+    function applyCSVText(text, label) {
+      events = parseCSV(text);
+      populateFilter();
+      if (events.length > 0) {
+        const [y, m] = events[0].fecha.split("-").map(Number);
+        currentYear = y;
+        currentMonth = m - 1;
+      }
+      renderCalendar();
+      statusBar.textContent = `Cargados ${events.length} eventos desde ${label}.`;
+    }
+
+    async function loadCalendarFile() {
+      try {
+        const res = await fetch(`${CSV_PATH}?t=${Date.now()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        applyCSVText(text, "calendar.csv");
+      } catch (err) {
+        renderCalendar();
+        statusBar.innerHTML = `<span class="error">No se pudo leer calendar.csv automáticamente.</span> Si abres el HTML en local, pulsa "Cargar calendar.csv" o sirve la carpeta por HTTP.`;
+      }
+    }
+
+    prevMonthBtn.addEventListener("click", () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+    });
+
+    compFilter.addEventListener("change", renderCalendar);
+
+    csvInput.addEventListener("change", async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
       const text = await file.text();
-      loadCSVText(text, file.name);
+      applyCSVText(text, file.name);
     });
 
-    searchInput.addEventListener("input", render);
-    compSelect.addEventListener("change", render);
-    timeFilter.addEventListener("change", render);
-
-    loadFromServer();
+    loadCalendarFile();
   </script>
 </body>
 </html>
