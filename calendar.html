@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendario - SuperLigaLV</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+      --accent: #38bdf8;
+      --apertura: #a855f7;
+      --mercado: #f59e0b;
+      --liga: #22c55e;
+      --europa: #3b82f6;
+      --copa: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    header { margin-bottom: 1.5rem; }
+    h1 { font-size: 1.6rem; margin-bottom: 0.25rem; }
+    .subtitle { color: var(--muted); font-size: 0.9rem; }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+    input, select, label.file-btn {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.55rem 0.8rem;
+      font-size: 0.9rem;
+    }
+    input[type="search"] { flex: 1; min-width: 200px; }
+    input[type="file"] { display: none; }
+    label.file-btn { cursor: pointer; border-style: dashed; }
+    label.file-btn:hover { border-color: var(--accent); }
+    .status {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+    .table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    th { color: var(--muted); font-weight: 600; background: rgba(15, 23, 42, 0.5); }
+    tr:last-child td { border-bottom: none; }
+    tr.is-today { background: rgba(56, 189, 248, 0.12); outline: 1px solid var(--accent); }
+    tr.is-past { opacity: 0.65; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .b-apertura { background: var(--apertura); }
+    .b-mercado  { background: var(--mercado); color: #0f172a; }
+    .b-liga     { background: var(--liga); color: #0f172a; }
+    .b-europa   { background: var(--europa); }
+    .b-copa     { background: var(--copa); }
+    .b-otro     { background: var(--border); }
+    .tag-hoy {
+      margin-left: 0.5rem;
+      font-size: 0.7rem;
+      background: var(--accent);
+      color: #0f172a;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Calendario de Competición</h1>
+      <p class="subtitle">Lectura dinámica desde <code>calendar.csv</code></p>
+    </header>
+
+    <div class="controls">
+      <input type="search" id="searchInput" placeholder="Buscar evento o día..." />
+      <select id="compFilter">
+        <option value="">Todas las competiciones</option>
+      </select>
+      <select id="timeFilter">
+        <option value="all">Todos los eventos</option>
+        <option value="upcoming">Hoy y próximos</option>
+        <option value="past">Pasados</option>
+      </select>
+      <label class="file-btn" for="csvFileInput">Seleccionar calendar.csv</label>
+      <input type="file" id="csvFileInput" accept=".csv,text/csv" />
+    </div>
+
+    <div class="status" id="statusMsg">Cargando calendar.csv...</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Día</th>
+            <th>Evento</th>
+            <th>Competición</th>
+          </tr>
+        </thead>
+        <tbody id="calendarBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const CSV_URL = "./calendar.csv";
+    let rows = [];
+
+    const compSelect = document.getElementById("compFilter");
+    const searchInput = document.getElementById("searchInput");
+    const timeFilter = document.getElementById("timeFilter");
+    const csvFileInput = document.getElementById("csvFileInput");
+    const statusMsg = document.getElementById("statusMsg");
+    const tbody = document.getElementById("calendarBody");
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    function parseCSV(raw) {
+      const lines = raw.trim().split(/\r?\n/).slice(1);
+      return lines.map(line => {
+        const parts = line.split(",").map(s => s.trim()).filter((_, idx, arr) => {
+          return !(s === "" && idx > 0 && idx < arr.length - 1);
+        });
+        return {
+          fecha: parts[0] || "",
+          dia: parts[1] || "",
+          evento: parts[2] || "",
+          comp: parts[3] || ""
+        };
+      }).filter(r => r.fecha);
+    }
+
+    function badgeClass(comp) {
+      const c = comp.toLowerCase();
+      if (c.includes("apertura")) return "b-apertura";
+      if (c.includes("mercado"))  return "b-mercado";
+      if (c === "liga")          return "b-liga";
+      if (c.includes("europa"))  return "b-europa";
+      if (c.includes("copa"))    return "b-copa";
+      return "b-otro";
+    }
+
+    function populateCompetitions() {
+      const current = compSelect.value;
+      compSelect.innerHTML = `<option value="">Todas las competiciones</option>`;
+      const comps = [...new Set(rows.map(r => r.comp).filter(Boolean))];
+      comps.forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        compSelect.appendChild(opt);
+      });
+      if (comps.includes(current)) compSelect.value = current;
+    }
+
+    function render() {
+      const q = searchInput.value.toLowerCase().trim();
+      const comp = compSelect.value;
+      const tf = timeFilter.value;
+
+      const filtered = rows.filter(r => {
+        if (comp && r.comp !== comp) return false;
+        if (tf === "upcoming" && r.fecha < todayStr) return false;
+        if (tf === "past" && r.fecha >= todayStr) return false;
+        if (q && !`${r.fecha} ${r.dia} ${r.evento} ${r.comp}`.toLowerCase().includes(q)) return false;
+        return true;
+      });
+
+      tbody.innerHTML = filtered.map(r => {
+        const isToday = r.fecha === todayStr;
+        const isPast = r.fecha < todayStr;
+        const cls = isToday ? "is-today" : (isPast ? "is-past" : "");
+        const hoyTag = isToday ? `<span class="tag-hoy">HOY</span>` : "";
+        return `
+          <tr class="${cls}">
+            <td>${r.fecha}${hoyTag}</td>
+            <td>${r.dia}</td>
+            <td>${r.evento}</td>
+            <td><span class="badge ${badgeClass(r.comp)}">${r.comp}</span></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function loadCSVText(text, sourceLabel) {
+      rows = parseCSV(text);
+      populateCompetitions();
+      render();
+      statusMsg.textContent = `Cargados ${rows.length} eventos desde ${sourceLabel}.`;
+    }
+
+    async function loadFromServer() {
+      try {
+        const res = await fetch(`${CSV_URL}?t=${Date.now()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        loadCSVText(text, "calendar.csv");
+      } catch (err) {
+        statusMsg.textContent =
+          "No se pudo leer calendar.csv automáticamente (si abres el archivo en local, usa el botón 'Seleccionar calendar.csv' o sirve la carpeta por HTTP).";
+      }
+    }
+
+    csvFileInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const text = await file.text();
+      loadCSVText(text, file.name);
+    });
+
+    searchInput.addEventListener("input", render);
+    compSelect.addEventListener("change", render);
+    timeFilter.addEventListener("change", render);
+
+    loadFromServer();
+  </script>
+</body>
+</html>
